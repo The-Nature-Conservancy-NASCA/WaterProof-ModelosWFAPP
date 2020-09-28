@@ -3,3 +3,5 @@ Fiona
 psycopg2
 geopandas
 pycrs
+fastapi
+uvicorn

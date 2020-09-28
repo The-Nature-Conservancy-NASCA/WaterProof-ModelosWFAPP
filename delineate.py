@@ -15,6 +15,7 @@ from fiona.crs import from_epsg
 import geopandas as gpd
 from rasterio.mask import mask
 import pycrs
+import geojson
 sys.path.append('config')
 from connect import connect
 
@@ -109,18 +110,27 @@ def delineateCatchment(path,x,y):
         'geometry': 'Polygon',
         'properties': {'LABEL': 'float:16'}
     }
-	with fiona.open('catchment.shp', 'w',
-                    driver='ESRI Shapefile',
-                    crs=dirFlow.crs.srs,
-                    schema=schema) as c:
-		i = 0
-		for shape, value in shapes:
-			rec = {}
-			rec['geometry'] = shape
-			rec['properties'] = {'LABEL' : str(value)}
-			rec['id'] = str(i)
-			c.write(rec)
-			i += 1
+	# with fiona.open('catchment.shp', 'w',
+    #                 driver='ESRI Shapefile',
+    #                 crs=dirFlow.crs.srs,
+    #                 schema=schema) as c:
+	# 	i = 0
+	# 	for shape, value in shapes:
+	# 		print(shape)
+	# 		print(value)
+	# 		rec = {}
+	# 		rec['geometry'] = shape
+	# 		rec['properties'] = {'LABEL' : str(value)}
+	# 		rec['id'] = str(i)
+	# 		c.write(rec)
+	# 		i += 1
+	for shape, value in shapes:
+		polygon = geojson.Polygon(shape['coordinates'])
+		features = []
+		features.append(geojson.Feature(geometry=polygon,properties={"LABEL":str(value)}))
+		feature_collection = geojson.FeatureCollection(features)
+	return feature_collection
+	
 
       
 # Validacion de parametros
