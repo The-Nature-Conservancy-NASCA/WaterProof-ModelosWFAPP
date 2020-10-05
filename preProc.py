@@ -10,6 +10,9 @@ from os import path
 import fiona
 import rasterio
 from natcap.invest.hydropower import hydropower_water_yield as awy
+from natcap.invest.sdr import sdr
+from natcap.invest.ndr import ndr
+from natcap.invest import carbon
 sys.path.append('config')
 from config import config
 from connect import connect
@@ -106,7 +109,6 @@ def createFolder(user,date):
    
 # Cortar raster
 def cutRaster(catchment,path,out_path):
-	print(out_path)
 	data = rasterio.open(path)
 	with fiona.open(catchment, "r") as shapefile:
 		shapes = [feature["geometry"] for feature in shapefile]
@@ -123,6 +125,7 @@ def cutRaster(catchment,path,out_path):
 	with rasterio.open(os.path.join(out_path,os.path.basename(path)), "w", **out_meta) as dest:
 		dest.write(out_image)
 
+	return os.path.join(out_path,os.path.basename(path))
 
 # Recuperar macroregion por id
 def getRegionFromId(basin):
@@ -188,7 +191,7 @@ def processParameters(parametersList, basin, catchment,pathF,quality):
 		if(value == 'False'):
 			value = False
 		elif(value == 'True'):
-			value = False		
+			value = True		
 		cut = parameter[2]
 		constant = parameter[3]
 		suffix = parameter[4]
@@ -206,7 +209,7 @@ def processParameters(parametersList, basin, catchment,pathF,quality):
 		if(empty):
 			value = ''
 		if(cut):
-			cutRaster(catchment,value,in_path)
+			value = cutRaster(catchment,value,in_path)
 		if(file):
 			value = catchment
 		if(outPathType):
@@ -218,11 +221,17 @@ def processParameters(parametersList, basin, catchment,pathF,quality):
 def executeFunction(parameters,model):
 	if(model == 'awy'):
 		awy.execute(parameters)
+	elif(model == 'sdr'):
+		sdr.execute(parameters)
+	elif(model == 'carbon'):
+		carbon.execute(parameters)
+	elif(model == 'ndr'):
+		ndr.execute(parameters)
 
 date = datetime.date.today()
 path = createFolder(1,date)
 catchment = exportToShp(2, path)
-list = getParameters(44,'awy')
+list = getParameters(44,'ndr')
 dict = processParameters(list,44,catchment,path,True)
-executeFunction(dict,'awy')
+executeFunction(dict,'ndr')
 #cutRaster('aaaaa',dict)

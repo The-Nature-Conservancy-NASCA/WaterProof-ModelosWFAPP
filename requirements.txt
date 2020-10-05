@@ -5,3 +5,5 @@ geopandas
 pycrs
 fastapi
 uvicorn
+natcap.invest
+rasterstats
