@@ -28,11 +28,11 @@ def calculateRainfallDayMonth(folder,catchment,label):
 	for filename in os.listdir(folder):
 		
 		if filename.endswith(".tif") and label in filename:		
-			print(filename)	
+			#print(filename)	
 			monthName = filename.split("_")[1]
 			monthNumber = months[monthName]
 			fileRaster = os.path.join(folder,filename)
-			print(monthNumber)
+			#print(monthNumber)
 			zs = calculateStatistic(typeStat,fileRaster,catchment)
 			result = zs[0]
 			rainfallList.append([monthNumber,int(result[typeStat[0]])])
@@ -54,7 +54,7 @@ def saveCsv(headers,content,folder):
 			
 			
       
-list = calculateRainfallDayMonth("/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_Rainfall/","/home/skaphe/Documentos/tnc/modelos/Workspace_BasinDelineation/tmp/1_2020_10_3/in/catchment/catchment.shp","SA_1")
-saveCsv(['month','events'],list,os.getcwd())
+#list = calculateRainfallDayMonth("/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_Rainfall/","/home/skaphe/Documentos/tnc/modelos/Workspace_BasinDelineation/tmp/1_2020_10_3/in/catchment/catchment.shp","SA_1")
+#saveCsv(['month','events'],list,os.getcwd())
    
 #calculateStatistic(['mean'],"/home/skaphe/Documentos/tnc/modelos/entradas/03-LandCover/YEAR_0/LULC_SA_1.tif","/home/skaphe/Documentos/tnc/modelos/Workspace_BasinDelineation/tmp/1_2020_10_3/in/catchment/catchment.shp")

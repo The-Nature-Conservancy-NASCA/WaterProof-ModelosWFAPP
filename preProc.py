@@ -10,9 +10,12 @@ from os import path
 import fiona
 import rasterio
 from natcap.invest.hydropower import hydropower_water_yield as awy
+from natcap.invest.seasonal_water_yield import seasonal_water_yield as swy
 from natcap.invest.sdr import sdr
 from natcap.invest.ndr import ndr
 from natcap.invest import carbon
+from zonalStatistics import calculateRainfallDayMonth
+from zonalStatistics import saveCsv
 sys.path.append('config')
 from config import config
 from connect import connect
@@ -199,6 +202,7 @@ def processParameters(parametersList, basin, catchment,pathF,quality):
 		file = parameter[6]
 		folder = parameter[7]
 		outPathType = parameter[8]
+		calculado = parameter[11]
 		if(suffix):
 			region = getRegionFromId(basin)
 			label = region[4]
@@ -214,6 +218,12 @@ def processParameters(parametersList, basin, catchment,pathF,quality):
 			value = catchment
 		if(outPathType):
 			value = out_path
+		if(calculado):
+			region = getRegionFromId(basin)
+			label = region[4]
+			rainfallList = calculateRainfallDayMonth(value,catchment,label)
+			saveCsv(['month','events'],rainfallList,in_path)
+			value = os.path.join(in_path,"rainfall_day.csv")
 		dictParameters[name] = value
 	print(dictParameters)
 	return dictParameters
@@ -227,11 +237,13 @@ def executeFunction(parameters,model):
 		carbon.execute(parameters)
 	elif(model == 'ndr'):
 		ndr.execute(parameters)
+	elif(model == 'swy'):
+		swy.execute(parameters)
 
 date = datetime.date.today()
 path = createFolder(1,date)
 catchment = exportToShp(2, path)
-list = getParameters(44,'ndr')
+list = getParameters(44,'swy')
 dict = processParameters(list,44,catchment,path,True)
-executeFunction(dict,'ndr')
+executeFunction(dict,'swy')
 #cutRaster('aaaaa',dict)

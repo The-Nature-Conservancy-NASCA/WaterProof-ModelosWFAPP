@@ -28,5 +28,19 @@ python delineate.py -d x y
 ```
 El argumento -d indica que se utiliza la delimitación, los parametros xy indican la latitud y longitud, respectivamente. Como salida se obtiene un archivo en formato shapefile llamado catchment.shp.
 
+Se pueden ejecutar dichos procedimientos, también mediante un llamado a un API REST implementada utilizando la dependencia FastAPI. 
+
+### Ejecución mediante API REST
+
+Para iniciar el API REST se debe escribir el siguiente comando:
+```bash
+python startup.py
+```
+Inmediatamente sube el API; y genera dos endpoint desde los cuales se pueden ejecutar los procedimientos de snap y delimitar cuenca. Los dos procedmientios se realizan mediante peticiones tipo GET:
+
+-  /snapPoint?x=?&y=?, donde los signos de interrogación se refieren a las coordenadas longitud y latitud, respectivamente. Esta url ejecuta el procdimiento de snap, y devuelve un fichero json con las coordenadas corregidas (x_snap,y_snap)
+- /delineateCatchment?x=?&y=?, donde los signos de interrogación se refieren a las coordenadas longitud y latitud, respectivamente. Esta url ejecuta el procedimiento para delimiat una cuenca a partir de unas coordenadas corregidas; se retorna un geojson que puede ser abierto en cualquier software SIG de escritorio en navegadores web, con el poligono de la cuenca delimitada.
+
+
 ## Licencia
 [MIT](https://choosealicense.com/licenses/mit/)
