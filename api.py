@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
+from typing import List
 import delineate
+from preproc import executeFunction,verifyExec,calcConc
 
 app = FastAPI()
 
@@ -42,4 +44,30 @@ async def delineateCatchment(x,y):
 	except:
 		dictResult['estado'] = False
 		dictResult['error'] = print("Error en la ejecucion")
+	return dictResult
+
+@app.get("/execInvest")
+async def execInvest(type:str,id_usuario:int, basin:int,catchment:int,models: List[str] = Query(None)):
+	dictResult = dict()
+	dictResult['estado'] = False
+
+	try:
+		for model in models:
+			catchmentShp,path,label = executeFunction(basin,model,type,catchment,id_usuario)
+
+		dictResult['resultado'] = 'Ejecucion exitosa'
+
+		if(type == "quality"):
+			execute = verifyExec(path)
+			s,n,p = calcConc(execute,path,label)
+			dictResult['resultado'] = {
+				"sediment":s,
+				"nitrogen":n,
+				"phosporus":p
+			}			
+		dictResult['estado'] = True
+		
+	except Exception as e:
+		dictResult['estado'] = False
+		dictResult['error'] = e.args
 	return dictResult

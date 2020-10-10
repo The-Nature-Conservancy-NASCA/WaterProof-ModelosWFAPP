@@ -14,8 +14,9 @@ from natcap.invest.seasonal_water_yield import seasonal_water_yield as swy
 from natcap.invest.sdr import sdr
 from natcap.invest.ndr import ndr
 from natcap.invest import carbon
-from zonalStatistics import calculateRainfallDayMonth
+from zonalStatistics import calculateRainfallDayMonth,calculateStatistic
 from zonalStatistics import saveCsv
+from calculateConcentrations import calcConcentrations as cntr
 sys.path.append('config')
 from config import config
 from connect import connect
@@ -51,26 +52,28 @@ def exportToShp(catchment, path):
 	fd1 = ogr.FieldDefn('subws_id',ogr.OFTInteger)
 	out_layer.CreateField(fd)
 	out_layer.CreateField(fd1)
-	sql = "select * from delineated_catchment where id_delineate_catchment=" + str(catchment)
+	if(catchment != -1):
+		sql = "select * from delineated_catchment where id_delineate_catchment=" + str(catchment)
 
-	# layer = conn.GetLayerByName("delineated_catchment")
-	layer = conn.ExecuteSQL(sql)
-	
-	feat = layer.GetNextFeature()
-	while feat is not None:
-		featDef = ogr.Feature(out_layer.GetLayerDefn())
-		geom = feat.GetGeometryRef()
-		geom.Transform(transform)		
-		featDef.SetGeometry(geom)			
-		featDef.SetField('ws_id',feat.id_delineate_catchment)		
-		featDef.SetField('subws_id',feat.id_delineate_catchment)		
-		out_layer.CreateFeature(featDef)
-		feat.Destroy()
-		feat = layer.GetNextFeature()
+		# layer = conn.GetLayerByName("delineated_catchment")
+		layer = conn.ExecuteSQL(sql)
 		
+		feat = layer.GetNextFeature()
+		while feat is not None:
+			featDef = ogr.Feature(out_layer.GetLayerDefn())
+			geom = feat.GetGeometryRef()
+			geom.Transform(transform)		
+			featDef.SetGeometry(geom)			
+			featDef.SetField('ws_id',feat.id_delineate_catchment)		
+			featDef.SetField('subws_id',feat.id_delineate_catchment)		
+			out_layer.CreateFeature(featDef)
+			feat.Destroy()
+			feat = layer.GetNextFeature()
+			
 
-	conn.Destroy()
-	out_ds.Destroy()
+		conn.Destroy()
+		out_ds.Destroy()
+		
 	return os.path.join(os.getcwd(),output)
 
 # Crear directorio para almacenar procesamientos
@@ -163,9 +166,44 @@ def getParameters(basin,model):
 		listResult.append(row)
 	cursor.close()
 	return listResult
+
+# Evaluar si existen las ejecuciones realizadas para AWY, SDR y NDR para calcular concentraciones
+def verifyExec(path):
+	pathWs = os.path.join(path,"out","01-INVEST_QUALITY")
+	execute = True
+	execList = []
+	execList.append("AWY")
+	execList.append("SDR")
+	execList.append("NDR")
+
+	for item in execList:
+		pathNew = os.path.join(pathWs,item)
+		isdir = os.path.isdir(pathNew)
+		if(not isdir):
+			execute = False
+			break
+
+	return execute
+ 
+# Ejecutar calculo de concentraciones
+def calcConc(execute,path,label):
+	pathWs = os.path.join(path,"out")
+	if(execute):
+		s,n,p = cntr(pathWs,label)
+	else:
+		s,n,p = [-1,-1,-1]
+
+	return s,n,p
+ 
+#Calcular sumatoria de resultado de carbon
+def calculateCarbonSum(catchment,path,label):
+	stats = ['sum']
+	raster = os.path.join(path,'out','01-INVEST_QUALITY','CARBON','tot_c_cur_' + label + '.tif')
+	statCalc = calculateStatistic(stats,raster,catchment)
+	print(statCalc)
  
 # Procesar parametros
-def processParameters(parametersList, basin, catchment,pathF,quality):
+def processParameters(parametersList, basin, catchment,pathF,type,model):
 	dictParameters = dict()
 	out_path = ""
 	in_path = ""
@@ -173,12 +211,13 @@ def processParameters(parametersList, basin, catchment,pathF,quality):
 	out_folder_quality = parametersList[0][10]
 	print(out_folder)
 	print(out_folder_quality)
-	if(quality):
+	if(type == "quality"):
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder_quality)
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder_quality)
 	else:
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder)
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder)
+	
 
 	isdir = os.path.isdir(out_path)
 	if(not isdir):
@@ -212,8 +251,8 @@ def processParameters(parametersList, basin, catchment,pathF,quality):
 			value = constantValue[2]
 		if(empty):
 			value = ''
-		if(cut):
-			value = cutRaster(catchment,value,in_path)
+		if(cut and model == 'carbon'):
+				value = cutRaster(catchment,value,in_path)
 		if(file):
 			value = catchment
 		if(outPathType):
@@ -226,9 +265,17 @@ def processParameters(parametersList, basin, catchment,pathF,quality):
 			value = os.path.join(in_path,"rainfall_day.csv")
 		dictParameters[name] = value
 	print(dictParameters)
-	return dictParameters
+	return dictParameters,out_path,label
 
-def executeFunction(parameters,model):
+def executeFunction(basin,model,type,id_catchment,id_usuario):
+	date = datetime.date.today()
+	path = createFolder(id_usuario,date)
+
+	list = getParameters(basin,model)	
+	catchment = exportToShp(id_catchment, path)
+	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model)
+	
+
 	if(model == 'awy'):
 		awy.execute(parameters)
 	elif(model == 'sdr'):
@@ -240,10 +287,16 @@ def executeFunction(parameters,model):
 	elif(model == 'swy'):
 		swy.execute(parameters)
 
-date = datetime.date.today()
-path = createFolder(1,date)
-catchment = exportToShp(2, path)
-list = getParameters(44,'swy')
-dict = processParameters(list,44,catchment,path,True)
-executeFunction(dict,'swy')
+	return catchment,path,label
+
+#date = datetime.date.today()
+#path = createFolder(1,date)
+#catchment = exportToShp(2, path)
+#list = getParameters(44,'carbon')
+#dict,pathF,label = processParameters(list,44,catchment,path,True)
+#executeFunction(dict,'carbon')
+#execute = verifyExec(path)
+#s,n,p = calcConc(execute,path,label)
+#print(s,n,p)
+#calculateCarbonSum(catchment,path,label)
 #cutRaster('aaaaa',dict)

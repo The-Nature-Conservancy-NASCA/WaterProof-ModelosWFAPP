@@ -33,9 +33,11 @@ Se pueden ejecutar dichos procedimientos, también mediante un llamado a un API R
 ### Ejecución mediante API REST
 
 Para iniciar el API REST se debe escribir el siguiente comando:
+
 ```bash
 python startup.py
 ```
+
 Inmediatamente sube el API; y genera dos endpoint desde los cuales se pueden ejecutar los procedimientos de snap y delimitar cuenca. Los dos procedmientios se realizan mediante peticiones tipo GET:
 
 -  /snapPoint?x=?&y=?, donde los signos de interrogación se refieren a las coordenadas longitud y latitud, respectivamente. Esta url ejecuta el procdimiento de snap, y devuelve un fichero json con las coordenadas corregidas (x_snap,y_snap)
