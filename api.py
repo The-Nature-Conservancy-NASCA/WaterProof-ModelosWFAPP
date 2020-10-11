@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Query
 from typing import List
 import delineate
-from preproc import executeFunction,verifyExec,calcConc
+from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum
 
 app = FastAPI()
 
@@ -64,9 +64,14 @@ async def execInvest(type:str,id_usuario:int, basin:int,catchment:int,models: Li
 				"sediment":s,
 				"nitrogen":n,
 				"phosporus":p
-			}			
+			}		
+		elif(type == "currentCarbon"):
+			sumCarbon = calculateCarbonSum(catchmentShp,path,label)
+			dictResult['resultado'] = {
+				"carbon":sumCarbon
+			}	
 		dictResult['estado'] = True
-		
+
 	except Exception as e:
 		dictResult['estado'] = False
 		dictResult['error'] = e.args

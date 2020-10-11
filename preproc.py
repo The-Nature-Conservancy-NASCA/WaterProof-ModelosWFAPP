@@ -200,7 +200,7 @@ def calculateCarbonSum(catchment,path,label):
 	stats = ['sum']
 	raster = os.path.join(path,'out','01-INVEST_QUALITY','CARBON','tot_c_cur_' + label + '.tif')
 	statCalc = calculateStatistic(stats,raster,catchment)
-	print(statCalc)
+	return statCalc
  
 # Procesar parametros
 def processParameters(parametersList, basin, catchment,pathF,type,model):
@@ -211,7 +211,7 @@ def processParameters(parametersList, basin, catchment,pathF,type,model):
 	out_folder_quality = parametersList[0][10]
 	print(out_folder)
 	print(out_folder_quality)
-	if(type == "quality"):
+	if(type == "quality" or type == "currentCarbon"):
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder_quality)
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder_quality)
 	else:
