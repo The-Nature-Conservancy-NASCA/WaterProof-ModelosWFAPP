@@ -4,7 +4,9 @@ import os
 def readDBF(dbfFile,field):
 	result = ''
 	table = DBF(dbfFile,load=True)
-	result = table.records[0][field]
+	result = 0
+	for record in table.records:
+		result = result + record[field]
 	return result
    
 

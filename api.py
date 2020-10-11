@@ -47,7 +47,7 @@ async def delineateCatchment(x,y):
 	return dictResult
 
 @app.get("/execInvest")
-async def execInvest(type:str,id_usuario:int, basin:int,catchment:int,models: List[str] = Query(None)):
+async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Query(None),catchment:List[int] = Query(None)):
 	dictResult = dict()
 	dictResult['estado'] = False
 
@@ -67,8 +67,14 @@ async def execInvest(type:str,id_usuario:int, basin:int,catchment:int,models: Li
 			}		
 		elif(type == "currentCarbon"):
 			sumCarbon = calculateCarbonSum(catchmentShp,path,label)
+			result = 0.0
+			if(len(sumCarbon) > 1):
+				for c in sumCarbon:
+					result = result + float(c['sum'])
+			elif(len(sumCarbon) == 1):
+				result = float(sumCarbon[0]['sum'])
 			dictResult['resultado'] = {
-				"carbon":sumCarbon
+				"carbon":result
 			}	
 		dictResult['estado'] = True
 

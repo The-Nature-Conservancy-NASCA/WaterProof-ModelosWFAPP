@@ -52,8 +52,18 @@ def exportToShp(catchment, path):
 	fd1 = ogr.FieldDefn('subws_id',ogr.OFTInteger)
 	out_layer.CreateField(fd)
 	out_layer.CreateField(fd1)
+	if(len(catchment) == 1):
+		params = ' = ' + str(catchment[0]) 
+	elif(len(catchment) > 1):
+		params = ' IN ('
+		for c in catchment:
+			params = params + str(c) + ','
+		params = params[:-1] + ')'
+
+
+
 	if(catchment != -1):
-		sql = "select * from delineated_catchment where id_delineate_catchment=" + str(catchment)
+		sql = "select * from delineated_catchment where id_delineate_catchment" + str(params)
 
 		# layer = conn.GetLayerByName("delineated_catchment")
 		layer = conn.ExecuteSQL(sql)
@@ -252,7 +262,7 @@ def processParameters(parametersList, basin, catchment,pathF,type,model):
 		if(empty):
 			value = ''
 		if(cut and model == 'carbon'):
-				value = cutRaster(catchment,value,in_path)
+			value = cutRaster(catchment,value,in_path)
 		if(file):
 			value = catchment
 		if(outPathType):
