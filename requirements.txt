@@ -8,3 +8,4 @@ uvicorn
 natcap.invest
 rasterstats
 dbfread
+SQLAlchemy

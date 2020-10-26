@@ -96,14 +96,16 @@ def createFolder(user,date):
 			"02-PREPROC_RIOS",
 			"03-INVEST",
 			"04-RIOS",
-			"05-ROI"
+			"05-ROI",
+			"06-AQUEDUCT"
 		],
 		"out":[
 			"01-INVEST_QUALITY",
 			"02-PREPROC_RIOS",
 			"03-INVEST",
 			"04-RIOS",
-			"05-ROI"
+			"05-ROI",
+			"06-AQUEDUCT"
 		]
 	}
 	isdir = path.isdir(pathF)
@@ -196,10 +198,10 @@ def verifyExec(path):
 	return execute
  
 # Ejecutar calculo de concentraciones
-def calcConc(execute,path,label):
+def calcConc(execute,path,label,cont):
 	pathWs = os.path.join(path,"out")
 	if(execute):
-		s,n,p = cntr(pathWs,label)
+		s,n,p = cntr(pathWs,label,cont)
 	else:
 		s,n,p = [-1,-1,-1]
 
@@ -274,7 +276,6 @@ def processParameters(parametersList, basin, catchment,pathF,type,model):
 			saveCsv(['month','events'],rainfallList,in_path)
 			value = os.path.join(in_path,"rainfall_day.csv")
 		dictParameters[name] = value
-	print(dictParameters)
 	return dictParameters,out_path,label
 
 def executeFunction(basin,model,type,id_catchment,id_usuario):

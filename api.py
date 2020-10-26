@@ -2,6 +2,7 @@ from fastapi import FastAPI, Query
 from typing import List
 import delineate
 from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum
+import math
 
 app = FastAPI()
 
@@ -50,35 +51,47 @@ async def delineateCatchment(x,y):
 async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Query(None),catchment:List[int] = Query(None)):
 	dictResult = dict()
 	dictResult['estado'] = False
+	catch = sorted(catchment,key=int)
 
-	try:
-		for model in models:
-			catchmentShp,path,label = executeFunction(basin,model,type,catchment,id_usuario)
+	# try:
+	for model in models:
+		catchmentShp,path,label = executeFunction(basin,model,type,catchment,id_usuario)
 
-		dictResult['resultado'] = 'Ejecucion exitosa'
+	dictResult['resultado'] = 'Ejecucion exitosa'
 
-		if(type == "quality"):
-			execute = verifyExec(path)
-			s,n,p = calcConc(execute,path,label)
-			dictResult['resultado'] = {
+	if(type == "quality"):
+		execute = verifyExec(path)
+		cont = 0
+		dictResult['resultado'] = []
+		for c in catch:
+			s,n,p = calcConc(execute,path,label,cont)
+			if math.isnan(s):
+				s = 0
+			elif math.isnan(n):
+				n = 0
+			elif math.isnan(p):
+				p = 0
+
+			dictResult['resultado'].append({
+				"catchment": c,
+				"concentrations": {
 				"sediment":s,
 				"nitrogen":n,
 				"phosporus":p
-			}		
-		elif(type == "currentCarbon"):
-			sumCarbon = calculateCarbonSum(catchmentShp,path,label)
-			result = 0.0
-			if(len(sumCarbon) > 1):
-				for c in sumCarbon:
-					result = result + float(c['sum'])
-			elif(len(sumCarbon) == 1):
-				result = float(sumCarbon[0]['sum'])
-			dictResult['resultado'] = {
-				"carbon":result
-			}	
-		dictResult['estado'] = True
+			}
+			})
+			cont = cont + 1	
+	elif(type == "currentCarbon"):
+		sumCarbon = calculateCarbonSum(catchmentShp,path,label)
+		result = 0.0
+		dictResult['resultado'] = {
+			"carbon":sumCarbon
+		}
 
-	except Exception as e:
-		dictResult['estado'] = False
-		dictResult['error'] = e.args
+	dictResult['estado'] = True
+	print(dictResult)
+
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
 	return dictResult
