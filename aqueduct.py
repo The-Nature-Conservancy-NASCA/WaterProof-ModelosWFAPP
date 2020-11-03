@@ -1,21 +1,58 @@
-import os, ogr, sys
+import os, ogr, sys, osr
 import geopandas as gpd
 sys.path.append('config')
 from connect import connect
 
 # Exportar cuenca delimitada a shp
 def cutShp(catchment, layer, out):
-    print(layer)
+    # print(layer)
+    # print(layer)
+    # print(catchment)
+    # inLayer = gpd.read_file(layer)
+    # clipLayer = gpd.read_file(catchment)
+    # # # ly_sindexed = inLayer
+    # # # zclip_sindexed = clipLayer
+    # # # ly_sindexed.sindex
+    # # # zclip_sindexed.sindex
 
-    inLayer = gpd.read_file(layer)
-    clipLayer = gpd.read_file(catchment)
-    ly_sindexed = inLayer
-    zclip_sindexed = clipLayer
-    ly_sindexed.sindex
-    zclip_sindexed.sindex
+    # result_clip = gpd.clip(inLayer,clipLayer)
+    # result_clip.to_file(out)
 
-    result_clip = gpd.clip(ly_sindexed,zclip_sindexed)
-    result_clip.to_file(out)
+    # print(layer)
+    # print(out)
+    # print(catchment)
+
+    ## Input
+    driverName = "ESRI Shapefile"
+    driver = ogr.GetDriverByName(driverName)
+    inDataSource = driver.Open(layer)
+    inLayer = inDataSource.GetLayer()
+
+    sourceprj = inLayer.GetSpatialRef()
+    
+    # print("src: " + str(sourceprj))
+    
+    # targetprj.ImportFromEPSG(54004)
+    # transform = osr.CoordinateTransformation(sourceprj, targetprj)
+
+
+    # print("in:" + str(inLayer.GetFeatureCount()))
+    ## Clip
+    inClipSource = driver.Open(catchment)
+    inClipLayer = inClipSource.GetLayer()
+    # print("clip:" + str(inClipLayer.GetFeatureCount()))
+    targetprj = inClipLayer.GetSpatialRef()
+    # print("target: " + str(targetprj))
+
+    ## Clipped Shapefile... Maybe??? 
+    outDataSource = driver.CreateDataSource(out)
+    outLayer = outDataSource.CreateLayer('FINAL', geom_type=ogr.wkbPolygon)
+
+    ogr.Layer.Clip(inLayer, inClipLayer, outLayer)
+    # print("out:" + str(outLayer.GetFeatureCount()))
+    inDataSource.Destroy()
+    inClipSource.Destroy()
+    outDataSource.Destroy()
 
 
 	
@@ -67,12 +104,93 @@ def cutAqueduct(usuario,fecha):
     path = os.path.join(os.getcwd(),'tmp',usuario + '_' + fecha)
     path_catchment = os.path.join(path,'in','catchment','catchment.shp')
     path_out = os.path.join(path,'in','06-AQUEDUCT')
+    path_out_f = os.path.join(path,'in')
+
+    isdir = os.path.isdir(path_out_f)
+    if(not isdir):
+        os.mkdir(path_out_f)
+
+    isdir = os.path.isdir(path_out)
+    if(not isdir):
+        os.mkdir(path_out)
+
     listIn = []
-    listIn.append(getpath(44,48))
+    
     listIn.append(getpath(44,49))
+    listIn.append(getpath(44,48))
+
 
     for item in listIn:        
         cutShp(path_catchment,item,os.path.join(path_out,os.path.basename(item)))
+        areaTotal = calculateArea(os.path.join(path_out,os.path.basename(item)))
+        if("Historic" in item):
+            qan,qanLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"qan_cat",areaTotal)
+            qal,qalLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"w_awr_def_",areaTotal)
+            rrr,rrrLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"rrr_cat",areaTotal)
+            print("Physical, Quantity: " + str(qan) + "/" + qanLbl)
+            print("Physical, Quality: " + str(qal) + "/" + qalLbl)
+            print("Regulatory & reputation: " + str(rrr) + "/" + rrrLbl)
+        elif("Future" in item):
+            ws20,ws20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"ws2028tr",areaTotal)
+            sv20,sv20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"sv2028tr",areaTotal)
+            ut20,ut20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"ut2028tr",areaTotal)
+            bt20,bt20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"bt2028tr",areaTotal)
+            print("Water Stress: " + str(ws20) + "/" + ws20Lbl)
+            print("Water Supply: " + str(bt20) + "/" + bt20Lbl)
+            print("Water Demand: " + str(ut20) + "/" + ut20Lbl)
+            print("Season Variablity: " + str(sv20) + "/" + sv20Lbl)
+
+
+
+
+
+def calculateArea(shp):
+    driverName = "ESRI Shapefile"
+    driver = ogr.GetDriverByName(driverName)
+    inDataSource = driver.Open(shp,1)
+    inLayer = inDataSource.GetLayer()
+    new_field = ogr.FieldDefn("Area", ogr.OFTReal)
+    new_field.SetWidth(32)
+    new_field.SetPrecision(2) #added line to set precision
+    inLayer.CreateField(new_field)
+    areaT = 0
+
+    for feature in inLayer:
+        geom = feature.GetGeometryRef()
+        area = geom.GetArea() 
+        areaT = areaT + area
+        feature.SetField("Area", area)
+        inLayer.SetFeature(feature)
+
+    return areaT
+
+def calculateIndex(shp,idx, areaT):
+    driverName = "ESRI Shapefile"
+    driver = ogr.GetDriverByName(driverName)
+    inDataSource = driver.Open(shp,1)
+    inLayer = inDataSource.GetLayer()
+    idxSum = 0
+
+    for feature in inLayer:
+        idxValue = feature.GetField(idx)
+        area = feature.GetField("Area")
+        idxSum = idxSum + (area*idxValue)
+
+    resultado = idxSum/areaT
+    roundResultado = round(resultado)
+    switcher = {
+        1: "Bajo",
+        2: "Bajo-Medio",
+        3: "Medio-Alto",
+        4: "Alto",
+        5: "Muy Alto"
+    }
+
+    lvl = switcher[roundResultado]
+
+    return roundResultado, lvl
+
+
 
 
 

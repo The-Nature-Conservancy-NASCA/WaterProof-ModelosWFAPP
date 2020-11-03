@@ -215,9 +215,9 @@ def BasinByLabel(label):
 # "/home/skaphe/Documentos/tnc/modelos/entradas/09-Plant_Available_Water/","/home/skaphe/Documentos/tnc/modelos/entradas/02-Evapotranspiration/01-Historic/YEAR/","/home/skaphe/Documentos/tnc/modelos/entradas/01-Precipitation/01-Historic/YEAR/"],'awy')
 
 # # swy
-savePathParameter(["/home/skaphe/Documentos/tnc/modelos/entradas/21-Biophysical_Table/","/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/","/home/skaphe/Documentos/tnc/modelos/entradas/01-Precipitation/01-Historic/",
-"/home/skaphe/Documentos/tnc/modelos/entradas/03-LandCover/YEAR_0/","/home/skaphe/Documentos/tnc/modelos/entradas/01-Precipitation/01-Historic/",
-"/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_Rainfall/","/home/skaphe/Documentos/tnc/modelos/entradas/04-SoilGroup/"],'swy')
+# savePathParameter(["/home/skaphe/Documentos/tnc/modelos/entradas/21-Biophysical_Table/","/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/","/home/skaphe/Documentos/tnc/modelos/entradas/01-Precipitation/01-Historic/",
+# "/home/skaphe/Documentos/tnc/modelos/entradas/03-LandCover/YEAR_0/","/home/skaphe/Documentos/tnc/modelos/entradas/01-Precipitation/01-Historic/",
+# "/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_Rainfall/","/home/skaphe/Documentos/tnc/modelos/entradas/04-SoilGroup/"],'swy')
 
 # sdr
 # savePathParameter(["/home/skaphe/Documentos/tnc/modelos/entradas/21-Biophysical_Table/","/home/skaphe/Documentos/tnc/modelos/entradas/03-LandCover/YEAR_0/","/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/",
@@ -227,7 +227,15 @@ savePathParameter(["/home/skaphe/Documentos/tnc/modelos/entradas/21-Biophysical_
 # savePathParameter(["/home/skaphe/Documentos/tnc/modelos/entradas/21-Biophysical_Table/","/home/skaphe/Documentos/tnc/modelos/entradas/03-LandCover/YEAR_0/","/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/",
 # "/home/skaphe/Documentos/tnc/modelos/entradas/01-Precipitation/01-Historic/YEAR/"],'ndr')
 
+# carbon
 #savePathParameter(["/home/skaphe/Documentos/tnc/modelos/entradas/21-Biophysical_Table/","/home/skaphe/Documentos/tnc/modelos/entradas/03-LandCover/YEAR_0/"],'carbon')
+
+# # preprocRIOS
+savePathParameter(["/home/skaphe/Documentos/tnc/modelos/entradas/03-LandCoverResampling/","/home/skaphe/Documentos/tnc/modelos/entradas/21-Biophysical_Table/",
+"/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/","/home/skaphe/Documentos/tnc/modelos/entradas/20-Soil_IndexResampling/","/home/skaphe/Documentos/tnc/modelos/entradas/01-PrecipitationResampling/",
+"/home/skaphe/Documentos/tnc/modelos/entradas/06-Rainfall_ErosivityResampling/","/home/skaphe/Documentos/tnc/modelos/entradas/07-Soil_ErodabilityResampling/",
+"/home/skaphe/Documentos/tnc/modelos/entradas/08-Soil_DepthResampling/","/home/skaphe/Documentos/tnc/modelos/entradas/02-EvapotranspirationResampling/",
+"/home/skaphe/Documentos/tnc/modelos/entradas/30-StreamResampling/","/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_RainfallResampling/"],'preprocRIOS')
 
 
 # awy
@@ -263,6 +271,21 @@ savePathParameter(["/home/skaphe/Documentos/tnc/modelos/entradas/21-Biophysical_
 # # carbon
 # generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/21-Biophysical_Table/","carbon","carbon_pools_path","csv")
 # generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/03-LandCover/YEAR_0/","carbon","lulc_cur_path","tif")
+
+#preprocRIOS
+# generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/03-LandCoverResampling/","preprocRIOS","lulc_raster_uri","tif")
+# generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/21-Biophysical_Table/","preprocRIOS","rios_coeff_table","csv")
+# generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/","preprocRIOS","dem_raster_uri","tif")
+# generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/20-Soil_IndexResampling/","preprocRIOS","soil_texture_raster_uri","tif")
+# generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/01-PrecipitationResampling/","preprocRIOS","precip_annual_raster_uri","tif")
+# generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/06-Rainfall_ErosivityResampling/","preprocRIOS","erosivity_raster_uri","tif")
+# generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/07-Soil_ErodabilityResampling/","preprocRIOS","erodibility_raster_uri","tif")
+# generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/08-Soil_DepthResampling/","preprocRIOS","soil_depth_raster_uri","tif")
+# generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/02-EvapotranspirationResampling/","preprocRIOS","aet_raster_uri","tif")
+# generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/30-StreamResampling/","preprocRIOS","streams_raster_uri","tif")
+# generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_RainfallResampling/","preprocRIOS","precip_month_raster_uri","folder")
+
+
 
 
         

@@ -18,6 +18,7 @@ def resamplingRaster(templatePath,srcPath,out):
     src_proj = src.GetProjection()
     src_geotrans = src.GetGeoTransform()
 
+    print(templatePath)
     # We want a section of source that matches this:
     match_ds = gdal.Open(templatePath, gdalconst.GA_ReadOnly)
     match_proj = match_ds.GetProjection()
@@ -45,7 +46,7 @@ def batchProcess(srcFolder, templateFolder, outFolder):
             base = os.path.basename(filename)
             fileNameWE = base.split(".")[0]
             labels = fileNameWE.split("_")
-            templatePath = os.path.join(templateFolder,"DEM_" + labels[1] + "_" + labels[2] + ".tif")
+            templatePath = os.path.join(templateFolder,"DEM_" + labels[-2] + "_" + labels[-1] + ".tif")
             outPath = os.path.join(outFolder,base)
             srcPath = os.path.join(srcFolder,filename)
             resamplingRaster(templatePath,srcPath,outPath)
@@ -53,7 +54,7 @@ def batchProcess(srcFolder, templateFolder, outFolder):
             # print(templatePath)
             # print(outPath)
 
-batchProcess("/home/skaphe/Documentos/tnc/modelos/entradas/30-Stream/","/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/","/home/skaphe/Documentos/tnc/modelos/entradas/30-StreamResampling/")
+batchProcess("/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_Rainfall/SI_6/","/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/","/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_RainfallResampling/SI_6/")
 
 
 
