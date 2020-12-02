@@ -235,7 +235,7 @@ savePathParameter(["/home/skaphe/Documentos/tnc/modelos/entradas/03-LandCoverRes
 "/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/","/home/skaphe/Documentos/tnc/modelos/entradas/20-Soil_IndexResampling/","/home/skaphe/Documentos/tnc/modelos/entradas/01-PrecipitationResampling/",
 "/home/skaphe/Documentos/tnc/modelos/entradas/06-Rainfall_ErosivityResampling/","/home/skaphe/Documentos/tnc/modelos/entradas/07-Soil_ErodabilityResampling/",
 "/home/skaphe/Documentos/tnc/modelos/entradas/08-Soil_DepthResampling/","/home/skaphe/Documentos/tnc/modelos/entradas/02-EvapotranspirationResampling/",
-"/home/skaphe/Documentos/tnc/modelos/entradas/30-StreamResampling/","/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_RainfallResampling/"],'preprocRIOS')
+"/home/skaphe/Documentos/tnc/modelos/entradas/30-Stream/","/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_RainfallResampling/"],'preprocRIOS')
 
 
 # awy
@@ -283,6 +283,7 @@ savePathParameter(["/home/skaphe/Documentos/tnc/modelos/entradas/03-LandCoverRes
 # generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/08-Soil_DepthResampling/","preprocRIOS","soil_depth_raster_uri","tif")
 # generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/02-EvapotranspirationResampling/","preprocRIOS","aet_raster_uri","tif")
 # generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/30-StreamResampling/","preprocRIOS","streams_raster_uri","tif")
+# generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/30-Stream/","preprocRIOS","streams_raster_uri","tif")
 # generateMetadataFile("/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_RainfallResampling/","preprocRIOS","precip_month_raster_uri","folder")
 
 

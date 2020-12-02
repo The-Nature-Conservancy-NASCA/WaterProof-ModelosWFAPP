@@ -119,26 +119,95 @@ def cutAqueduct(usuario,fecha):
     listIn.append(getpath(44,49))
     listIn.append(getpath(44,48))
 
+    resultado = dict()
+
 
     for item in listIn:        
         cutShp(path_catchment,item,os.path.join(path_out,os.path.basename(item)))
         areaTotal = calculateArea(os.path.join(path_out,os.path.basename(item)))
         if("Historic" in item):
-            qan,qanLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"qan_cat",areaTotal)
-            qal,qalLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"w_awr_def_",areaTotal)
-            rrr,rrrLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"rrr_cat",areaTotal)
-            print("Physical, Quantity: " + str(qan) + "/" + qanLbl)
-            print("Physical, Quality: " + str(qal) + "/" + qalLbl)
-            print("Regulatory & reputation: " + str(rrr) + "/" + rrrLbl)
+            qan,qanLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"bws_cat",areaTotal)
+            qal,qalLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"bwd_cat",areaTotal)
+            rrr,rrrLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"iav_cat",areaTotal)
+            sev,sevLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"sev_cat",areaTotal)
+            gtd,gtdLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"gtd_cat",areaTotal)
+            rfr,rfrLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"rfr_cat",areaTotal)
+            cfr,cfrLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"cfr_cat",areaTotal)
+            drr,drrLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"drr_cat",areaTotal)
+            ucw,ucwLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"ucw_cat",areaTotal)
+            cep,cepLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"cep_cat",areaTotal)
+            udw,udwLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"udw_cat",areaTotal)
+            usa,usaLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"usa_cat",areaTotal)
+            rri,rriLbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"rri_cat",areaTotal)
+            resultado["historic"] = {}
+            resultado["historic"]["bws"] = {}
+            resultado["historic"]["bws"]["value"] = qan
+            resultado["historic"]["bws"]["lbl"] = qanLbl
+            resultado["historic"]["bwd"] = {}
+            resultado["historic"]["bwd"]["value"] = qal
+            resultado["historic"]["bwd"]["lbl"] = qalLbl
+            resultado["historic"]["iav"] = {}
+            resultado["historic"]["iav"]["value"] = rrr
+            resultado["historic"]["iav"]["lbl"] = rrrLbl
+            resultado["historic"]["sev"] = {}
+            resultado["historic"]["sev"]["value"] = sev
+            resultado["historic"]["sev"]["lbl"] = sevLbl
+            resultado["historic"]["gtd"] = {}
+            resultado["historic"]["gtd"]["value"] = gtd
+            resultado["historic"]["gtd"]["lbl"] = gtdLbl
+            resultado["historic"]["rfr"] = {}
+            resultado["historic"]["rfr"]["value"] = rfr
+            resultado["historic"]["rfr"]["lbl"] = rfrLbl
+            resultado["historic"]["cfr"] = {}
+            resultado["historic"]["cfr"]["value"] = cfr
+            resultado["historic"]["cfr"]["lbl"] = cfrLbl
+            resultado["historic"]["drr"] = {}
+            resultado["historic"]["drr"]["value"] = drr
+            resultado["historic"]["drr"]["lbl"] = drrLbl
+            resultado["historic"]["ucw"] = {}
+            resultado["historic"]["ucw"]["value"] = ucw
+            resultado["historic"]["ucw"]["lbl"] = ucwLbl
+            resultado["historic"]["cep"] = {}
+            resultado["historic"]["cep"]["value"] = cep
+            resultado["historic"]["cep"]["lbl"] = cepLbl
+            resultado["historic"]["udw"] = {}
+            resultado["historic"]["udw"]["value"] = udw
+            resultado["historic"]["udw"]["lbl"] = udwLbl
+            resultado["historic"]["usa"] = {}
+            resultado["historic"]["usa"]["value"] = usa
+            resultado["historic"]["usa"]["lbl"] = usaLbl
+            resultado["historic"]["rri"] = {}
+            resultado["historic"]["rri"]["value"] = rri
+            resultado["historic"]["rri"]["lbl"] = rriLbl
+            # print("Physical, Quantity: " + str(qan) + "/" + qanLbl)
+            # print("Physical, Quality: " + str(qal) + "/" + qalLbl)
+            # print("Regulatory & reputation: " + str(rrr) + "/" + rrrLbl)
         elif("Future" in item):
             ws20,ws20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"ws2028tr",areaTotal)
             sv20,sv20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"sv2028tr",areaTotal)
             ut20,ut20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"ut2028tr",areaTotal)
             bt20,bt20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"bt2028tr",areaTotal)
-            print("Water Stress: " + str(ws20) + "/" + ws20Lbl)
-            print("Water Supply: " + str(bt20) + "/" + bt20Lbl)
-            print("Water Demand: " + str(ut20) + "/" + ut20Lbl)
-            print("Season Variablity: " + str(sv20) + "/" + sv20Lbl)
+            resultado["future20"] = {}
+            resultado["future20"]["ws"] = {}
+            resultado["future20"]["ws"]["value"] = ws20
+            resultado["future20"]["ws"]["lbl"] = ws20Lbl
+            resultado["future20"]["sv"] = {}
+            resultado["future20"]["sv"]["value"] = sv20
+            resultado["future20"]["sv"]["lbl"] = sv20Lbl
+            resultado["future20"]["ut"] = {}
+            resultado["future20"]["ut"]["value"] = ut20
+            resultado["future20"]["ut"]["lbl"] = ut20Lbl
+            resultado["future20"]["bt"] = {}
+            resultado["future20"]["bt"]["value"] = bt20
+            resultado["future20"]["bt"]["lbl"] = bt20Lbl
+            # print("Water Stress: " + str(ws20) + "/" + ws20Lbl)
+            # print("Water Supply: " + str(bt20) + "/" + bt20Lbl)
+            # print("Water Demand: " + str(ut20) + "/" + ut20Lbl)
+            # print("Season Variablity: " + str(sv20) + "/" + sv20Lbl)
+
+    return resultado
+
+        
 
 
 
@@ -185,6 +254,7 @@ def calculateIndex(shp,idx, areaT):
         4: "Alto",
         5: "Muy Alto"
     }
+    print(roundResultado)
 
     lvl = switcher[roundResultado]
 
@@ -196,4 +266,4 @@ def calculateIndex(shp,idx, areaT):
 
 catchment = '/home/skaphe/Documentos/tnc/modelos/Workspace_BasinDelineation/tmp/9_2020_10_10/in/catchment/catchment.shp'
 layer = '/home/skaphe/Documentos/tnc/modelos/entradas/16-Aqueduct/Future_Index.shp'
-cutAqueduct('9','2020_10_13')
+# cutAqueduct('9','2020_10_13')

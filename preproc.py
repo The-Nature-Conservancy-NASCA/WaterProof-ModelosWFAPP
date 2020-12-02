@@ -17,6 +17,7 @@ from natcap.invest import carbon
 from zonalStatistics import calculateRainfallDayMonth,calculateStatistic
 from zonalStatistics import saveCsv
 from calculateConcentrations import calcConcentrations as cntr
+from createBioParamCsv import getColsParams,generateCsv
 sys.path.append('config')
 from config import config
 from connect import connect
@@ -215,7 +216,7 @@ def calculateCarbonSum(catchment,path,label):
 	return statCalc
  
 # Procesar parametros
-def processParameters(parametersList, basin, catchment,pathF,type,model):
+def processParameters(parametersList, basin, catchment,pathF,type,model,user):
 	dictParameters = dict()
 	out_path = ""
 	in_path = ""
@@ -254,6 +255,7 @@ def processParameters(parametersList, basin, catchment,pathF,type,model):
 		folder = parameter[7]
 		outPathType = parameter[8]
 		calculado = parameter[11]
+		bio_param = parameter[13]
 		if(suffix):
 			region = getRegionFromId(basin)
 			label = region[4]
@@ -275,6 +277,13 @@ def processParameters(parametersList, basin, catchment,pathF,type,model):
 			rainfallList = calculateRainfallDayMonth(value,catchment,label)
 			saveCsv(['month','events'],rainfallList,in_path)
 			value = os.path.join(in_path,"rainfall_day.csv")
+		if(bio_param):
+			region = getRegionFromId(basin)
+			label = region[4]
+			file = os.path.join(os.getcwd(),pathF,'in',"biophysical_table.csv")
+			values,headers = getColsParams("apps.skaphe.com",27017,"waterProof","parametros_biofisicos",user,label,True)
+			generateCsv(headers,values,file)
+			value = file
 		dictParameters[name] = value
 	return dictParameters,out_path,label
 
@@ -284,7 +293,7 @@ def executeFunction(basin,model,type,id_catchment,id_usuario):
 
 	list = getParameters(basin,model)	
 	catchment = exportToShp(id_catchment, path)
-	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model)
+	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario)
 	
 
 	if(model == 'awy'):

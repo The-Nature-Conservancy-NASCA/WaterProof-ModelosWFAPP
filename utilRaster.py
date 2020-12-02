@@ -32,7 +32,7 @@ def resamplingRaster(templatePath,srcPath,out):
     dst.SetProjection( match_proj)
 
     # Do the work
-    gdal.ReprojectImage(src, dst, src_proj, match_proj, gdalconst.GRA_NearestNeighbour)
+    gdal.ReprojectImage(src, dst, src_proj, match_proj, gdalconst.GRA_Bilinear)
 
     del dst # Flush
 
@@ -54,7 +54,7 @@ def batchProcess(srcFolder, templateFolder, outFolder):
             # print(templatePath)
             # print(outPath)
 
-batchProcess("/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_Rainfall/SI_6/","/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/","/home/skaphe/Documentos/tnc/modelos/entradas/14-Day_RainfallResampling/SI_6/")
+batchProcess("/home/skaphe/Documentos/tnc/modelos/entradas/08-Soil_Depth/","/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/","/home/skaphe/Documentos/tnc/modelos/entradas/08-Soil_DepthResampling/")
 
 
 
