@@ -1,7 +1,7 @@
 import uvicorn
 import api
 
-host = 'dev.skaphe.com'
+host = '0.0.0.0'
 port = 8000
 log_level = 'info'
 
