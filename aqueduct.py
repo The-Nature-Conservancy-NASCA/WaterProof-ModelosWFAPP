@@ -183,10 +183,27 @@ def cutAqueduct(usuario,fecha):
             # print("Physical, Quality: " + str(qal) + "/" + qalLbl)
             # print("Regulatory & reputation: " + str(rrr) + "/" + rrrLbl)
         elif("Future" in item):
-            ws20,ws20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"ws2028tr",areaTotal)
-            sv20,sv20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"sv2028tr",areaTotal)
-            ut20,ut20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"ut2028tr",areaTotal)
-            bt20,bt20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"bt2028tr",areaTotal)
+            ws10,ws10Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"ws3028tr",areaTotal)
+            sv10,sv10Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"sv3028tr",areaTotal)
+            ut10,ut10Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"ut3028tr",areaTotal)
+            bt10,bt10Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"bt3028tr",areaTotal)
+            ws20,ws20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"ws4028tr",areaTotal)
+            sv20,sv20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"sv4028tr",areaTotal)
+            ut20,ut20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"ut4028tr",areaTotal)
+            bt20,bt20Lbl = calculateIndex(os.path.join(path_out,os.path.basename(item)),"bt4028tr",areaTotal)
+            resultado["future10"] = {}
+            resultado["future10"]["ws"] = {}
+            resultado["future10"]["ws"]["value"] = ws10
+            resultado["future10"]["ws"]["lbl"] = ws10Lbl
+            resultado["future10"]["sv"] = {}
+            resultado["future10"]["sv"]["value"] = sv10
+            resultado["future10"]["sv"]["lbl"] = sv10Lbl
+            resultado["future10"]["ut"] = {}
+            resultado["future10"]["ut"]["value"] = ut10
+            resultado["future10"]["ut"]["lbl"] = ut10Lbl
+            resultado["future10"]["bt"] = {}
+            resultado["future10"]["bt"]["value"] = bt10
+            resultado["future10"]["bt"]["lbl"] = bt10Lbl
             resultado["future20"] = {}
             resultado["future20"]["ws"] = {}
             resultado["future20"]["ws"]["value"] = ws20
@@ -247,7 +264,9 @@ def calculateIndex(shp,idx, areaT):
 
     resultado = idxSum/areaT
     roundResultado = round(resultado)
+    print(roundResultado)
     switcher = {
+        0: "No hay datos",
         1: "Bajo",
         2: "Bajo-Medio",
         3: "Medio-Alto",

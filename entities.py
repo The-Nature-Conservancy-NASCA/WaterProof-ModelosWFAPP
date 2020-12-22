@@ -4,8 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 class ParametroRuta(Base):
-    __tablename__ = "tbl_pr_parametro_ruta"
-    __table_args__ = ({"schema": "wfa"})
+    __tablename__ = "waterproof_pr_parametro_ruta"
+    __table_args__ = ({"schema": "public"})
 
     id_parametro_ruta = Column(Integer, primary_key = True)
     id_basin = Column(Integer)

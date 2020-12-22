@@ -101,13 +101,13 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 async def calculateAqueduct(id_usuario,fecha):
 	dictResult = dict()
 	dictResult['estado'] = False
-	try:
-		list = cutAqueduct(id_usuario,fecha)
-		print(list)
-		dictResult = dict()
-		dictResult['estado'] = True
-		dictResult['resultado'] = list
-	except Exception as e:
-		dictResult['estado'] = False
-		dictResult['error'] = e.args
+	# try:
+	list = cutAqueduct(id_usuario,fecha)
+	print(list)
+	dictResult = dict()
+	dictResult['estado'] = True
+	dictResult['resultado'] = list
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
 	return dictResult
