@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import delineate
 from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum
@@ -6,6 +7,19 @@ import math
 from aqueduct import cutAqueduct
 
 app = FastAPI()
+
+origins = [
+    "http://apps.skaphe.com:8000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 @app.get("/")
 async def root():

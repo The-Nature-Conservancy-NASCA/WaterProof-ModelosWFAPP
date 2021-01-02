@@ -71,6 +71,9 @@ def generateCsv(header,values, file):
 
 
 
+
+
+
 # connectMongo("apps.skaphe.com",27017,"waterProof","parametros_biofisicos")
 
 # values,headers = getColsParams("apps.skaphe.com",27017,"waterProof","parametros_biofisicos",1,"SA_1",True)

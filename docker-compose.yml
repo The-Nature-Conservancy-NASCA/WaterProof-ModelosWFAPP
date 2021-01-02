@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  wfapp_py3:
+    image: wfapp_py3
+    container_name: wfapp_py3_container
+    build: .
+    volumes:
+      - /home/skaphe/Documentos/tnc/modelos/:/home/skaphe/Documentos/tnc/modelos/
+    ports:
+      - 8000:8000

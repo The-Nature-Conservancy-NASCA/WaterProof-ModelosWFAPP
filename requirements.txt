@@ -5,6 +5,8 @@ geopandas
 pycrs
 fastapi
 uvicorn
+numpy
+gdal==2.4.4
 natcap.invest
 rasterstats
 dbfread

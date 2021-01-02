@@ -62,7 +62,11 @@ def savePathParameter(paths,model):
         folderType = p[7]
         outType = p[8]
         calcType = p[9]
-        print(suffixType)
+        # inputType = p[10]
+        # bioType = p[11]
+        # preprocType = p[12]
+        # riosType = p[13]
+        # print(suffixType)
 
 
         if folderType:
@@ -137,7 +141,7 @@ def savePathParameter(paths,model):
 
                                     session.commit()
         elif cutType is None:
-            if id_parameter == 5 or id_parameter == 22 or id_parameter == 27 or id_parameter == 28 or id_parameter == 43 or id_parameter == 45 or id_parameter == 46:
+            if id_parameter == 5 or id_parameter == 22 or id_parameter == 27 or id_parameter == 28 or id_parameter == 43 or id_parameter == 45 or id_parameter == 46 or id_parameter==78:
                 ruta = "False"
             elif id_parameter == 36 or id_parameter == 37:
                 ruta = "True"
