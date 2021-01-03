@@ -4,7 +4,7 @@
 
 
 # Importacion de librerias
-import sys
+import sys, os
 from pysheds.grid import Grid
 import fiona
 import argparse
@@ -24,6 +24,9 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-s","--snap", nargs='*',help="Snap to pour point")
 parser.add_argument("-d","--delineate",nargs='*',help="Delineate catchment")
 args = vars(parser.parse_args())
+
+# Variables de entorno
+ruta = os.environ["PATH_FILES"]
 
 # Generar bbox
 def generateCoordinates(c,rad,tipo):
@@ -46,7 +49,7 @@ def getFeatures(gdf):
 # Cortar raster a partir de unas coordenada y un radio
 def cutRaster(path,x,y,rad):
 	data = rasterio.open(path)
-	out_tif = "./tmp/clipped.tiff"
+	out_tif = os.path.join(ruta,"salidas","tmp","clipped.tiff")
 	[minx, maxx] = generateCoordinates(x,rad,'lon')
 	[miny, maxy] = generateCoordinates(y,rad,'lat')
 	bbox = box(minx, miny, maxx, maxy)

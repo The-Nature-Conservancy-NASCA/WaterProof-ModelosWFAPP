@@ -39,9 +39,9 @@ async def snap(x,y):
 		dictResult = dict()
 		dictResult['estado'] = True
 		dictResult['resultado'] = {"x_snap":x,"y_snap":y}
-	except:
+	except Exception as e:
 		dictResult['estado'] = False
-		dictResult['error'] = print("Error en la ejeucion")
+		dictResult['error'] = e.args
 	return dictResult
  
 @app.get("/delineateCatchment")

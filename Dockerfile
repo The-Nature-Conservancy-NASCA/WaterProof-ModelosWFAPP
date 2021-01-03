@@ -31,7 +31,7 @@ RUN chmod +x startup.py
 
 EXPOSE 8000
 
-CMD [“python”, “startup.py”]
+CMD ["python", "startup.py"]
 
 #EXPOSE 8000
 

@@ -5,7 +5,18 @@ services:
     image: wfapp_py3
     container_name: wfapp_py3_container
     build: .
+    environment:
+      - PG_HOST=dev.skaphe.com
+      - PG_GEO_DATABASE=geonode_data
+      - PG_GEO_USER=postgres
+      - PG_GEO_PASSWORD=skaphe2O2O
+      - PG_DATABASE=geonode
+      - PG_USER=postgres
+      - PG_PASSWORD=skaphe2O2O
+      - PG_PORT=5432
+      - PATH_FILES=/home/skaphe/Documentos/tnc/modelos
     volumes:
-      - /home/skaphe/Documentos/tnc/modelos/:/home/skaphe/Documentos/tnc/modelos/
+      - /data/global_datasets:/home/skaphe/Documentos/tnc/modelos/entradas
+      - /data/salidas:/home/skaphe/Documentos/tnc/modelos/salidas
     ports:
       - 8000:8000
