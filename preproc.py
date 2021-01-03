@@ -6,7 +6,7 @@
 # Importacion de librerias
 import sys
 import os.path
-from os import path
+from os import path, environ
 import fiona
 import rasterio
 from natcap.invest.hydropower import hydropower_water_yield as awy
@@ -26,6 +26,8 @@ import ogr
 import osgeo.osr as osr
 from rasterio.mask import mask
 import geopandas as gpd
+
+ruta = environ["PATH_FILES"]
 
 
 # Exportar cuenca delimitada a shp
@@ -89,7 +91,8 @@ def exportToShp(catchment, path):
 
 # Crear directorio para almacenar procesamientos
 def createFolder(user,date):
-	pathF = 'tmp/' + str(user) + "_" + str(date.year) + "_" + str(date.month) + "_" + str(date.day)
+	pathF = path.join(ruta,"salidas",str(user) + "_" + str(date.year) + "_" + str(date.month) + "_" + str(date.day))
+	# pathF = ruta + str(user) + "_" + str(date.year) + "_" + str(date.month) + "_" + str(date.day)
 	folders = {
 		"in":[
 			"catchment",

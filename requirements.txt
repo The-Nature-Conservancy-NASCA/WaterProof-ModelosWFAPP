@@ -1,14 +1,13 @@
 pysheds
 Fiona
 psycopg2
-geopandas
 pycrs
 fastapi
 uvicorn
 numpy
-gdal==2.4.4
 natcap.invest
 rasterstats
 dbfread
 SQLAlchemy
 pymongo
+gdal==2.4.4

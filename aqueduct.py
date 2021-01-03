@@ -3,6 +3,8 @@ import geopandas as gpd
 sys.path.append('config')
 from connect import connect
 
+ruta = os.environ["PATH_FILES"]
+
 # Exportar cuenca delimitada a shp
 def cutShp(catchment, layer, out):
     # print(layer)
@@ -101,7 +103,7 @@ def getpath(basin,constantName):
 	return result
 
 def cutAqueduct(usuario,fecha):
-    path = os.path.join(os.getcwd(),'tmp',usuario + '_' + fecha)
+    path = os.path.join(ruta,'salidas',usuario + '_' + fecha)
     path_catchment = os.path.join(path,'in','catchment','catchment.shp')
     path_out = os.path.join(path,'in','06-AQUEDUCT')
     path_out_f = os.path.join(path,'in')

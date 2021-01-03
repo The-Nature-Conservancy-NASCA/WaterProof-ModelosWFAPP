@@ -2,6 +2,7 @@ FROM python:3.7
 
 #ADD environment.yml /tmp/environment.yml
 ADD requirements.txt /usr/local/wfapp_py3/requirements.txt
+ADD requirements_before.txt /usr/local/wfapp_py3/requirements_before.txt
 
 RUN apt update && apt install -y libpq-dev gdal-bin libgdal-dev
 #RUN apt-get install libgdal-dev
@@ -18,6 +19,7 @@ RUN apt update && apt install -y libpq-dev gdal-bin libgdal-dev
 #SHELL ["conda", "run", "-n", "InVEST", "/bin/bash", "-c"]
 
 WORKDIR /usr/local/wfapp_py3
+RUN pip install -r requirements_before.txt
 RUN pip install -r requirements.txt
 
 COPY . /usr/local/wfapp_py3
