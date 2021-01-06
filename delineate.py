@@ -72,7 +72,7 @@ def cutRaster(path,x,y,rad):
 # Obtener macroregion a partir de coordenada
 def getRegionFromCoord(x,y):
 	result = ''
-	cursor = connect('postgresql').cursor()
+	cursor = connect('postgresql_alfa').cursor()
 	cursor.callproc('intersectmacroregionfromcoords',[x,y])
 	result = cursor.fetchall()
 	for row in result:
@@ -84,7 +84,7 @@ def getRegionFromCoord(x,y):
 def getPath(basin,parameter):
 	result = ''
 	cursor = connect('postgresql_alfa').cursor()
-	cursor.callproc('wfa.getpathbasinparameter',[basin,parameter])
+	cursor.callproc('getpathbasinparameter',[basin,parameter])
 	result = cursor.fetchall()
 	for row in result:
 		result = row[0]
