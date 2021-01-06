@@ -32,7 +32,7 @@ ruta = environ["PATH_FILES"]
 
 # Exportar cuenca delimitada a shp
 def exportToShp(catchment, path):
-	params = config(section='postgresql')
+	params = config(section='postgresql_alfa')
 	connString = "PG: host=" + params['host'] + " dbname=" + params['database'] + " user=" + params['user'] + " password=" + params['password'] 
 	conn=ogr.Open(connString)
 	if conn is None:
@@ -66,7 +66,7 @@ def exportToShp(catchment, path):
 
 
 	if(catchment != -1):
-		sql = "select * from delineated_catchment where id_delineate_catchment" + str(params)
+		sql = "select * from waterproof_intake_polygon where tipo = 'catchment' and id_captacion" + str(params)
 
 		# layer = conn.GetLayerByName("delineated_catchment")
 		layer = conn.ExecuteSQL(sql)
@@ -77,8 +77,8 @@ def exportToShp(catchment, path):
 			geom = feat.GetGeometryRef()
 			geom.Transform(transform)		
 			featDef.SetGeometry(geom)			
-			featDef.SetField('ws_id',feat.id_delineate_catchment)		
-			featDef.SetField('subws_id',feat.id_delineate_catchment)		
+			featDef.SetField('ws_id',feat.id)		
+			featDef.SetField('subws_id',feat.id)		
 			out_layer.CreateFeature(featDef)
 			feat.Destroy()
 			feat = layer.GetNextFeature()
@@ -164,7 +164,7 @@ def getRegionFromId(basin):
 def getConstantFromBasin(basin,constantName):
 	result = ''
 	cursor = connect('postgresql_alfa').cursor()
-	cursor.callproc('wfa.getconstant',[basin,constantName])
+	cursor.callproc('getconstant',[basin,constantName])
 	result = cursor.fetchall()
 	for row in result:
 		result = row
@@ -176,7 +176,7 @@ def getParameters(basin,model):
 	result = ''
 	listResult = []
 	cursor = connect('postgresql_alfa').cursor()
-	cursor.callproc('wfa.getparametersmodel',[basin,model])
+	cursor.callproc('getparametersmodel',[basin,model])
 	result = cursor.fetchall()
 	for row in result:
 		listResult.append(row)
@@ -205,11 +205,11 @@ def verifyExec(path):
 def calcConc(execute,path,label,cont):
 	pathWs = os.path.join(path,"out")
 	if(execute):
-		s,n,p = cntr(pathWs,label,cont)
+		s,n,p,q,sW,nW,pW = cntr(pathWs,label,cont)
 	else:
-		s,n,p = [-1,-1,-1]
+		s,n,p,q,sW,nW,pW = [-1,-1,-1,-1,-1,-1,-1]
 
-	return s,n,p
+	return s,n,p,q,sW,nW,pW
  
 #Calcular sumatoria de resultado de carbon
 def calculateCarbonSum(catchment,path,label):

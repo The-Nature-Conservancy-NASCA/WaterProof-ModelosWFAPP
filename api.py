@@ -81,16 +81,31 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 			cont = 0
 			dictResult['resultado'] = []
 			for c in catch:
-				s,n,p = calcConc(execute,path,label,cont)
+				s,n,p,q,sW,nW,pW = calcConc(execute,path,label,cont)
 				if math.isnan(s):
 					s = 0
 				elif math.isnan(n):
 					n = 0
 				elif math.isnan(p):
 					p = 0
+				elif math.isnan(q):
+					q = 0
+				elif math.isnan(sW):
+					sW = 0
+				elif math.isnan(nW):
+					nW = 0
+				elif math.isnan(pW):
+					pW = 0
+
 
 				dictResult['resultado'].append({
 					"catchment": c,
+					"caudal": q,
+					"w": {
+						"sediment":sW,
+						"nitrogen":nW,
+						"phosporus":pW
+					},
 					"concentrations": {
 					"sediment":s,
 					"nitrogen":n,

@@ -25,9 +25,13 @@ def calcConcentrations(path,label,cont):
 	sdr_value = readDBF(sdr_file,'sed_export',cont)*1000000000
 	ndrn_value = readDBF(ndr_file,'n_exp_tot',cont)*1000000
 	ndrp_value = readDBF(ndr_file,'p_exp_tot',cont)*1000000
+	q = awy_value
+	sdrW = sdr_value
+	ndrnW = ndrn_value
+	ndrpW = ndrp_value
 	sdr_concentration = sdr_value/awy_value
 	ndrN_concentration = ndrn_value/awy_value
 	ndrP_concentration = ndrp_value/awy_value
-	return sdr_concentration,ndrN_concentration,ndrP_concentration
+	return sdr_concentration,ndrN_concentration,ndrP_concentration,q,sdrW,ndrnW,ndrpW
  
 #calcConcentrations(path,'SA_1')
