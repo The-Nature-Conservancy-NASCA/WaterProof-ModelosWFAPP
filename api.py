@@ -56,10 +56,12 @@ async def delineateCatchment(x,y):
 		catchment = delineate.delineateCatchment(path,x,y)
 		dictResult = dict()
 		dictResult['estado'] = True
-		dictResult['resultado'] = catchment
-	except:
+		dictResult['resultado'] = {}
+		dictResult['resultado']['basin'] = basin
+		dictResult['resultado']['geometry'] = catchment
+	except Exception as e:
 		dictResult['estado'] = False
-		dictResult['error'] = print("Error en la ejecucion")
+		dictResult['error'] = e.args
 	return dictResult
 
 @app.get("/execInvest")
