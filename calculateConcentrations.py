@@ -21,17 +21,17 @@ def calcConcentrations(path,label,cont):
 	awy_file = os.path.join(out_path,'AWY','output','watershed_results_wyield_' + str(label) + '.dbf')
 	sdr_file = os.path.join(out_path,'SDR','watershed_results_sdr_' + str(label) + '.dbf')
 	ndr_file = os.path.join(out_path,'NDR','watershed_results_ndr_' + str(label) + '.dbf')
-	awy_value = readDBF(awy_file,'wyield_vol',cont)*1000
-	sdr_value = readDBF(sdr_file,'sed_export',cont)*1000000000
-	ndrn_value = readDBF(ndr_file,'n_exp_tot',cont)*1000000
-	ndrp_value = readDBF(ndr_file,'p_exp_tot',cont)*1000000
-	q = awy_value
-	sdrW = sdr_value
-	ndrnW = ndrn_value
-	ndrpW = ndrp_value
-	sdr_concentration = sdr_value/awy_value
-	ndrN_concentration = ndrn_value/awy_value
-	ndrP_concentration = ndrp_value/awy_value
+	awy_value = readDBF(awy_file,'wyield_vol',cont)*1000 # liters/year
+	sdr_value = readDBF(sdr_file,'sed_export',cont) # Ton/year
+	ndrn_value = readDBF(ndr_file,'n_exp_tot',cont) # Kg/year
+	ndrp_value = readDBF(ndr_file,'p_exp_tot',cont) # Kg/year
+	q = awy_value/31556952 # l/s
+	sdrW = sdr_value # Ton/year
+	ndrnW = ndrn_value # Kg/year
+	ndrpW = ndrp_value # Kg/year
+	sdr_concentration = (sdr_value*1000000000)/(awy_value) # mg/l
+	ndrN_concentration = (ndrn_value*1000000)/(awy_value) # mg/l
+	ndrP_concentration = (ndrp_value*1000000)/(awy_value) # mg/l
 	return sdr_concentration,ndrN_concentration,ndrP_concentration,q,sdrW,ndrnW,ndrpW
  
 #calcConcentrations(path,'SA_1')
