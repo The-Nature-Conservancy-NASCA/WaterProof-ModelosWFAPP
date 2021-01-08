@@ -2,7 +2,7 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import delineate
-from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum
+from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters
 import math
 from aqueduct import cutAqueduct
 
@@ -97,10 +97,13 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 				elif math.isnan(pW):
 					pW = 0
 
+				
+				InsertQualityParameters(c,'RIO',q,sW,nW,pW,s,n,p)
+
 
 				dictResult['resultado'].append({
 					"catchment": c,
-					"caudal": q,
+					"awy": q,
 					"w": {
 						"sediment":sW,
 						"nitrogen":nW,
@@ -113,6 +116,8 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 				}
 				})
 				cont = cont + 1	
+
+				
 		elif(type == "currentCarbon"):
 			sumCarbon = calculateCarbonSum(catchmentShp,path,label)
 			result = 0.0

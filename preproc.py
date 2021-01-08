@@ -152,36 +152,52 @@ def cutRaster(catchment,path,out_path):
 # Recuperar macroregion por id
 def getRegionFromId(basin):
 	result = ''
-	cursor = connect('postgresql').cursor()
+	conn = connect('postgresql_alfa')
+	cursor = conn.cursor()
 	cursor.callproc('getBasin',[basin])
 	result = cursor.fetchall()
 	for row in result:
 		result = row
 	cursor.close()
+	conn.close()
 	return result
  
 # Recuperar constante por macroregion
 def getConstantFromBasin(basin,constantName):
 	result = ''
-	cursor = connect('postgresql_alfa').cursor()
+	conn = connect('postgresql_alfa')
+	cursor = conn.cursor()
 	cursor.callproc('getconstant',[basin,constantName])
 	result = cursor.fetchall()
 	for row in result:
 		result = row
 	cursor.close()
+	conn.close()
 	return result
 
 # Obtener parametros de modelo
 def getParameters(basin,model):
 	result = ''
 	listResult = []
-	cursor = connect('postgresql_alfa').cursor()
+	conn = connect('postgresql_alfa')
+	cursor = conn.cursor()
 	cursor.callproc('getparametersmodel',[basin,model])
 	result = cursor.fetchall()
 	for row in result:
 		listResult.append(row)
 	cursor.close()
+	conn.close()
 	return listResult
+
+# Obtener parametros de modelo
+def InsertQualityParameters(catchment,element,awy,wsed,wn,wp,csed,cn,cp):
+	listResult = []
+	conn = connect('postgresql_alfa')
+	cursor = conn.cursor()
+	cursor.callproc('insertConcentrationsInVEST',[catchment,element,awy,wsed,wn,wp,csed,cn,cp])
+	conn.commit()
+	cursor.close()
+	conn.close()
 
 # Evaluar si existen las ejecuciones realizadas para AWY, SDR y NDR para calcular concentraciones
 def verifyExec(path):
