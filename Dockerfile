@@ -23,6 +23,7 @@ RUN pip install -r requirements_before.txt
 RUN pip install -r requirements.txt
 
 COPY . /usr/local/wfapp_py3
+ADD geoprocessing.py /usr/local/lib/python3.7/site-packages/pygeoprocessing/geoprocessing.py
 RUN chmod +x startup.py
 
 #RUN \

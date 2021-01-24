@@ -46,7 +46,8 @@ def batchProcess(srcFolder, templateFolder, outFolder):
             base = os.path.basename(filename)
             fileNameWE = base.split(".")[0]
             labels = fileNameWE.split("_")
-            templatePath = os.path.join(templateFolder,"DEM_" + labels[-2] + "_" + labels[-1] + ".tif")
+            print(labels)
+            templatePath = os.path.join(templateFolder,"DEM_" + labels[1] + "_" + labels[2] + ".tif")
             outPath = os.path.join(outFolder,base)
             srcPath = os.path.join(srcFolder,filename)
             resamplingRaster(templatePath,srcPath,outPath)
@@ -54,7 +55,7 @@ def batchProcess(srcFolder, templateFolder, outFolder):
             # print(templatePath)
             # print(outPath)
 
-batchProcess("/home/skaphe/Documentos/tnc/modelos/entradas/08-Soil_Depth/","/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/","/home/skaphe/Documentos/tnc/modelos/entradas/08-Soil_DepthResampling/")
+batchProcess("/home/skaphe/Documentos/tnc/modelos/entradas/01-Precipitation/01-Historic/SI_6/","/home/skaphe/Documentos/tnc/modelos/entradas/10-DEM/","/home/skaphe/Documentos/tnc/modelos/entradas/01-PrecipitationResampling/01-Historic/SI_6/")
 
 
 

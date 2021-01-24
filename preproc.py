@@ -66,7 +66,7 @@ def exportToShp(catchment, path):
 
 
 	if(catchment != -1):
-		sql = "select * from waterproof_intake_polygon where tipo = 'catchment' and id_captacion" + str(params)
+		sql = "select * from waterproof_intake_polygon where delimitation_type = 'catchment' and intake_id" + str(params)
 
 		# layer = conn.GetLayerByName("delineated_catchment")
 		layer = conn.ExecuteSQL(sql)
@@ -313,7 +313,7 @@ def executeFunction(basin,model,type,id_catchment,id_usuario):
 	list = getParameters(basin,model)	
 	catchment = exportToShp(id_catchment, path)
 	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario)
-	
+	print(parameters)
 
 	if(model == 'awy'):
 		awy.execute(parameters)
