@@ -5,9 +5,11 @@ pycrs
 fastapi
 uvicorn
 numpy
-natcap.invest
+natcap.invest==3.8.9
 rasterstats
 dbfread
 SQLAlchemy
 pymongo
 gdal==2.4.4
+sympy
+antlr4-python3-runtime
