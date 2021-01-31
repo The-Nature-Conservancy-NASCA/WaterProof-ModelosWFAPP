@@ -5,6 +5,7 @@ import delineate
 from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters
 import math
 from aqueduct import cutAqueduct
+from ptapSelection import getRandomLetter as grl
 
 app = FastAPI()
 
@@ -143,6 +144,20 @@ async def calculateAqueduct(id_usuario,fecha):
 		dictResult = dict()
 		dictResult['estado'] = True
 		dictResult['resultado'] = list
+	except Exception as e:
+		dictResult['estado'] = False
+		dictResult['error'] = e.args
+	return dictResult
+
+@app.get("/ptapSelection")
+async def snap(ptap_id):
+	dictResult = dict()
+	dictResult['estado'] = False
+	try:
+		ptapType = grl()
+		dictResult = dict()
+		dictResult['estado'] = True
+		dictResult['resultado'] = {"ptap_type":ptapType}
 	except Exception as e:
 		dictResult['estado'] = False
 		dictResult['error'] = e.args
