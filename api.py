@@ -66,7 +66,6 @@ async def delineateCatchment(x,y):
 		dictResult['error'] = e.args
 	return dictResult
 
-# @app.post("/execInvest")
 # def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Query(None),catchment:List[int] = Query(None)):
 # 	execInv.delay(type,id_usuario,basin,models,catchment)
 @app.get("/execInvest")

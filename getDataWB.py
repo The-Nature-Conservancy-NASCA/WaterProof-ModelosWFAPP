@@ -98,6 +98,19 @@ def getPData(catchment_id):
     conn.close()
     return listResult
 
+def getQData(catchment_id):
+    result = ''
+    listResult = []
+    conn = connect('postgresql_alfa')
+    cursor = conn.cursor()
+    cursor.callproc('getqbycatchment',[catchment_id])
+    result = cursor.fetchall()
+    for row in result:
+        listResult.append(row)
+    cursor.close()
+    conn.close()
+    return listResult
+
 def generateCsv(header,values, file):
     row_list = []
     row_list.append(header)
@@ -177,11 +190,26 @@ def generateCsvP(catchment_id):
     listDataH.append(listData)
     generateCsv(listElements,listDataH, pathF)
 
+def generateCsvQ(catchment_id):
+    results = getQData(catchment_id)
+    listElements = []
+    listData = []
+    pathF = path.join(ruta,"salidas","wb_test","INPUTS","3_Water_Extraction.csv")
+    for r in results:
+        listData.append([r[0],r[1]])
+    generateCsv(["0","1"],listData, pathF)
+
+def generateAllData(catchment_id):
+    generateCsvTopology(catchment_id)
+    generateCsvPerc(catchment_id)
+    generateCsvAWY(catchment_id)
+    generateCsvSed(catchment_id)
+    generateCsvN(catchment_id)
+    generateCsvP(catchment_id)
+    generateCsvQ(catchment_id)
+
 catchment_id = 1
-generateCsvTopology(catchment_id)
-generateCsvPerc(catchment_id)
-generateCsvAWY(catchment_id)
-generateCsvSed(catchment_id)
-generateCsvN(catchment_id)
-generateCsvP(catchment_id)
+
+generateAllData(catchment_id)
+
 
