@@ -6,6 +6,9 @@ from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,Inser
 import math
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
+from getDataWB import generateAllData as InWB
+from WI_Balance import execWB
+from outWB import mergeData, readSum
 # from workers import execInv
 
 app = FastAPI()
@@ -161,6 +164,23 @@ async def snap(ptap_id):
 		dictResult = dict()
 		dictResult['estado'] = True
 		dictResult['resultado'] = {"ptap_type":ptapType}
+	except Exception as e:
+		dictResult['estado'] = False
+		dictResult['error'] = e.args
+	return dictResult
+
+@app.get("/wb")
+async def calculateWB(id_intake):
+	dictResult = dict()
+	dictResult['estado'] = False
+	try:
+		InWB(id_intake)
+		execWB()
+		outFile = mergeData()
+		readSum(outFile)
+		dictResult = dict()
+		dictResult['estado'] = True
+		dictResult['resultado'] = {"result":'Transacción exitosa'}
 	except Exception as e:
 		dictResult['estado'] = False
 		dictResult['error'] = e.args

@@ -124,7 +124,7 @@ def readSum(csvIn):
                 parameter = dirOutputs[typeI]['field']
                 updateParameter(element,parameter,value)           
 
-outFile = mergeData()
-readSum(outFile)
-print("Exitoso")
+# outFile = mergeData()
+# readSum(outFile)
+# print("Exitoso")
     
