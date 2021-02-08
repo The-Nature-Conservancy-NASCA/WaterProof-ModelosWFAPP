@@ -4,7 +4,7 @@ psycopg2
 pycrs
 fastapi
 uvicorn
-numpy==1.19.5
+numpy
 natcap.invest==3.8.9
 rasterstats
 dbfread

@@ -64,6 +64,7 @@ for i in Elements:
         Order_Solution = np.append(Order_Solution, i)
 
 Initial_Elements = Order_Solution[1:]
+print(Order_Solution)
 
 # Variable de control para recorrer la red topologica
 CheckVar = 0
@@ -229,7 +230,9 @@ for i in Final_Order_Solution:
         WSed_Ret_Results = np.append(WSed_Ret_Results, WSed_Ret_Calc, axis=1)
         # Calculo de Concentracion de Sedimentos
         AWY = AWY_Results[:, Results_Pos[0]]
+        print(AWY)        
         WSed = WSed_Results[:, Results_Pos[0]]
+        print(WSed)
         CSed_Calc = (WSed / AWY) * (1000 * 1000) # Concentracion en miligramos por litro (1000 * 1000) Factor de conversion
         CSed_Results = np.append(CSed_Results, CSed_Calc, axis=1)
 
@@ -312,6 +315,7 @@ for i in Final_Order_Solution:
             WSed_Calc = (CSed_Calc * AWY) / (1000 * 1000)  # Carga en Toneladas
             WSed_Results = np.append(WSed_Results, WSed_Calc, axis=1)
             # Calculo de carga de sedimentos retenida en el elemento
+            
             WSed_Ret_Calc = WSed_Results[:, Results_Pos[0]] * ((RetSed[RetSed_Pos[0]]) / 100)
             WSed_Ret_Results = np.append(WSed_Ret_Results, WSed_Ret_Calc, axis=1)
 
