@@ -173,15 +173,15 @@ async def snap(ptap_id):
 async def calculateWB(id_intake):
 	dictResult = dict()
 	dictResult['estado'] = False
-	try:
-		InWB(id_intake)
-		execWB()
-		outFile = mergeData()
-		readSum(outFile)
-		dictResult = dict()
-		dictResult['estado'] = True
-		dictResult['resultado'] = {"result":'Transacción exitosa'}
-	except Exception as e:
-		dictResult['estado'] = False
-		dictResult['error'] = e.args
+	# try:
+	InWB(id_intake)
+	execWB()
+	outFile = mergeData()
+	readSum(outFile)
+	dictResult = dict()
+	dictResult['estado'] = True
+	dictResult['resultado'] = {"result":'Transacción exitosa'}
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
 	return dictResult

@@ -194,10 +194,12 @@ def generateCsvQ(catchment_id):
     results = getQData(catchment_id)
     listElements = []
     listData = []
+    element = None
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","3_Water_Extraction.csv")
     for r in results:
-        listData.append([r[0],r[1]])
-    generateCsv(["0","1"],listData, pathF)
+        listData.append([r[1],r[2]])
+        element = r[0]
+    generateCsv(["0",element],listData, pathF)
 
 def generateAllData(catchment_id):
     generateCsvTopology(catchment_id)

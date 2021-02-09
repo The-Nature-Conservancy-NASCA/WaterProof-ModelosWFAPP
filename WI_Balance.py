@@ -4,10 +4,11 @@ import numpy as np
 import csv
 from os import environ
 
+
 ruta = environ["PATH_FILES"]
 
-def execWB():
 
+def execWB():
     # Leer archivos base CSV
     # Los archivos CSV deberán ser construidos desde la interfaz WEB con la estructura propuesta
 
@@ -66,7 +67,6 @@ def execWB():
             Order_Solution = np.append(Order_Solution, i)
 
     Initial_Elements = Order_Solution[1:]
-    print(Order_Solution)
 
     # Variable de control para recorrer la red topologica
     CheckVar = 0
@@ -232,9 +232,7 @@ def execWB():
             WSed_Ret_Results = np.append(WSed_Ret_Results, WSed_Ret_Calc, axis=1)
             # Calculo de Concentracion de Sedimentos
             AWY = AWY_Results[:, Results_Pos[0]]
-            print(AWY)        
             WSed = WSed_Results[:, Results_Pos[0]]
-            print(WSed)
             CSed_Calc = (WSed / AWY) * (1000 * 1000) # Concentracion en miligramos por litro (1000 * 1000) Factor de conversion
             CSed_Results = np.append(CSed_Results, CSed_Calc, axis=1)
 
@@ -317,7 +315,6 @@ def execWB():
                 WSed_Calc = (CSed_Calc * AWY) / (1000 * 1000)  # Carga en Toneladas
                 WSed_Results = np.append(WSed_Results, WSed_Calc, axis=1)
                 # Calculo de carga de sedimentos retenida en el elemento
-                
                 WSed_Ret_Calc = WSed_Results[:, Results_Pos[0]] * ((RetSed[RetSed_Pos[0]]) / 100)
                 WSed_Ret_Results = np.append(WSed_Ret_Results, WSed_Ret_Calc, axis=1)
 
@@ -540,7 +537,6 @@ def execWB():
                 WP_Ret_Results = np.append(WP_Ret_Results, WP_Ret_Calc, axis=1)
 
     # Limpiar matrices de resultados (No considerar Columna 1 (Posicion [0]) ni Fila 1 [Posicion [0] de matrices)
-
     AWY_Results = AWY_Results[1:, 1:]
     CSed_Results = CSed_Results[1:, 1:]
     WSed_Results = WSed_Results[1:, 1:]
@@ -548,9 +544,41 @@ def execWB():
     CN_Results = CN_Results[1:, 1:]
     WN_Results = WN_Results[1:, 1:]
     WN_Ret_Results = WN_Ret_Results[1:, 1:]
-    CP_Results = CN_Results[1:, 1:]
-    WP_Results = WN_Results[1:, 1:]
-    WP_Ret_Results = WN_Ret_Results[1:, 1:]
+    CP_Results = CP_Results[1:, 1:]
+    WP_Results = WP_Results[1:, 1:]
+    WP_Ret_Results = WP_Ret_Results[1:, 1:]
+
+
+    """
+    Check para verificar volumen de extracción de agua ingresado por el usuario
+    """
+    # AWY elemento de captación
+    Posi  = np.where(Final_Order_Solution == Extract_Element)
+    Data1 = AWY_Results[:,Posi[0][0]]
+
+    # AWY Elemento conectado a la captación
+    Posi  = np.where(Topology[:,1] == Extract_Element)
+    Posi  = np.where(Final_Order_Solution == Topology[Posi[0],0])
+    Data2 = AWY_Results[:,Posi[0][0]]
+    for i in range(1,len(Posi)):
+        Data2 = Data2 + AWY_Results[:,Posi[0][i]]
+
+    Check = []
+    for i in range(0,len(Data1)):
+        Check.append(Data2[i] < Data1[i])
+
+    Check = np.sum(Check)
+
+    myFile = open(os.path.join(ruta,'salidas','wb_test','OUTPUTS', 'SystemErrors.txt'), 'w', newline='')
+    with myFile:
+        if Check > 0:
+            Choco = "1"
+        else:
+            Choco = "0"
+
+        myFile.writelines(Choco)
+        myFile.close()
+
 
     # Annual Water Yield (AWY) / Caudales Trasportados en cada Elemento
     myFile = open(os.path.join(ruta,"salidas","wb_test",'OUTPUTS','Q_Results.csv'), 'w', newline='')
