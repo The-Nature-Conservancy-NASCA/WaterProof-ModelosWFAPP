@@ -9,7 +9,13 @@ from ptapSelection import getRandomLetter as grl
 from getDataWB import generateAllData as InWB
 from WI_Balance import execWB
 from outWB import mergeData, readSum
+from pydantic import BaseModel
+from getDataPTAP import generateAll
+from Select_PTAP import Select_PTAP
 # from workers import execInv
+
+class ListCS(BaseModel):
+    csinfras: List[int]
 
 app = FastAPI()
 
@@ -155,18 +161,23 @@ async def calculateAqueduct(id_usuario,fecha):
 		dictResult['error'] = e.args
 	return dictResult
 
-@app.get("/ptapSelection")
-async def snap(ptap_id):
+@app.post("/ptapSelection")
+async def ptapSelect(listcs:ListCS):
 	dictResult = dict()
 	dictResult['estado'] = False
 	try:
-		ptapType = grl()
+		result = generateAll(listcs.csinfras)
+		r,awy = Select_PTAP("prueba")
 		dictResult = dict()
 		dictResult['estado'] = True
-		dictResult['resultado'] = {"ptap_type":ptapType}
+		dictResult['resultado'] = {
+			"ptap_type":r,
+			"awy":awy
+			}
 	except Exception as e:
 		dictResult['estado'] = False
 		dictResult['error'] = e.args
+		
 	return dictResult
 
 @app.get("/wb")
