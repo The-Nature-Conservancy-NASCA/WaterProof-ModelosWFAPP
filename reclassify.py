@@ -1,4 +1,4 @@
-import sys
+import sys,os
 from osgeo import gdal
 sys.path.append('config')
 from config import config
@@ -19,9 +19,9 @@ def getTranformations(nbs_id):
     conn.close()
     return listResult
 
-def reclassify(listTrans):
+def reclassify(listTrans,pathFile,outPath,filename):
     driver = gdal.GetDriverByName('GTiff')
-    file = gdal.Open('activity_portfolio_continuous_year_1.tif')
+    file = gdal.Open(pathFile)
     band = file.GetRasterBand(1)
     lista = band.ReadAsArray()
     for x in listTrans:
@@ -34,8 +34,9 @@ def reclassify(listTrans):
                 if lista[i,j] == x[0]:
                     lista[i,j] = x[2]
 
+    pathTranslated = os.path.join(outPath,filename)
     # create new file
-    file2 = driver.Create('raster2.tif', file.RasterXSize , file.RasterYSize , 1)
+    file2 = driver.Create(pathTranslated, file.RasterXSize , file.RasterYSize , 1)
     file2.GetRasterBand(1).WriteArray(lista)
 
     # spatial ref system
@@ -45,10 +46,22 @@ def reclassify(listTrans):
     file2.SetGeoTransform(georef)
     file2.FlushCache()
 
+def iterateFiles(path,nbs_id):
+    listTransformations = getTranformations(nbs_id)
+    pathOut = os.path.join(path,"translated_cob")
 
-listTransformations = getTranformations(5)
-reclassify(listTransformations)
-print(listTransformations)
+    if not os.path.isdir(pathOut):
+        os.mkdir(pathOut)
+
+    for filename in os.listdir(path):
+        if filename.endswith(".tif"):
+            reclassify(listTransformations,os.path.join(path,filename),pathOut,filename)
+
+
+
+iterateFiles('/home/skaphe/Documentos/tnc/modelos/salidas/9_2020_10_24/out/04-RIOS/1_investment_portfolio_adviser_workspace/activity_portfolios/continuous_activity_portfolios',5)
+# reclassify(listTransformations)
+# print(listTransformations)
 
 
 
