@@ -35,6 +35,7 @@ def calculateRainfallDayMonth(folder,catchment,label):
 			#print(monthNumber)
 			zs = calculateStatistic(typeStat,fileRaster,catchment)
 			result = zs[0]
+			print(filename)
 			rainfallList.append([monthNumber,int(result[typeStat[0]])])
 		
 	# print(rainfallList)
