@@ -20,4 +20,4 @@ services:
       - /data/global_datasets:/home/skaphe/Documentos/tnc/modelos/entradas
       - /data/salidas:/home/skaphe/Documentos/tnc/modelos/salidas
     ports:
-      - 8000:8000
+      - 8001:8000

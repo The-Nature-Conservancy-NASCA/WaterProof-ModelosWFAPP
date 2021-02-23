@@ -32,7 +32,7 @@ RUN chmod +x startup.py
 # pip install -r requirements.txt --no-cache-dir && \
 # apk --purge del .build-deps
 
-EXPOSE 8000
+EXPOSE 8001
 
 CMD ["python", "startup.py"]
 
