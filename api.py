@@ -12,6 +12,7 @@ from outWB import mergeData, readSum
 from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
+from reclassify import iterateFiles
 # from workers import execInv
 
 class ListCS(BaseModel):
@@ -171,12 +172,18 @@ async def ptapSelect(listcs:ListCS):
 	dictResult['estado'] = False
 	try:
 		result = generateAll(listcs.csinfras)
-		r,awy = Select_PTAP("prueba")
+		r,awy,cn,cp,cs,wn,wp,ws = Select_PTAP("prueba")
 		dictResult = dict()
 		dictResult['estado'] = True
 		dictResult['resultado'] = {
 			"ptap_type":r,
-			"awy":awy
+			"awy":awy,
+			"cn": cn,
+			"cp": cp,
+			"cs": cs,
+			"wn": wn,
+			"wp": wp,
+			"ws": ws
 			}
 	except Exception as e:
 		dictResult['estado'] = False
@@ -200,3 +207,19 @@ async def calculateWB(id_intake):
 	# 	dictResult['estado'] = False
 	# 	dictResult['error'] = e.args
 	return dictResult
+
+@app.get("/cobTrans")
+async def cobTrans(pathCobs,nbs_id,pathLULC):
+	dictResult = dict()
+	
+	try:
+		iterateFiles(pathCobs,5,pathLULC)
+		dictResult['estado'] = True
+		dictResult['resultado'] = {"result":'Transacción exitosa'}
+	except Exception as e:
+		dictResult['estado'] = False
+		dictResult['error'] = "Todo lo que podia fallar falló!!!!"
+   
+	return dictResult
+
+

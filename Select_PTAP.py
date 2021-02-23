@@ -71,7 +71,7 @@ def Select_PTAP(PathProject_PTAP):
     # Results.to_csv( os.path.join(PathProject_PTAP,'OUTPUTS','1-Type_PTAP.csv'), index=False)
     # Results = 0
 
-    return Results["Type"][0], AWY.sum(1)[0]
+    return Results["Type"][0], AWY.sum(1)[0],CN[0],CP[0],CS[0],N.sum(1)[0],P.sum(1)[0],S.sum(1)[0]
 
 # # -----------------------------------------------------------------------------------
 # # Tester
