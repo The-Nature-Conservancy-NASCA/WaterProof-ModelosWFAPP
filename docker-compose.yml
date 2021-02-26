@@ -21,3 +21,9 @@ services:
       - /data/salidas:/home/skaphe/Documentos/tnc/modelos/salidas
     ports:
       - 8001:8000
+    networks:
+      - shared-models
+      
+networks:
+  shared-models:
+    driver: bridge
