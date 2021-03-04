@@ -6,12 +6,12 @@ from connect import connect
 
 ruta = environ["PATH_FILES"]
 
-def getTopologyData(catchment_id):
+def getTopologyData(id_ptap):
     result = ''
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc('__wpgettopologybycatchment',[catchment_id])
+    cursor.callproc('__wpgettopologybyptap',[id_ptap])
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
@@ -19,12 +19,12 @@ def getTopologyData(catchment_id):
     conn.close()
     return listResult
 
-def getPercData(catchment_id):
+def getPercData(id_ptap):
     result = ''
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc('__wpgetpercentagesbycatchment',[catchment_id])
+    cursor.callproc('__wpgetpercentagesbyptap',[id_ptap])
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
@@ -32,12 +32,12 @@ def getPercData(catchment_id):
     conn.close()
     return listResult
 
-def getAWYData(catchment_id):
+def getAWYData(id_ptap):
     result = ''
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc('__wpgetawybycatchment',[catchment_id])
+    cursor.callproc('__wpgetawybyptap',[id_ptap])
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
@@ -45,12 +45,12 @@ def getAWYData(catchment_id):
     conn.close()
     return listResult
 
-def getSedData(catchment_id):
+def getSedData(id_ptap):
     result = ''
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc('__wpgetsedbycatchment',[catchment_id])
+    cursor.callproc('__wpgetsedbycatchment',[id_ptap])
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
@@ -58,12 +58,12 @@ def getSedData(catchment_id):
     conn.close()
     return listResult
 
-def getNData(catchment_id):
+def getNData(id_ptap):
     result = ''
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc('__wpgetnbycatchment',[catchment_id])
+    cursor.callproc('__wpgetnbyptap',[id_ptap])
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
@@ -71,12 +71,12 @@ def getNData(catchment_id):
     conn.close()
     return listResult
 
-def getPData(catchment_id):
+def getPData(id_ptap):
     result = ''
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc('__wpgetpbycatchment',[catchment_id])
+    cursor.callproc('__wpgetpbyptap',[id_ptap])
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
@@ -84,12 +84,12 @@ def getPData(catchment_id):
     conn.close()
     return listResult
 
-def getQData(catchment_id):
+def getQData(id_ptap):
     result = ''
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc('__wpgetqbycatchment',[catchment_id])
+    cursor.callproc('__wpgetqbyptap',[id_ptap])
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
@@ -108,20 +108,20 @@ def generateCsv(header,values, file):
         writer = csv.writer(file)
         writer.writerows(row_list)
 
-def generateCsvTopology(catchment_id):
-    results = getTopologyData(catchment_id)
-    # print(results)
+def generateCsvTopology(id_ptap):
+    results = getTopologyData(id_ptap)
+    print(results)
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","0_WI_Topology.csv")
     generateCsv(["From_Element","To_Element"],results, pathF)
 
-def generateCsvPerc(catchment_id):
-    results = getPercData(catchment_id)
+def generateCsvPerc(id_ptap):
+    results = getPercData(id_ptap)
     # print(results)
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","1_WI_Elements_Param.csv")
     generateCsv(["From_Element","PWater","RetSed","RetN","RetP"],results, pathF)
 
-def generateCsvAWY(catchment_id):
-    results = getAWYData(catchment_id)
+def generateCsvAWY(id_ptap):
+    results = getAWYData(id_ptap)
     listElements = []
     listData = []
     listElements.append(0)
@@ -134,8 +134,8 @@ def generateCsvAWY(catchment_id):
     listDataH.append(listData)
     generateCsv(listElements,listDataH, pathF)
 
-def generateCsvSed(catchment_id):
-    results = getSedData(catchment_id)
+def generateCsvSed(id_ptap):
+    results = getSedData(id_ptap)
     listElements = []
     listData = []
     listElements.append(0)
@@ -148,8 +148,8 @@ def generateCsvSed(catchment_id):
     listDataH.append(listData)
     generateCsv(listElements,listDataH, pathF)
 
-def generateCsvN(catchment_id):
-    results = getNData(catchment_id)
+def generateCsvN(id_ptap):
+    results = getNData(id_ptap)
     listElements = []
     listData = []
     listElements.append(0)
@@ -162,8 +162,8 @@ def generateCsvN(catchment_id):
     listDataH.append(listData)
     generateCsv(listElements,listDataH, pathF)
 
-def generateCsvP(catchment_id):
-    results = getPData(catchment_id)
+def generateCsvP(id_ptap):
+    results = getPData(id_ptap)
     listElements = []
     listData = []
     listElements.append(0)
@@ -176,8 +176,8 @@ def generateCsvP(catchment_id):
     listDataH.append(listData)
     generateCsv(listElements,listDataH, pathF)
 
-def generateCsvQ(catchment_id):
-    results = getQData(catchment_id)
+def generateCsvQ(id_ptap):
+    results = getQData(id_ptap)
     listElements = []
     listData = []
     element = None
@@ -187,17 +187,15 @@ def generateCsvQ(catchment_id):
         element = r[0]
     generateCsv(["0",element],listData, pathF)
 
-def generateAllData(catchment_id):
-    generateCsvTopology(catchment_id)
-    generateCsvPerc(catchment_id)
-    generateCsvAWY(catchment_id)
-    generateCsvSed(catchment_id)
-    generateCsvN(catchment_id)
-    generateCsvP(catchment_id)
-    generateCsvQ(catchment_id)
+def generateAllData(id_ptap):
+    generateCsvTopology(id_ptap)
+    generateCsvPerc(id_ptap)
+    generateCsvAWY(id_ptap)
+    generateCsvSed(id_ptap)
+    generateCsvN(id_ptap)
+    generateCsvP(id_ptap)
+    generateCsvQ(id_ptap)
 
-#catchment_id = 3
+#id_ptap = 3
 
-#generateAllData(catchment_id)
-
-
+#generateAllData(id_ptap)

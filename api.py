@@ -7,6 +7,7 @@ import math
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
 from getDataWB import generateAllData as InWB
+from getDataWBPTAP import generateAllData as InWBPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum
 from pydantic import BaseModel
@@ -201,6 +202,22 @@ async def calculateWB(id_intake):
 	outFile = mergeData()
 	readSum(outFile)
 	dictResult = dict()
+	dictResult['estado'] = True
+	dictResult['resultado'] = {"result":'Transacción exitosa'}
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
+	return dictResult
+
+@app.get("/wbPTAP")
+async def calculateWBPTAP(id_ptap):
+	dictResult = dict()
+	dictResult['estado'] = False
+	# try:
+	InWBPTAP(id_ptap)
+	execWB()
+	outFile = mergeData()
+	readSum(outFile)
 	dictResult['estado'] = True
 	dictResult['resultado'] = {"result":'Transacción exitosa'}
 	# except Exception as e:
