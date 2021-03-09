@@ -214,7 +214,8 @@ async def calculateWBPTAP(id_ptap):
 	dictResult = dict()
 	dictResult['estado'] = False
 	# try:
-	InWBPTAP(id_ptap)
+	ptap_id = int(id_ptap)
+	InWBPTAP(ptap_id)
 	execWB()
 	outFile = mergeData()
 	readSum(outFile)
