@@ -9,7 +9,7 @@ from ptapSelection import getRandomLetter as grl
 from getDataWB import generateAllData as InWB
 from getDataWBPTAP import generateAllData as InWBPTAP
 from WI_Balance import execWB
-from outWB import mergeData, readSum
+from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP
 from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
@@ -217,8 +217,8 @@ async def calculateWBPTAP(id_ptap):
 	ptap_id = int(id_ptap)
 	InWBPTAP(ptap_id)
 	execWB()
-	outFile = mergeData()
-	readSum(outFile)
+	outFile = mergeDataPTAP()
+	readSumPTAP(outFile)
 	dictResult['estado'] = True
 	dictResult['resultado'] = {"result":'Transacción exitosa'}
 	# except Exception as e:
@@ -229,7 +229,7 @@ async def calculateWBPTAP(id_ptap):
 @app.get("/cobTrans")
 async def cobTrans(pathCobs,nbs_id,pathLULC):
 	dictResult = dict()
-	
+
 	try:
 		iterateFiles(pathCobs,5,pathLULC)
 		dictResult['estado'] = True
@@ -237,7 +237,7 @@ async def cobTrans(pathCobs,nbs_id,pathLULC):
 	except Exception as e:
 		dictResult['estado'] = False
 		dictResult['error'] = "Todo lo que podia fallar falló!!!!"
-   
+
 	return dictResult
 
 

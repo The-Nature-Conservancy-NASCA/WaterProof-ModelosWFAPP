@@ -50,7 +50,7 @@ def getSedData(id_ptap):
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc('__wpgetsedbycatchment',[id_ptap])
+    cursor.callproc('__wpgetsedbyptap',[id_ptap])
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
@@ -183,8 +183,11 @@ def generateCsvQ(id_ptap):
     element = None
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","3_Water_Extraction.csv")
     for r in results:
-        listData.append([r[1],r[2]])
-        element = r[0]
+
+        listData.append([0,r[1]])
+        # Se adiciona el 1 porque la extración de agua
+        # se realiza desde el segundo elemento del flujo
+        element = r[0]+1
     generateCsv(["0",element],listData, pathF)
 
 def generateAllData(id_ptap):
