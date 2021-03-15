@@ -49,7 +49,7 @@ dirOutputsPTAP = {
     'cn': {
         'file': 'CN_Results.csv',
         'field': 'element_cn_mg_l'
-    },
+        },
     'csed': {
         'file': 'CSed_Results.csv',
         'field': 'element_csed_mg_l'
@@ -202,7 +202,7 @@ def updateParameterPTAP(element, parameter, value):
 	listResult = []
 	conn = connect('postgresql_alfa')
 	cursor = conn.cursor()
-	cursor.callproc('__wbupdate_parameter_ptap',[element,parameter,value])
+	cursor.callproc('__wpupdate_parameter_ptap',[element,parameter,value])
 	conn.commit()
 	cursor.close()
 	conn.close()
