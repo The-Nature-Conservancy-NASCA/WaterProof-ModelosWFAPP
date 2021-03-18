@@ -20,9 +20,11 @@ def Select_PTAP(PathProject_PTAP):
     Factor_1 = 1000
 
     # Integración de calidades
-    CN = N.sum(1)/AWY.sum(1)*Factor_1
-    CP = P.sum(1)/AWY.sum(1)*Factor_1
-    CS = S.sum(1)/AWY.sum(1)*Factor_1*1000
+
+    # el -1 se resta con el campo time que proviene del csv (siempre es uno)
+    CN = (N.sum(1)-1)/(AWY.sum(1)-1)*Factor_1
+    CP = (P.sum(1)-1)/(AWY.sum(1)-1)*Factor_1
+    CS = (S.sum(1)-1)/(AWY.sum(1)-1)*Factor_1*1000
 
     # Results = S
 
@@ -71,7 +73,7 @@ def Select_PTAP(PathProject_PTAP):
     # Results.to_csv( os.path.join(PathProject_PTAP,'OUTPUTS','1-Type_PTAP.csv'), index=False)
     # Results = 0
 
-    return Results["Type"][0], AWY.sum(1)[0],CN[0],CP[0],CS[0],N.sum(1)[0],P.sum(1)[0],S.sum(1)[0]
+    return Results["Type"][0], AWY.sum(1)[0]-1,CN[0],CP[0],CS[0],N.sum(1)[0]-1,P.sum(1)[0]-1,S.sum(1)[0]-1
 
 # # -----------------------------------------------------------------------------------
 # # Tester
