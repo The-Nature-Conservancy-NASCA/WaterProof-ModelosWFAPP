@@ -2,8 +2,9 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import delineate
-from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters
 import math
+import pathlib
+from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
 from getDataWB import generateAllData as InWB
@@ -14,6 +15,7 @@ from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
 from reclassify import iterateFiles
+from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 # from workers import execInv
 
 class ListCS(BaseModel):
@@ -240,3 +242,14 @@ async def cobTrans(pathCobs,nbs_id,pathLULC):
 	return dictResult
 
 
+@app.get("/disaggregation")
+async def disaggregation():
+	
+	current_dir = pathlib.Path().absolute()
+	demo_data = "/Disaggregation_WaterFunds/Project"
+	path_data = str(current_dir) + demo_data
+	dissagregation = Desaggregation_BaU_NBS(path_data, path_data)
+	dict_result = dict()
+	dict_result['status'] = True
+	dict_result['result'] = dissagregation
+	return dict_result
