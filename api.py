@@ -2,8 +2,10 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import delineate
-from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters
 import math
+import pathlib
+import os
+from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
 from getDataWB import generateAllData as InWB
@@ -14,6 +16,8 @@ from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
 from reclassify import iterateFiles
+import pandas as pd
+from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 # from workers import execInv
 
 class ListCS(BaseModel):
@@ -240,3 +244,20 @@ async def cobTrans(pathCobs,nbs_id,pathLULC):
 	return dictResult
 
 
+@app.get("/disaggregation")
+async def disaggregation():
+	
+	out_bau = '02-OUTPUTS_BaU.csv'
+	out_nbs = '02-OUTPUTS_NBS.csv'
+	name_cols = ['AWY (m3)','Wsed (Ton)','WN (Kg)','WP (kg)','BF (m3)','WC (Ton)']
+	current_dir = pathlib.Path().absolute()
+	demo_data = "/Disaggregation_WaterFunds/Project"
+	path_data = str(current_dir) + demo_data
+	Desaggregation_BaU_NBS(path_data)
+
+	dict_result = dict()
+	dict_result['status'] = True
+    
+	dict_result['nbs'] = pd.read_csv(os.path.join(path_data, out_nbs),usecols=name_cols)
+	dict_result['bau'] = pd.read_csv(os.path.join(path_data, out_bau),usecols=name_cols)
+	return dict_result
