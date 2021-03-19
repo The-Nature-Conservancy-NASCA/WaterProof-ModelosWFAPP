@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
+
 from typing import List
 import delineate
 import math
@@ -272,7 +274,8 @@ async def disaggregation(user_id):
 
 	PATH_FILES = os.environ["PATH_FILES"]
 	date_ymd = datetime.today().strftime('%Y-%m-%d')
-	path = os.path.join(PATH_FILES,'salidas', user_id + '_' + date_ymd)
+	user_dir = user_id + '_' + date_ymd
+	path = os.path.join(PATH_FILES,'salidas', user_dir)
 	validate_and_create_dir (path)
 	path_out_in = os.path.join(path,'in')
 	validate_and_create_dir (path_out_in)	
@@ -284,6 +287,13 @@ async def disaggregation(user_id):
 	path_out_dissagregation = os.path.join(path_out_out, DISAGGREGATION)
 	validate_and_create_dir (path_out_dissagregation)
 
+	dict_result["output"] = {}
+	dict_result["output"]["user_dir"] = user_dir
+	dict_result["output"]["topic"] = DISAGGREGATION
+	dict_result["output"]["files"] = [out_bau, out_nbs]	 
+	base_url = "/download?user_dir=" + user_dir + "&topic="+DISAGGREGATION + "&file="
+	dict_result["output"]["urls"] = [base_url + out_bau, base_url + out_nbs]
+
 	print ("export inputs to: " + path_in_dissagregation)
 	shutil.copyfile(os.path.join(path_data,in_invest), os.path.join(path_in_dissagregation,in_invest))
 	shutil.copyfile(os.path.join(path_data,in_nbs), os.path.join(path_in_dissagregation,in_nbs))
@@ -293,6 +303,14 @@ async def disaggregation(user_id):
 	shutil.copyfile(os.path.join(path_data,out_bau), os.path.join(path_out_dissagregation,out_bau))
 	shutil.copyfile(os.path.join(path_data,out_nbs), os.path.join(path_out_dissagregation,out_nbs))
 	return dict_result
+
+@app.get("/download")
+def download(user_dir, topic , file):
+	PATH_FILES = os.environ["PATH_FILES"]
+	path = os.path.join(PATH_FILES,'salidas', user_dir)
+	file_path = os.path.join(path,'out' , topic, file)
+	print ("download file : " + file_path)
+	return FileResponse(path=file_path, filename=file, media_type='text/csv')
 
 def validate_and_create_dir(dir_to_validate):
 
