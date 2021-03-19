@@ -72,9 +72,9 @@ def generateAll(list_cs):
     for d in data:
         h.append("Csinfra-" + str(d[0][0]))
         awy_item.append(d[0][7])
-        sed_item.append(d[0][15])
-        n_item.append(d[0][11])
-        p_item.append(d[0][16])
+        sed_item.append(d[0][16])
+        n_item.append(d[0][12])
+        p_item.append(d[0][17])
 
     headers.append(h)
     awy.append(awy_item)

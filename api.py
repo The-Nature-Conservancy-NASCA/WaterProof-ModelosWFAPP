@@ -5,13 +5,15 @@ import delineate
 import math
 import pathlib
 import os
+import shutil
+from datetime import datetime
 from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
 from getDataWB import generateAllData as InWB
 from getDataWBPTAP import generateAllData as InWBPTAP
 from WI_Balance import execWB
-from outWB import mergeData, readSum
+from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP
 from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
@@ -175,9 +177,11 @@ async def calculateAqueduct(id_usuario,fecha):
 async def ptapSelect(listcs:ListCS):
 	dictResult = dict()
 	dictResult['estado'] = False
+	print(listcs.csinfras)
 	try:
 		result = generateAll(listcs.csinfras)
-		r,awy,cn,cp,cs,wn,wp,ws = Select_PTAP("prueba")
+		print(result)
+		r,awy,cn,cp,cs,wn,wp,ws = Select_PTAP(result)
 		dictResult = dict()
 		dictResult['estado'] = True
 		dictResult['resultado'] = {
@@ -218,10 +222,11 @@ async def calculateWBPTAP(id_ptap):
 	dictResult = dict()
 	dictResult['estado'] = False
 	# try:
-	InWBPTAP(id_ptap)
+	ptap_id = int(id_ptap)
+	InWBPTAP(ptap_id)
 	execWB()
-	outFile = mergeData()
-	readSum(outFile)
+	outFile = mergeDataPTAP()
+	readSumPTAP(outFile)
 	dictResult['estado'] = True
 	dictResult['resultado'] = {"result":'Transacción exitosa'}
 	# except Exception as e:
@@ -232,7 +237,7 @@ async def calculateWBPTAP(id_ptap):
 @app.get("/cobTrans")
 async def cobTrans(pathCobs,nbs_id,pathLULC):
 	dictResult = dict()
-	
+
 	try:
 		iterateFiles(pathCobs,5,pathLULC)
 		dictResult['estado'] = True
@@ -240,15 +245,19 @@ async def cobTrans(pathCobs,nbs_id,pathLULC):
 	except Exception as e:
 		dictResult['estado'] = False
 		dictResult['error'] = "Todo lo que podia fallar falló!!!!"
-   
+
 	return dictResult
 
 
 @app.get("/disaggregation")
-async def disaggregation():
+async def disaggregation(user_id):
 	
+	in_invest = '01-INPUTS_InVEST.csv'
+	in_nbs    = '01-INPUTS_NBS.csv'
+	in_time   = '01-INPUTS_Time.csv'
 	out_bau = '02-OUTPUTS_BaU.csv'
 	out_nbs = '02-OUTPUTS_NBS.csv'
+	DISAGGREGATION = 'DISAGGREGATION'
 	name_cols = ['AWY (m3)','Wsed (Ton)','WN (Kg)','WP (kg)','BF (m3)','WC (Ton)']
 	current_dir = pathlib.Path().absolute()
 	demo_data = "/Disaggregation_WaterFunds/Project"
@@ -260,4 +269,31 @@ async def disaggregation():
     
 	dict_result['nbs'] = pd.read_csv(os.path.join(path_data, out_nbs),usecols=name_cols)
 	dict_result['bau'] = pd.read_csv(os.path.join(path_data, out_bau),usecols=name_cols)
+
+	PATH_FILES = os.environ["PATH_FILES"]
+	date_ymd = datetime.today().strftime('%Y-%m-%d')
+	path = os.path.join(PATH_FILES,'salidas', user_id + '_' + date_ymd)
+	validate_and_create_dir (path)
+	path_out_in = os.path.join(path,'in')
+	validate_and_create_dir (path_out_in)	
+	path_in_dissagregation = os.path.join(path_out_in, DISAGGREGATION)
+	validate_and_create_dir (path_in_dissagregation)
+
+	path_out_out = os.path.join(path,'out')
+	validate_and_create_dir (path_out_out)
+	path_out_dissagregation = os.path.join(path_out_out, DISAGGREGATION)
+	validate_and_create_dir (path_out_dissagregation)
+
+
+	shutil.copyfile(os.path.join(path_data,in_invest), os.path.join(path_in_dissagregation,in_invest))
+	shutil.copyfile(os.path.join(path_data,in_nbs), os.path.join(path_in_dissagregation,in_nbs))
+	shutil.copyfile(os.path.join(path_data,in_time), os.path.join(path_in_dissagregation,in_time))
+
+	shutil.copyfile(os.path.join(path_data,out_bau), os.path.join(path_out_dissagregation,out_bau))
+	shutil.copyfile(os.path.join(path_data,out_nbs), os.path.join(path_out_dissagregation,out_nbs))
 	return dict_result
+
+def validate_and_create_dir(dir_to_validate):
+
+	if(not os.path.isdir(dir_to_validate)):
+		os.mkdir(dir_to_validate)
