@@ -284,11 +284,12 @@ async def disaggregation(user_id):
 	path_out_dissagregation = os.path.join(path_out_out, DISAGGREGATION)
 	validate_and_create_dir (path_out_dissagregation)
 
-
+	print ("export inputs to: " + path_in_dissagregation)
 	shutil.copyfile(os.path.join(path_data,in_invest), os.path.join(path_in_dissagregation,in_invest))
 	shutil.copyfile(os.path.join(path_data,in_nbs), os.path.join(path_in_dissagregation,in_nbs))
 	shutil.copyfile(os.path.join(path_data,in_time), os.path.join(path_in_dissagregation,in_time))
 
+	print ("export outputs to: " + path_out_dissagregation)
 	shutil.copyfile(os.path.join(path_data,out_bau), os.path.join(path_out_dissagregation,out_bau))
 	shutil.copyfile(os.path.join(path_data,out_nbs), os.path.join(path_out_dissagregation,out_nbs))
 	return dict_result
