@@ -11,7 +11,7 @@ from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,Inser
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
 from getDataWB import generateAllData as InWB
-from getDataWB import generateAllDataDisaggBau as InWBDisagg
+from getDataWBDisaggregation import generateAllDataDisaggBau as InWBDisagg
 from getDataWBPTAP import generateAllData as InWBPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP

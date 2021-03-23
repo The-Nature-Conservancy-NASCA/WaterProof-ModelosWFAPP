@@ -1,4 +1,5 @@
 import sys, csv
+import numpy as np
 from os import environ,path
 sys.path.append('config')
 from config import config
@@ -189,39 +190,6 @@ def generateCsvQ(catchment_id):
         listData.append([r[1],r[2]])
         element = r[0]
     generateCsv(["0",element],listData, pathF)
-
-# Genera los csv para la primera ejecucion desde DissagBAU
-
-def getAWYDataBau():
-
-    with open(os.path.join(ruta,"salidas","disaggregetion",'02_OUTPUTS_BaU.csv')) as File:
-        reader = csv.reader(File, delimiter=',', quoting=csv.QUOTE_MINIMAL)
-    for row in reader:
-        print(row[1])
-    return listResult
-
-def generateCsvAWYBau(catchment_id):
-    results = getAWYDataBau()
-    listElements = []
-    listData = []
-    element = None
-    pathF = path.join(ruta,"salidas","wb_test","INPUTS","3_Water_Extraction.csv")
-    for r in results:
-        listData.append([r[1],r[2]])
-        element = r[0]
-    generateCsv(["0",element],listData, pathF)
-
-# Genera los csv para la primera ejecucion desde DissagNBS
-
-
-def generateAllDataDisaggBau(catchment_id):
-    # generateCsvTopology(catchment_id)
-    # generateCsvPerc(catchment_id)
-    generateCsvAWYBau(catchment_id)
-    # generateCsvSedBau(catchment_id)
-    # generateCsvNBau(catchment_id)
-    # generateCsvPBAu(catchment_id)
-    # generateCsvQ(catchment_id)
 
 # Genera los csv para la segunda ejecucion desde DB
 def generateAllData(catchment_id):
