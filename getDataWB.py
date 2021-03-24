@@ -1,4 +1,5 @@
 import sys, csv
+import numpy as np
 from os import environ,path
 sys.path.append('config')
 from config import config
@@ -17,6 +18,9 @@ def getTopologyData(catchment_id):
         listResult.append(row)
     cursor.close()
     conn.close()
+    if (listResult ==[]):
+        raise Exception(f'Sin datos para el id: {catchment_id}')
+
     return listResult
 
 def getPercData(catchment_id):
@@ -30,6 +34,9 @@ def getPercData(catchment_id):
         listResult.append(row)
     cursor.close()
     conn.close()
+    if (listResult ==[]):
+        raise Exception(f'Sin datos para el id: {catchment_id}')
+
     return listResult
 
 def getAWYData(catchment_id):
@@ -43,6 +50,9 @@ def getAWYData(catchment_id):
         listResult.append(row)
     cursor.close()
     conn.close()
+    if (listResult ==[]):
+        raise Exception(f'Sin datos para el id: {catchment_id}')
+
     return listResult
 
 def getSedData(catchment_id):
@@ -56,6 +66,9 @@ def getSedData(catchment_id):
         listResult.append(row)
     cursor.close()
     conn.close()
+    if (listResult ==[]):
+        raise Exception(f'Sin datos para el id: {catchment_id}')
+
     return listResult
 
 def getNData(catchment_id):
@@ -69,6 +82,9 @@ def getNData(catchment_id):
         listResult.append(row)
     cursor.close()
     conn.close()
+    if (listResult ==[]):
+        raise Exception(f'Sin datos para el id: {catchment_id}')
+
     return listResult
 
 def getPData(catchment_id):
@@ -82,6 +98,9 @@ def getPData(catchment_id):
         listResult.append(row)
     cursor.close()
     conn.close()
+    if (listResult ==[]):
+        raise Exception(f'Sin datos para el id: {catchment_id}')
+
     return listResult
 
 def getQData(catchment_id):
@@ -95,7 +114,29 @@ def getQData(catchment_id):
         listResult.append(row)
     cursor.close()
     conn.close()
+    if (listResult ==[]):
+        raise Exception(f'Sin datos para el id: {catchment_id}')
+        
     return listResult
+
+def getQDataDis(catchment_id):
+    result = ''
+    listResult = []
+    conn = connect('postgresql_alfa')
+    cursor = conn.cursor()
+    cursor.callproc('__wpgetqbycatchmentDis',[catchment_id])
+    result = cursor.fetchall()
+    for row in result:
+        listResult.append(row)
+    cursor.close()
+    conn.close()
+    if (listResult ==[]):
+        raise Exception(f'Sin datos para el id: {catchment_id}')
+        
+    return listResult
+
+
+
 
 def generateCsv(header,values, file):
     row_list = []
@@ -187,6 +228,18 @@ def generateCsvQ(catchment_id):
         element = r[0]
     generateCsv(["0",element],listData, pathF)
 
+def generateCsvQDis(catchment_id):
+    results = getQDataDis(catchment_id)
+    listElements = []
+    listData = []
+    element = None
+    pathF = path.join(ruta,"salidas","wb_test","INPUTS","3_Water_Extraction.csv")
+    for r in results:
+        listData.append([r[1],r[2]])
+        element = r[0]
+    generateCsv(["0",element],listData, pathF)
+
+# Genera los csv para la segunda ejecucion desde DB
 def generateAllData(catchment_id):
     generateCsvTopology(catchment_id)
     generateCsvPerc(catchment_id)

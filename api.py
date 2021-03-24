@@ -13,6 +13,7 @@ from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,Inser
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
 from getDataWB import generateAllData as InWB
+from getDataWBDisaggregation import generateAllDataDisaggBau as InWBDisagg
 from getDataWBPTAP import generateAllData as InWBPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP
@@ -40,7 +41,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 @app.get("/")
 async def root():
@@ -202,21 +202,41 @@ async def ptapSelect(listcs:ListCS):
 		
 	return dictResult
 
+# WB intake primera ejecucion tomando los valores de disaggregation
+@app.get("/wbdisaggregation")
+async def calculateWBDisaggregation(id_intake):
+	dictResult = dict()
+	dictResult['estado'] = False
+	try:
+		InWBDisagg(id_intake)
+		execWB()
+		# Todo bonito hasta aqui
+		outFile = mergeData()
+		readSum(outFile)
+		dictResult = dict()
+		dictResult['estado'] = True
+		dictResult['resultado'] = {"result":'Transacción exitosa'}
+	except Exception as e:
+		dictResult['estado'] = False
+		dictResult['error'] = e.args
+	return dictResult
+
+#water balance segunda ejecucion
 @app.get("/wb")
 async def calculateWB(id_intake):
 	dictResult = dict()
 	dictResult['estado'] = False
-	# try:
-	InWB(id_intake)
-	execWB()
-	outFile = mergeData()
-	readSum(outFile)
-	dictResult = dict()
-	dictResult['estado'] = True
-	dictResult['resultado'] = {"result":'Transacción exitosa'}
-	# except Exception as e:
-	# 	dictResult['estado'] = False
-	# 	dictResult['error'] = e.args
+	try:
+		InWB(id_intake)
+		execWB()
+		outFile = mergeData()
+		readSum(outFile)
+		dictResult = dict()
+		dictResult['estado'] = True
+		dictResult['resultado'] = {"result":'Transacción exitosa'}
+	except Exception as e:
+		dictResult['estado'] = False
+		dictResult['error'] = e.args
 	return dictResult
 
 @app.get("/wbPTAP")
