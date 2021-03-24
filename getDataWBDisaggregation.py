@@ -4,112 +4,195 @@ from os import environ,path
 sys.path.append('config')
 from config import config
 from connect import connect
-from getDataWB import generateCsv, getTopologyData, getPercData, getQData
+from getDataWB import generateCsv, generateCsvTopology, generateCsvPerc, generateCsvQ,getAWYData, getSedData,getNData,getPData
 
-# Genera los csv para la primera ejecucion desde DissagBAU
-
+ruta = environ["PATH_FILES"]
+# Genera los csv para la primera ejecucion desde Disaggregation BAU
 def generateCsvAWYBau(catchment_id):
-    result = ''
     listHeader = []
-    listResult = []
-    listResultexamples = []
-    # conexion a la base de datos para llamar la funcion
-    conn = connect('postgresql_alfa')
-    cursor = conn.cursor()
-    cursor.callproc('__wpgetawybycatchmentdis',[catchment_id])
-    result = cursor.fetchall()
-    cursor.close()
-    conn.close()
+    listResults = []
+    listResultsDB = []
+    result = getAWYData(catchment_id)
+    result.sort()
+    idriver = result.pop(0)
     # se adiciona el elemento 0 al inicio
     listHeader.append(0)
+    listHeader.append(idriver[0])
     # Se crea un arreglo con el valor del rio
     for row in result:
-        listHeader.append(row[0]-1)
-    # se crea el arreglo con el valor del resto de los elementos
-    for row in result:
         listHeader.append(row[0])
-        listResultexamples.append(row[1])
-    # se eliminan los elementos duplicados para la uniformidad de los datos
-    listHeaderFin = list(set(listHeader))
+        listResultsDB.append(row[1])
     # se crea la ruta del archivo a generar
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_AWYInputs.csv")
     # se lee el archivo generado por el modelo de disaggregation
     reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_BaU.csv')), delimiter=",", skiprows=1)
     for r in reader:
-        app = [r[0]] + [r[1]] + listResultexamples
-        listResult.append(app)
-    generateCsv(listHeaderFin,listResult, pathF)
-    
-    #WSed
+        app = [r[0]] + [r[1]] + listResultsDB
+        listResults.append(app)
+    generateCsv(listHeader,listResults, pathF)
 
-    def generateCsvWSedBau(catchment_id):
-    result = ''
+def generateCsvWSedBau(catchment_id):
     listHeader = []
-    listResult = []
-    listResultexamples = []
-    # conexion a la base de datos para llamar la funcion
-    conn = connect('postgresql_alfa')
-    cursor = conn.cursor()
-    cursor.callproc('__wp_catchment_disaggregation_awy',[catchment_id])
-    result = cursor.fetchall()
-    cursor.close()
-    conn.close()
+    listResults = []
+    listResultsDB = []
+    result = getSedData(catchment_id)
+    result.sort()
+    idriver = result.pop(0)
     # se adiciona el elemento 0 al inicio
     listHeader.append(0)
+    listHeader.append(idriver[0])
     # Se crea un arreglo con el valor del rio
     for row in result:
-        listHeader.append(row[0]-1)
-    # se crea el arreglo con el valor del resto de los elementos
-    for row in result:
         listHeader.append(row[0])
-        listResultexamples.append(row[1])
-    # se eliminan los elementos duplicados para la uniformidad de los datos
-    listHeaderFin = list(set(listHeader))
+        listResultsDB.append(row[1])
     # se crea la ruta del archivo a generar
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WSedInputs.csv")
     # se lee el archivo generado por el modelo de disaggregation
     reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_BaU.csv')), delimiter=",", skiprows=1)
     for r in reader:
-        app = [r[0]] + [r[2]] + listResultexamples
-        listResult.append(app)
-    generateCsv(listHeaderFin,listResult, pathF)
+        app = [r[0]] + [r[2]] + listResultsDB
+        listResults.append(app)
+    generateCsv(listHeader,listResults, pathF)
 
-    #WN
-    #WP
-
-
-# Genera los csv para la primera ejecucion desde DissagNBS
-def generateCsvAWYNBS(catchment_id):
-    result = ''
+def generateCsvNBau(catchment_id):
     listHeader = []
-    listResultFin = []
-    listResultexamples = []
-    # conexion a la base de datos para llamar la funcion
-    conn = connect('postgresql_alfa')
-    cursor = conn.cursor()
-    cursor.callproc('__wpgetawybycatchmentdis',[catchment_id])
-    result = cursor.fetchall()
-    cursor.close()
-    conn.close()
+    listResults = []
+    listResultsDB = []
+    result = getNData(catchment_id)
+    result.sort()
+    idriver = result.pop(0)
     # se adiciona el elemento 0 al inicio
     listHeader.append(0)
+    listHeader.append(idriver[0])
     # Se crea un arreglo con el valor del rio
     for row in result:
-        listHeader.append(row[0]-1)
-    # se crea el arreglo con el valor del resto de los elementos
+        listHeader.append(row[0])
+        listResultsDB.append(row[1])
+    # se crea la ruta del archivo a generar
+    pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WNInputs.csv")
+    # se lee el archivo generado por el modelo de disaggregation
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_BaU.csv')), delimiter=",", skiprows=1)
+    for r in reader:
+        app = [r[0]] + [r[3]] + listResultsDB
+        listResults.append(app)
+    generateCsv(listHeader,listResults, pathF)
+
+def generateCsvPBau(catchment_id):
+    listHeader = []
+    listResults = []
+    listResultsDB = []
+    result = getPData(catchment_id)
+    result.sort()
+    idriver = result.pop(0)
+    # se adiciona el elemento 0 al inicio
+    listHeader.append(0)
+    listHeader.append(idriver[0])
+    # Se crea un arreglo con el valor del rio
     for row in result:
         listHeader.append(row[0])
-        listResultexamples.append(row[1])
-    # se eliminan los elementos duplicados para la uniformidad
-    listHeaderFin = list(set(listHeader))
+        listResultsDB.append(row[1])
+    # se crea la ruta del archivo a generar
+    pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WPInputs.csv")
+    # se lee el archivo generado por el modelo de disaggregation
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_BaU.csv')), delimiter=",", skiprows=1)
+    for r in reader:
+        app = [r[0]] + [r[4]] + listResultsDB
+        listResults.append(app)
+    generateCsv(listHeader,listResults, pathF)
+
+
+# Genera los csv para la segunda ejecucion desde Disaggregation NBS
+def generateCsvAWYNBS(catchment_id):
+    listHeader = []
+    listResults = []
+    listResultsDB = []
+    result = getAWYData(catchment_id)
+    result.sort()
+    idriver = result.pop(0)
+    # se adiciona el elemento 0 al inicio
+    listHeader.append(0)
+    listHeader.append(idriver[0])
+    # Se crea un arreglo con el valor del rio
+    for row in result:
+        listHeader.append(row[0])
+        listResultsDB.append(row[1])
     # se crea la ruta del archivo a generar
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_AWYInputs.csv")
     # se lee el archivo generado por el modelo de disaggregation
     reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_NBS.csv')), delimiter=",", skiprows=1)
     for r in reader:
-        app = [r[0]] + [r[1]] + listResultexamples
-        listResultFin.append(app)
-    generateCsv(listHeaderFin,listResultFin, pathF)
+        app = [r[0]] + [r[1]] + listResultsDB
+        listResults.append(app)
+    generateCsv(listHeader,listResults, pathF)
+
+def generateCsvSedNBS(catchment_id):
+    listHeader = []
+    listResults = []
+    listResultsDB = []
+    result = getSedData(catchment_id)
+    result.sort()
+    idriver = result.pop(0)
+    # se adiciona el elemento 0 al inicio
+    listHeader.append(0)
+    listHeader.append(idriver[0])
+    # Se crea un arreglo con el valor del rio
+    for row in result:
+        listHeader.append(row[0])
+        listResultsDB.append(row[1])
+    # se crea la ruta del archivo a generar
+    pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WSedInputs.csv")
+    # se lee el archivo generado por el modelo de disaggregation
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_NBS.csv')), delimiter=",", skiprows=1)
+    for r in reader:
+        app = [r[0]] + [r[2]] + listResultsDB
+        listResults.append(app)
+    generateCsv(listHeader,listResults, pathF)
+
+def generateCsvNNBS(catchment_id):
+    listHeader = []
+    listResults = []
+    listResultsDB = []
+    result = getNData(catchment_id)
+    result.sort()
+    idriver = result.pop(0)
+    # se adiciona el elemento 0 al inicio
+    listHeader.append(0)
+    listHeader.append(idriver[0])
+    # Se crea un arreglo con el valor del rio
+    for row in result:
+        listHeader.append(row[0])
+        listResultsDB.append(row[1])
+    # se crea la ruta del archivo a generar
+    pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WNInputs.csv")
+    # se lee el archivo generado por el modelo de disaggregation
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_NBS.csv')), delimiter=",", skiprows=1)
+    for r in reader:
+        app = [r[0]] + [r[3]] + listResultsDB
+        listResults.append(app)
+    generateCsv(listHeader,listResults, pathF)
+
+def generateCsvPNBS(catchment_id):
+    listHeader = []
+    listResults = []
+    listResultsDB = []
+    result = getPData(catchment_id)
+    result.sort()
+    idriver = result.pop(0)
+    # se adiciona el elemento 0 al inicio
+    listHeader.append(0)
+    listHeader.append(idriver[0])
+    # Se crea un arreglo con el valor del rio
+    for row in result:
+        listHeader.append(row[0])
+        listResultsDB.append(row[1])
+    # se crea la ruta del archivo a generar
+    pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WPInputs.csv")
+    # se lee el archivo generado por el modelo de disaggregation
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_NBS.csv')), delimiter=",", skiprows=1)
+    for r in reader:
+        app = [r[0]] + [r[4]] + listResultsDB
+        listResults.append(app)
+    generateCsv(listHeader,listResults, pathF)
 
 
 # Genera los csv para la primera ejecucion desde DissagNBS
@@ -117,9 +200,9 @@ def generateAllDataDisaggBau(catchment_id):
     generateCsvTopology(catchment_id)
     generateCsvPerc(catchment_id)
     generateCsvAWYBau(catchment_id)
-    # generateCsvSedBau(catchment_id)
-    # generateCsvNBau(catchment_id)
-    # generateCsvPBau(catchment_id)
+    generateCsvWSedBau(catchment_id)
+    generateCsvNBau(catchment_id)
+    generateCsvPBau(catchment_id)
     generateCsvQ(catchment_id)
 
 
@@ -128,7 +211,7 @@ def generateAllDataDisaggNBS(catchment_id):
     generateCsvTopology(catchment_id)
     generateCsvPerc(catchment_id)
     generateCsvAWYNBS(catchment_id)
-    # generateCsvSedNBS(catchment_id)
-    # generateCsvNNBS(catchment_id)
-    # generateCsvPNBS(catchment_id)
+    generateCsvSedNBS(catchment_id)
+    generateCsvNNBS(catchment_id)
+    generateCsvPNBS(catchment_id)
     generateCsvQ(catchment_id)

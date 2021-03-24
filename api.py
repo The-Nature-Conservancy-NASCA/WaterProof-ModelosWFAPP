@@ -205,17 +205,17 @@ async def ptapSelect(listcs:ListCS):
 async def calculateWBDisaggregation(id_intake):
 	dictResult = dict()
 	dictResult['estado'] = False
-	# try:
-	InWBDisagg(id_intake)
-	execWB()
-	outFile = mergeData()
-	readSum(outFile)
-	dictResult = dict()
-	dictResult['estado'] = True
-	dictResult['resultado'] = {"result":'Transacción exitosa'}
-	# except Exception as e:
-	# 	dictResult['estado'] = False
-	# 	dictResult['error'] = e.args
+	try:
+		InWBDisagg(id_intake)
+		execWB()
+		outFile = mergeData()
+		readSum(outFile)
+		dictResult = dict()
+		dictResult['estado'] = True
+		dictResult['resultado'] = {"result":'Transacción exitosa'}
+	except Exception as e:
+		dictResult['estado'] = False
+		dictResult['error'] = e.args
 	return dictResult
 
 #water balance segunda ejecucion
@@ -223,17 +223,17 @@ async def calculateWBDisaggregation(id_intake):
 async def calculateWB(id_intake):
 	dictResult = dict()
 	dictResult['estado'] = False
-	# try:
-	InWB(id_intake)
-	execWB()
-	outFile = mergeData()
-	readSum(outFile)
-	dictResult = dict()
-	dictResult['estado'] = True
-	dictResult['resultado'] = {"result":'Transacción exitosa'}
-	# except Exception as e:
-	# 	dictResult['estado'] = False
-	# 	dictResult['error'] = e.args
+	try:
+		InWB(id_intake)
+		execWB()
+		outFile = mergeData()
+		readSum(outFile)
+		dictResult = dict()
+		dictResult['estado'] = True
+		dictResult['resultado'] = {"result":'Transacción exitosa'}
+	except Exception as e:
+		dictResult['estado'] = False
+		dictResult['error'] = e.args
 	return dictResult
 
 @app.get("/wbPTAP")
