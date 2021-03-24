@@ -4,7 +4,7 @@ from os import environ,path
 sys.path.append('config')
 from config import config
 from connect import connect
-from getDataWB import generateCsv, generateCsvTopology, generateCsvPerc, generateCsvQ,getAWYData, getSedData,getNData,getPData
+from getDataWB import generateCsv, generateCsvTopology, generateCsvPerc, generateCsvQ,getAWYData, getSedData,getNData,getPData,generateCsvQDis
 
 ruta = environ["PATH_FILES"]
 # Genera los csv para la primera ejecucion desde Disaggregation BAU
@@ -203,10 +203,10 @@ def generateAllDataDisaggBau(catchment_id):
     generateCsvWSedBau(catchment_id)
     generateCsvNBau(catchment_id)
     generateCsvPBau(catchment_id)
-    generateCsvQ(catchment_id)
+    generateCsvQDis(catchment_id)
 
 
-# Genera los csv para la primera ejecucion desde DissagNBS
+# Genera los csv para la segunda ejecucion desde DissagNBS
 def generateAllDataDisaggNBS(catchment_id):
     generateCsvTopology(catchment_id)
     generateCsvPerc(catchment_id)
@@ -214,4 +214,4 @@ def generateAllDataDisaggNBS(catchment_id):
     generateCsvSedNBS(catchment_id)
     generateCsvNNBS(catchment_id)
     generateCsvPNBS(catchment_id)
-    generateCsvQ(catchment_id)
+    generateCsvQDis(catchment_id)

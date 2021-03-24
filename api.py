@@ -208,6 +208,7 @@ async def calculateWBDisaggregation(id_intake):
 	try:
 		InWBDisagg(id_intake)
 		execWB()
+		# Todo bonito hasta aqui
 		outFile = mergeData()
 		readSum(outFile)
 		dictResult = dict()

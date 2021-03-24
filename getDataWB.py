@@ -119,6 +119,22 @@ def getQData(catchment_id):
         
     return listResult
 
+def getQDataDis(catchment_id):
+    result = ''
+    listResult = []
+    conn = connect('postgresql_alfa')
+    cursor = conn.cursor()
+    cursor.callproc('__wpgetqbycatchmentDis',[catchment_id])
+    result = cursor.fetchall()
+    for row in result:
+        listResult.append(row)
+    cursor.close()
+    conn.close()
+    if (listResult ==[]):
+        raise Exception(f'Sin datos para el id: {catchment_id}')
+        
+    return listResult
+
 
 
 
@@ -203,6 +219,17 @@ def generateCsvP(catchment_id):
 
 def generateCsvQ(catchment_id):
     results = getQData(catchment_id)
+    listElements = []
+    listData = []
+    element = None
+    pathF = path.join(ruta,"salidas","wb_test","INPUTS","3_Water_Extraction.csv")
+    for r in results:
+        listData.append([r[1],r[2]])
+        element = r[0]
+    generateCsv(["0",element],listData, pathF)
+
+def generateCsvQDis(catchment_id):
+    results = getQDataDis(catchment_id)
     listElements = []
     listData = []
     element = None
