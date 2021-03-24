@@ -25,7 +25,7 @@ def generateCsvAWYBau(catchment_id):
     # se crea la ruta del archivo a generar
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_AWYInputs.csv")
     # se lee el archivo generado por el modelo de disaggregation
-    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_BaU.csv')), delimiter=",", skiprows=1)
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation","Out","disaggregation",'02-OUTPUTS_BaU.csv')), delimiter=",", skiprows=1)
     for r in reader:
         app = [r[0]] + [r[1]] + listResultsDB
         listResults.append(app)
@@ -48,7 +48,7 @@ def generateCsvWSedBau(catchment_id):
     # se crea la ruta del archivo a generar
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WSedInputs.csv")
     # se lee el archivo generado por el modelo de disaggregation
-    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_BaU.csv')), delimiter=",", skiprows=1)
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation","Out","disaggregation",'02-OUTPUTS_BaU.csv')), delimiter=",", skiprows=1)
     for r in reader:
         app = [r[0]] + [r[2]] + listResultsDB
         listResults.append(app)
@@ -71,7 +71,7 @@ def generateCsvNBau(catchment_id):
     # se crea la ruta del archivo a generar
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WNInputs.csv")
     # se lee el archivo generado por el modelo de disaggregation
-    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_BaU.csv')), delimiter=",", skiprows=1)
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation","Out","disaggregation",'02-OUTPUTS_BaU.csv')), delimiter=",", skiprows=1)
     for r in reader:
         app = [r[0]] + [r[3]] + listResultsDB
         listResults.append(app)
@@ -94,7 +94,7 @@ def generateCsvPBau(catchment_id):
     # se crea la ruta del archivo a generar
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WPInputs.csv")
     # se lee el archivo generado por el modelo de disaggregation
-    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_BaU.csv')), delimiter=",", skiprows=1)
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation","Out","disaggregation",'02-OUTPUTS_BaU.csv')), delimiter=",", skiprows=1)
     for r in reader:
         app = [r[0]] + [r[4]] + listResultsDB
         listResults.append(app)
@@ -119,7 +119,7 @@ def generateCsvAWYNBS(catchment_id):
     # se crea la ruta del archivo a generar
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_AWYInputs.csv")
     # se lee el archivo generado por el modelo de disaggregation
-    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_NBS.csv')), delimiter=",", skiprows=1)
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation","Out","disaggregation",'02-OUTPUTS_NBS.csv')), delimiter=",", skiprows=1)
     for r in reader:
         app = [r[0]] + [r[1]] + listResultsDB
         listResults.append(app)
@@ -142,7 +142,7 @@ def generateCsvSedNBS(catchment_id):
     # se crea la ruta del archivo a generar
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WSedInputs.csv")
     # se lee el archivo generado por el modelo de disaggregation
-    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_NBS.csv')), delimiter=",", skiprows=1)
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation","Out","disaggregation",'02-OUTPUTS_NBS.csv')), delimiter=",", skiprows=1)
     for r in reader:
         app = [r[0]] + [r[2]] + listResultsDB
         listResults.append(app)
@@ -165,7 +165,7 @@ def generateCsvNNBS(catchment_id):
     # se crea la ruta del archivo a generar
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WNInputs.csv")
     # se lee el archivo generado por el modelo de disaggregation
-    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_NBS.csv')), delimiter=",", skiprows=1)
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation","Out","disaggregation",'02-OUTPUTS_NBS.csv')), delimiter=",", skiprows=1)
     for r in reader:
         app = [r[0]] + [r[3]] + listResultsDB
         listResults.append(app)
@@ -188,7 +188,7 @@ def generateCsvPNBS(catchment_id):
     # se crea la ruta del archivo a generar
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WPInputs.csv")
     # se lee el archivo generado por el modelo de disaggregation
-    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation",'02-OUTPUTS_NBS.csv')), delimiter=",", skiprows=1)
+    reader = np.loadtxt(open(path.join(ruta,"salidas","disaggregation","Out","disaggregation",'02-OUTPUTS_NBS.csv')), delimiter=",", skiprows=1)
     for r in reader:
         app = [r[0]] + [r[4]] + listResultsDB
         listResults.append(app)
