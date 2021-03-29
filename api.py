@@ -180,25 +180,25 @@ async def ptapSelect(listcs:ListCS):
 	dictResult = dict()
 	dictResult['estado'] = False
 	print(listcs.csinfras)
-	try:
-		result = generateAll(listcs.csinfras)
-		print(result)
-		r,awy,cn,cp,cs,wn,wp,ws = Select_PTAP(result)
-		dictResult = dict()
-		dictResult['estado'] = True
-		dictResult['resultado'] = {
-			"ptap_type":r,
-			"awy":awy,
-			"cn": cn,
-			"cp": cp,
-			"cs": cs,
-			"wn": wn,
-			"wp": wp,
-			"ws": ws
-			}
-	except Exception as e:
-		dictResult['estado'] = False
-		dictResult['error'] = e.args
+	# try:
+	result = generateAll(listcs.csinfras)
+	print(result)
+	r,awy,cn,cp,cs,wn,wp,ws = Select_PTAP(result)
+	dictResult = dict()
+	dictResult['estado'] = True
+	dictResult['resultado'] = {
+		"ptap_type":r,
+		"awy":awy,
+		"cn": cn,
+		"cp": cp,
+		"cs": cs,
+		"wn": wn,
+		"wp": wp,
+		"ws": ws
+		}
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
 		
 	return dictResult
 
