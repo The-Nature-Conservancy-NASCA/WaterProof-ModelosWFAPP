@@ -7,10 +7,10 @@ ruta = os.environ["PATH_FILES"]
 
 def Select_PTAP(PathProject_PTAP):
     # Leer Archivos de entrada
-    AWY = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","1_WI_AWY.csv"))
-    N   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","3_WI_WN.csv"))
-    P   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","4_WI_WP.csv"))
-    S   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","2_WI_WSed.csv"))
+    AWY = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","1_WI_AWY.csv"),  index_col=0)
+    N   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","3_WI_WN.csv"),  index_col=0)
+    P   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","4_WI_WP.csv"),  index_col=0)
+    S   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","2_WI_WSed.csv"),  index_col=0)
     NQ  = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS",'7_NormQuality.csv'))
     SelectQuality   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS",'6_Table_Select_Quality.csv'))
     SelectPTAP      = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS",'5_Table_Select_PTAP.csv'))
