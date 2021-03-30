@@ -15,6 +15,7 @@ from getDataWBDisaggregation import generateAllDataDisaggBau as InWBDisagg
 from getDataWBPTAP import generateAllData as InWBPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP
+from outWBDisIntake import mergeDataDis, readSumDis
 from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
@@ -205,18 +206,18 @@ async def ptapSelect(listcs:ListCS):
 async def calculateWBDisaggregation(id_intake):
 	dictResult = dict()
 	dictResult['estado'] = False
-	try:
-		InWBDisagg(id_intake)
-		execWB()
+	# try:
+		# InWBDisagg(id_intake)
+		# execWB()
 		# Todo bonito hasta aqui
-		outFile = mergeData()
-		readSum(outFile)
-		dictResult = dict()
-		dictResult['estado'] = True
-		dictResult['resultado'] = {"result":'Transacción exitosa'}
-	except Exception as e:
-		dictResult['estado'] = False
-		dictResult['error'] = e.args
+	outFile = mergeDataDis()
+	readSumDis(outFile)
+	dictResult = dict()
+	dictResult['estado'] = True
+	dictResult['resultado'] = {"result":'Transacción exitosa'}
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
 	return dictResult
 
 #water balance segunda ejecucion
