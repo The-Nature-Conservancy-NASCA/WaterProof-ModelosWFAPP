@@ -4,148 +4,79 @@ sys.path.append('config')
 from config import config
 from connect import connect
 import pandas as pd
+import numpy as np
+from pandas.core.common import flatten
 
-dirOutputs = {
-    'results': 'Results_Order.csv',
-    'cn': {
-        'file': 'CN_Results.csv',
-        'field': 'cn_mg_l'
-    },
-    'csed': {
-        'file': 'CSed_Results.csv',
-        'field': 'csed_mg_l'
-        },
-    'cp': {
-        'file': 'CP_Results.csv',
-        'field': 'cp_mg_l'
-        },
-    'q' : {
-        'file':'Q_Results.csv',
-        'field': 'q_l_s'
-        },
-    'wn': {
-        'file':'WN_Results.csv',
-        'field': 'wn_kg'
-        },
-    'wn_ret': {
-        'file':'WN_Ret_Results.csv',
-        'field': 'wn_ret_kg'},
-    'wp': {
-        'file':'WP_Results.csv',
-        'field': 'wp_kg'
-        },
-    'wp_ret': {
-        'file':'WP_Ret_Results.csv',
-        'field': 'wp_ret_ton'},
-    'wsed' : {
-        'file':'WSed_Results.csv',
-        'field': 'wsed_ton'},
-    'wsed_ret': {
-        'file':'WSed_Ret_Results.csv',
-        'field': 'wsed_ret_ton'
-        }
-}
+
 
 ruta = os.environ["PATH_FILES"]
-
-def readCsv(csvIn):
-    pathFile = os.path.join(ruta,'salidas','wb_test','OUTPUTS',csvIn)
-    resultList = []
-    with open(pathFile) as csv_file:
-        csv_reader = csv.reader(csv_file, delimiter=',')
-        for row in csv_reader:
-            resultList.append(row)
-
-    return resultList
-
-def generateCsv(header,values, file):
-    row_list = []
-    row_list.append(header)
-
-    for item in values:
-        row_list.append(item)
-
-    with open(file,"w",newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(row_list)
+# ruta = 'D:/Descargas/Trabajo/Workspace/tnc/modelos'
 
 def mergeDataDis():
-    cn = readCsv('CN_Results.csv')
-    csed = readCsv('CSed_Results.csv')
-    cp = readCsv('CP_Results.csv')
-    q = readCsv('Q_Results.csv')
-    wn = readCsv('WN_Results.csv')
-    wn_ret = readCsv('WN_Ret_Results.csv')
-    wp = readCsv('WP_Results.csv')
-    wp_ret = readCsv('WP_Ret_Results.csv')
-    wsed = readCsv('WSed_Results.csv')
-    wsed_ret = readCsv('WSed_Ret_Results.csv')
+    # Ruta de acceso a los archivos
+    anotherroute= os.path.join(ruta,'salidas','wb_test','OUTPUTS')
+    # archivos de salida en csv a Matriz
+    headers = pd.read_csv(anotherroute+'/Results_Order.csv',nrows=0).columns
+    cn = pd.read_csv(anotherroute+'/CN_Results.csv', names=headers)
+    csed = pd.read_csv(anotherroute+'/CSed_Results.csv', names=headers)
+    cp = pd.read_csv(anotherroute+'/CP_Results.csv', names=headers)
+    q = pd.read_csv(anotherroute+'/Q_Results.csv', names=headers)
+    wn = pd.read_csv(anotherroute+'/WN_Results.csv', names=headers)
+    wn_ret = pd.read_csv(anotherroute+'/WN_Ret_Results.csv', names=headers)
+    wp = pd.read_csv(anotherroute+'/WP_Results.csv', names=headers)
+    wp_ret = pd.read_csv(anotherroute+'/WP_Ret_Results.csv', names=headers)
+    wsed = pd.read_csv(anotherroute+'/WSed_Results.csv', names=headers)
+    # wsed_ret = pd.read_csv(anotherroute+'/WSed_Ret_Results.csv', names=headers[0])
 
-    for a in cn,csed,cp,q,wn,wn_ret,wp,wp_ret,wsed,wsed_ret:
-        print(a)
-        for b in a:
-            print(b)
+    # las cabeceras se pasan a tipo Lista para poder unirlas
+    headerList=headers.tolist()
+    headersdat=[]
+    yeardat=[]
+    # print(len(cn))
+    count = 0
+    year=[]
+    for b in range(len(cn)):
+        count+=1
+        year.append(count)
 
+    # se repiten las cabeceras el numero de veces (archivos de salida)
+    for a in range(len(headerList)):
+        yeardat.append(year)
 
+    for a in range(9):
+        headersdat.append(headerList)
 
-    return a
-    
+    # Se aplanan todas las matrices para trabajarlas como arreglos
+    headerdat = np.array(headersdat).flatten()
+    yeardat = np.array(yeardat).flatten()
+    cndat = cn.to_numpy().flatten()
+    cseddat = csed.to_numpy().flatten()
+    cpdat = cp.to_numpy().flatten()
+    qdat = q.to_numpy().flatten()
+    wndat = wn.to_numpy().flatten()
+    wn_retdat = wn_ret.to_numpy().flatten()
+    wpdat = wp.to_numpy().flatten()
+    wp_retdat = wp_ret.to_numpy().flatten()
+    wseddat = wsed.to_numpy().flatten()
+    # wsed_retdat = wsed_ret.to_numpy().flatten()
+    yeardat.sort()
+    # se crea la matriz con todos los arreglos
+    final = pd.DataFrame(data=np.array([headerdat,yeardat,qdat,cndat,cpdat,cseddat,wndat,wpdat,wseddat,wn_retdat,wp_retdat]))
+    # print(final)
 
-    # order = []
-    # orderbyyear = []
-    # for key in dirOutputs:
-    #     if key != 'results':
-    #         csv_result = readCsv(dirOutputs[key]['file'])
-    #         if len(csv_result) > 0:
-    #             row = []
-    #             data = []
-    #             count = 0
-    #             for num in csv_result:
-    #                 for i in num:
-    #                     data.append(i)
-    #                 rowc = [key]+[count]+data
-    #                 order.append(rowc)
-    #                 data = []
-    #                 count += 1
-    #     else:
-    #         csv_result = readCsv(dirOutputs['results'])[0]
-    #         row = []
-    #         row.append('type')
-    #         row.append('year')
-    #         for o in csv_result:
-    #             row.append(o)
+    for label,series in final.items():
+        values = series.values
+        # Por el momento se han agregado ceros en los datos que aun no han sido obtenidos
+        insertParameter(float(values[0]),0,values[1],0,0,values[2],values[3],values[4],values[5],values[6],values[7],values[8],values[9],values[10],0)
 
-    #         order.append(row)
-
-
-    # sumFilePath = os.path.join(ruta,'salidas','wb_test','OUTPUTS','sumWB.csv')
-
-    # generateCsv(order[0],order[1:],sumFilePath)
-
-    # return sumFilePath
-
-def insertParameter(element, parameter, value):
+def insertParameter(element_id,intake_id,year,user_id,awy, q ,cn_mg_l, cp_mg_l, csed_mg_l, wn_kg, wp_kg,wsed_ton, wn_ret_kg, wp_ret_kg, wsed_ret_ton):
 	listResult = []
 	conn = connect('postgresql_alfa')
 	cursor = conn.cursor()
-	cursor.callproc('__wp_intake_insert_report',[element,parameter,value])
+	cursor.callproc('__wp_intake_insert_report',[element_id,intake_id,year,user_id,awy,q,cn_mg_l,cp_mg_l,csed_mg_l,wn_kg,wp_kg,wsed_ton,wn_ret_kg,wp_ret_kg,wsed_ret_ton])
 	conn.commit()
 	cursor.close()
 	conn.close()
-
-def readSumDis(csvIn):
-    data = readCsv(csvIn)
-    line = 0
-    headers = []
-    for row in data:
-        line += + 1
-        if line == 1:
-            headers = row
-        else:
-            typeI = row[0]
-            year = row[1]
-            for i in range (2,len(row)):
-                value = row[i]
-                element = int(float(headers[i]))
-                parameter = dirOutputs[typeI]['field']
-                insertParameter(element,parameter,value)
+    
+# if __name__ == "__main__":
+#     mergeDataDis()
