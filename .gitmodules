@@ -1,3 +1,6 @@
 [submodule "Disaggregation_WaterFunds"]
 	path = Disaggregation_WaterFunds
 	url = https://github.com/The-Nature-Conservancy-NASCA/Disaggregation_WaterFunds
+[submodule "ROI_WaterFunds"]
+	path = ROI_WaterFunds
+	url = https://github.com/The-Nature-Conservancy-NASCA/ROI_WaterFunds.git
