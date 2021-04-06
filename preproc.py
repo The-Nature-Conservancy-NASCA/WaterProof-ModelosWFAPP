@@ -7,6 +7,7 @@
 import sys
 import os.path
 from os import path, environ
+import pathlib
 import fiona
 import rasterio
 from natcap.invest.hydropower import hydropower_water_yield as awy
@@ -26,7 +27,12 @@ import ogr
 import osgeo.osr as osr
 from rasterio.mask import mask
 import geopandas as gpd
-
+import AdvancedHTMLParser
+import requests
+from AdvancedHTMLParser import AdvancedTag
+from connect import connect
+from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
+from ROI_WaterFunds.ROI import ROI_Analisys
 ruta = environ["PATH_FILES"]
 
 
@@ -328,6 +334,30 @@ def executeFunction(basin,model,type,id_catchment,id_usuario):
 
 	return catchment,path,label
 
+
+""" Function to get the areas from IPO (Invest Portfolio)"""
+""" using AdvancedHTMLParser return all the elements with className = budget_totals """
+""" then return an array of all areas except the sum of all areas (All Years).  """
+""" This area is the first element """
+def parse_html_to_get_areas(path_file):
+    #path_file = 'C:/tmp/TNC/ipa_report_Dummy.html' 
+    class_name = "budget_totals"
+    f = open(path_file, 'r')
+    html = f.read()
+    parser = AdvancedHTMLParser.AdvancedHTMLParser()
+    parser.parseStr(html)
+    budget_totals = parser.getElementsByClassName(class_name)
+    areas = {}
+    i = 0
+    for t in budget_totals:
+        if (i > 0):
+            areas['area_' + str(i)] = float(t.getChildren()[3].innerText)
+        i = i + 1
+        #areas.append(float(t.getChildren()[3].innerText))
+    #areas.pop(0)
+    return areas
+
+
 #date = datetime.date.today()
 #path = createFolder(1,date)
 #catchment = exportToShp(2, path)
@@ -339,3 +369,55 @@ def executeFunction(basin,model,type,id_catchment,id_usuario):
 #print(s,n,p)
 #calculateCarbonSum(catchment,path,label)
 #cutRaster('aaaaa',dict)
+
+def processDissagregation(user_id, study_cases_id):
+	
+	print ("processDissagregation")
+	dict_result = {}
+
+	query = {'type':'quality', 'id_usuario':'1', 'basin' : '44', 'models' : 'sdr', 'catchment' : '1', 'models' : 'amy', 'models' : 'ndr'}
+	print (query)
+	
+	api_url = "http://dev.skaphe.com:8000/execInvest"
+	response = requests.get(api_url, params=query)
+
+	invest_json = response.json()["resultado"]
+	input_invest = []
+	input_invest.append({
+		'scenario' : 'current',
+		'awy' : invest_json[0]['awy'],
+		'wsed':invest_json[0]['w']['sediment'],
+		'wn':invest_json[0]['w']['nitrogen'],
+		'wp':invest_json[0]['w']['phosporus'],
+		'bf':0,
+		'wc':0,
+	})
+
+	conn = connect('postgresql_alfa')
+	cursor = conn.cursor()
+	cursor.callproc('__wpget_nbs_data',[study_cases_id])
+	result = cursor.fetchall()
+
+	path_file = '/usr/local/wfapp_py3/ipa_report_Dummy.html'
+	areas = parse_html_to_get_areas(path_file)
+	input_nbs = []
+	in_time = 0
+	for row in result:
+		r = {'nbs_name': row[0], 'time_max_benefit': row[1], 'benefit_t0': row[2]}
+		d = {**r, **areas}
+		in_time = row[3]
+		input_nbs.append(d)
+
+	dict_result["input_invest"] = input_invest
+	dict_result["input_nbs"] = input_nbs
+	dict_result["time"] = in_time
+	return dict_result
+
+def processRoi(user_id, study_cases_id):
+	print ("processRoi")
+	current_dir = pathlib.Path().absolute()
+	demo_data = "/ROI_WaterFunds/Project"
+	path_data = str(current_dir) + demo_data
+	print ("path_data :: " + path_data)
+	
+	return ROI_Analisys(path_data)
