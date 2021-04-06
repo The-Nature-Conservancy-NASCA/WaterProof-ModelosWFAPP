@@ -14,3 +14,5 @@ gdal==2.4.4
 sympy
 antlr4-python3-runtime
 aiofiles
+requests
+AdvancedHTMLParser

@@ -7,10 +7,10 @@ ruta = os.environ["PATH_FILES"]
 
 def Select_PTAP(PathProject_PTAP):
     # Leer Archivos de entrada
-    AWY = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","1_WI_AWY.csv"))
-    N   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","3_WI_WN.csv"))
-    P   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","4_WI_WP.csv"))
-    S   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","2_WI_WSed.csv"))
+    AWY = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","1_WI_AWY.csv"),  index_col=0)
+    N   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","3_WI_WN.csv"),  index_col=0)
+    P   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","4_WI_WP.csv"),  index_col=0)
+    S   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","2_WI_WSed.csv"),  index_col=0)
     NQ  = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS",'7_NormQuality.csv'))
     SelectQuality   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS",'6_Table_Select_Quality.csv'))
     SelectPTAP      = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS",'5_Table_Select_PTAP.csv'))
@@ -22,40 +22,40 @@ def Select_PTAP(PathProject_PTAP):
     # Integración de calidades
 
     # el -1 se resta con el campo time que proviene del csv (siempre es uno)
-    CN = (N.sum(1)-1)/(AWY.sum(1)-1)*Factor_1
-    CP = (P.sum(1)-1)/(AWY.sum(1)-1)*Factor_1
-    CS = (S.sum(1)-1)/(AWY.sum(1)-1)*Factor_1*1000
+    CN = N.sum(1)/AWY.sum(1)*Factor_1
+    CP = P.sum(1)/AWY.sum(1)*Factor_1
+    CS = S.sum(1)/AWY.sum(1)*Factor_1*1000
 
     # Results = S
 
-    # Select PTAP - Water Quality - SST
-    if (CS[0] >= SelectPTAP['SST'][0]) and (CS[0] < SelectPTAP['SST'][1]):
+     # Select PTAP - Water Quality - SST
+    if (CS[1] >= SelectPTAP['SST'][0]) and (CS[1] < SelectPTAP['SST'][1]):
         Type_SST = 1
-    elif (CS[0] >= SelectPTAP['SST'][1]) and (CS[0] < SelectPTAP['SST'][2]):
+    elif (CS[1] >= SelectPTAP['SST'][1]) and (CS[1] < SelectPTAP['SST'][2]):
         Type_SST = 2
-    elif (CS[0] >= SelectPTAP['SST'][2]) and (CS[0] < SelectPTAP['SST'][3]):
+    elif (CS[1] >= SelectPTAP['SST'][2]) and (CS[1] < SelectPTAP['SST'][3]):
         Type_SST = 3
-    elif (CS[0] >= SelectPTAP['SST'][3]):
+    elif (CS[1] >= SelectPTAP['SST'][3]):
         Type_SST = 4
 
     # Select PTAP - Water Quality - N
-    if (CN[0] >= SelectPTAP['N'][0]) and (CN[0] < SelectPTAP['N'][1]):
+    if (CN[1] >= SelectPTAP['N'][0]) and (CN[1] < SelectPTAP['N'][1]):
         Type_N = 1
-    elif (CN[0] >= SelectPTAP['N'][1]) and (CN[0] < SelectPTAP['N'][2]):
+    elif (CN[1] >= SelectPTAP['N'][1]) and (CN[1] < SelectPTAP['N'][2]):
         Type_N = 2
-    elif (CN[0] >= SelectPTAP['N'][2]) and (CN[0] < SelectPTAP['N'][3]):
+    elif (CN[1] >= SelectPTAP['N'][2]) and (CN[1] < SelectPTAP['N'][3]):
         Type_N = 3
-    elif (CN[0] >= SelectPTAP['N'][3]):
+    elif (CN[1] >= SelectPTAP['N'][3]):
         Type_N = 4
 
     # Select PTAP - Water Quality - P
-    if (CP[0] >= SelectPTAP['P'][0]) and (CP[0] < SelectPTAP['P'][1]):
+    if (CP[1] >= SelectPTAP['P'][0]) and (CP[1] < SelectPTAP['P'][1]):
         Type_P = 1
-    elif (CP[0] >= SelectPTAP['P'][1]) and (CP[0] < SelectPTAP['P'][2]):
+    elif (CP[1] >= SelectPTAP['P'][1]) and (CP[1] < SelectPTAP['P'][2]):
         Type_P = 2
-    elif (CP[0] >= SelectPTAP['P'][2]) and (CP[0] < SelectPTAP['P'][3]):
+    elif (CP[1] >= SelectPTAP['P'][2]) and (CP[1] < SelectPTAP['P'][3]):
         Type_P = 3
-    elif (CP[0] >= SelectPTAP['P'][3]):
+    elif (CP[1] >= SelectPTAP['P'][3]):
         Type_P = 4
 
     # Water Quality
@@ -73,7 +73,7 @@ def Select_PTAP(PathProject_PTAP):
     # Results.to_csv( os.path.join(PathProject_PTAP,'OUTPUTS','1-Type_PTAP.csv'), index=False)
     # Results = 0
 
-    return Results["Type"][0], AWY.sum(1)[0]-1,CN[0],CP[0],CS[0],N.sum(1)[0]-1,P.sum(1)[0]-1,S.sum(1)[0]-1
+    return Results["Type"][0], AWY.sum(1)[1],CN[1],CP[1],CS[1],N.sum(1)[1],P.sum(1)[1],S.sum(1)[1]
 
 # # -----------------------------------------------------------------------------------
 # # Tester

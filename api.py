@@ -9,7 +9,7 @@ import pathlib
 import os
 import shutil
 from datetime import datetime
-from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters
+from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters, parse_html_to_get_areas, processDissagregation, processRoi
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
 from getDataWB import generateAllData as InWB
@@ -23,6 +23,8 @@ from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
 from reclassify import iterateFiles
 import pandas as pd
+import requests
+from connect import connect
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 # from workers import execInv
 
@@ -181,25 +183,25 @@ async def ptapSelect(listcs:ListCS):
 	dictResult = dict()
 	dictResult['estado'] = False
 	print(listcs.csinfras)
-	try:
-		result = generateAll(listcs.csinfras)
-		print(result)
-		r,awy,cn,cp,cs,wn,wp,ws = Select_PTAP(result)
-		dictResult = dict()
-		dictResult['estado'] = True
-		dictResult['resultado'] = {
-			"ptap_type":r,
-			"awy":awy,
-			"cn": cn,
-			"cp": cp,
-			"cs": cs,
-			"wn": wn,
-			"wp": wp,
-			"ws": ws
-			}
-	except Exception as e:
-		dictResult['estado'] = False
-		dictResult['error'] = e.args
+	# try:
+	result = generateAll(listcs.csinfras)
+	print(result)
+	r,awy,cn,cp,cs,wn,wp,ws = Select_PTAP(result)
+	dictResult = dict()
+	dictResult['estado'] = True
+	dictResult['resultado'] = {
+		"ptap_type":r,
+		"awy":awy,
+		"cn": cn,
+		"cp": cp,
+		"cs": cs,
+		"wn": wn,
+		"wp": wp,
+		"ws": ws
+		}
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
 		
 	return dictResult
 
@@ -274,6 +276,14 @@ async def cobTrans(pathCobs,nbs_id,pathLULC):
 @app.get("/disaggregation")
 async def disaggregation(user_id):
 	
+	query = {'type':'quality', 'id_usuario':'1', 'basin' : '44', 'models' : 'sdr', 'catchment' : '1', 'models' : 'amy', 'models' : 'ndr'}
+	print (query)
+	
+	api_url = "http://dev.skaphe.com:8000/execInvest"
+	response = requests.get(api_url, params=query)
+	print(response.json())
+	return response.json()
+	
 	in_invest = '01-INPUTS_InVEST.csv'
 	in_nbs    = '01-INPUTS_NBS.csv'
 	in_time   = '01-INPUTS_Time.csv'
@@ -323,6 +333,16 @@ async def disaggregation(user_id):
 	shutil.copyfile(os.path.join(path_data,out_bau), os.path.join(path_out_dissagregation,out_bau))
 	shutil.copyfile(os.path.join(path_data,out_nbs), os.path.join(path_out_dissagregation,out_nbs))
 	return dict_result
+
+@app.get("/disaggregation2")
+def disaggregation2(user_id, study_cases_id):
+
+	return processDissagregation(user_id, study_cases_id)
+
+@app.get("/roiExecution")
+def roiExecution(user_id, study_cases_id):
+
+	return processRoi(user_id,study_cases_id)
 
 @app.get("/download")
 def download(user_dir, topic , file):
