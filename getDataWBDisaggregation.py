@@ -194,7 +194,6 @@ def generateCsvPNBS(catchment_id):
         listResults.append(app)
     generateCsv(listHeader,listResults, pathF)
 
-
 # Genera los csv para la primera ejecucion desde DissagNBS
 def generateAllDataDisaggBau(catchment_id):
     generateCsvTopology(catchment_id)
@@ -204,7 +203,6 @@ def generateAllDataDisaggBau(catchment_id):
     generateCsvNBau(catchment_id)
     generateCsvPBau(catchment_id)
     generateCsvQDis(catchment_id)
-
 
 # Genera los csv para la segunda ejecucion desde DissagNBS
 def generateAllDataDisaggNBS(catchment_id):

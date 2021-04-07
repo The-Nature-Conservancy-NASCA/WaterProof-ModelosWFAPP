@@ -13,11 +13,12 @@ from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,Inser
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
 from getDataWB import generateAllData as InWB
-from getDataWBDisaggregation import generateAllDataDisaggBau as InWBDisagg
+from getDataWBDisaggregation import generateAllDataDisaggBau as InWBDisaggBAU
+from getDataWBDisaggregation import generateAllDataDisaggNBS as InWBDisaggNBS
 from getDataWBPTAP import generateAllData as InWBPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP
-from outWBDisIntake import mergeDataDis
+from outWBDisIntake import mergeDataDisBAU,mergeDataDisNBS
 from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
@@ -206,15 +207,37 @@ async def ptapSelect(listcs:ListCS):
 	return dictResult
 
 # WB intake primera ejecucion tomando los valores de disaggregation
-@app.get("/wbdisaggregation")
-async def calculateWBDisaggregation(id_intake):
+@app.get("/wbdisaggregationIntake")
+async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
+	dictResult = dict()
+	dictResult['estado'] = False
+	# try:
+	InWBDisaggBAU(id_intake)
+	execWB()
+	mergeDataDisBAU(id_intake,user_id,study_case_id)
+	# Todo bonito hasta aqui
+	InWBDisaggNBS(id_intake)
+	execWB()
+	mergeDataDisNBS(id_intake,user_id,study_case_id)
+	dictResult = dict()
+	dictResult['estado'] = True
+	dictResult['resultado'] = {"result":'Transacción exitosa'}
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
+	return dictResult
+
+# WB PTAP primera ejecucion tomando los valores de disaggregation
+@app.get("/wbdisaggregationPTAP")
+async def calculateWBDisaggregationPTAP(id_intake,user_id,study_case_id):
 	dictResult = dict()
 	dictResult['estado'] = False
 	# try:
 	InWBDisagg(id_intake)
 	execWB()
 	# Todo bonito hasta aqui
-	mergeDataDis()
+	# mergeDataDisPTAPBAU(id_intake,user_id,study_case_id)
+	# mergeDataDisPTAPNBS(id_intake,user_id,study_case_id)
 	dictResult = dict()
 	dictResult['estado'] = True
 	dictResult['resultado'] = {"result":'Transacción exitosa'}
