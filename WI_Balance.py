@@ -540,7 +540,7 @@ def execWB():
     AWY_Results = AWY_Results[1:, 1:]
     CSed_Results = CSed_Results[1:, 1:]
     WSed_Results = WSed_Results[1:, 1:]
-    WSed_Ret_Results = WSed_Results[1:, 1:]
+    WSed_Ret_Results = WSed_Ret_Results[1:, 1:]
     CN_Results = CN_Results[1:, 1:]
     WN_Results = WN_Results[1:, 1:]
     WN_Ret_Results = WN_Ret_Results[1:, 1:]
