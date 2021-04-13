@@ -15,8 +15,7 @@ from ptapSelection import getRandomLetter as grl
 from getDataInWB import DataInWB, DataInWBPTAP, DataInBAU, DataInNBS, DataInBAUPTAP, DataInNBSPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP
-from outWBDisIntake import mergeDataDisBAU,mergeDataDisNBS
-from outWBDisIntake_PTAP import mergeDataDis_PTAP
+from outWBDisIntake import SaveInDB
 from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
@@ -207,15 +206,16 @@ async def ptapSelect(listcs:ListCS):
 # WB intake primera ejecucion tomando los valores de disaggregation
 @app.get("/wbdisaggregationIntake")
 async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
+	function_db = '__wp_intake_insert_report'
 	dictResult = dict()
 	dictResult['estado'] = False
 	# try:
 	DataInBAU(id_intake)
 	execWB()
-	mergeDataDisBAU(id_intake,user_id,study_case_id)
+	SaveInDB( function_db, id_intake, user_id, study_case_id, 'BAU' )
 	DataInNBS(id_intake)
 	execWB()
-	mergeDataDisNBS(id_intake,user_id,study_case_id)
+	SaveInDB( function_db, id_intake, user_id, study_case_id, 'NBS' )
 	dictResult = dict()
 	dictResult['estado'] = True
 	dictResult['resultado'] = {"result":'Transacción exitosa'}
@@ -227,16 +227,16 @@ async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 # WB PTAP primera ejecucion tomando los valores de disaggregation
 @app.get("/wbdisaggregationPTAP")
 async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
+	function_bd = '__wp_ptap_insert_report'
 	dictResult = dict()
 	dictResult['estado'] = False
 	# try:
 	DataInBAUPTAP(ptap_id)
 	execWB()
-	mergeDataDis_PTAP(ptap_id,user_id,study_case_id,'BAU')
-	# Todo bonito hasta aqui
+	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'BAU' )
 	DataInNBSPTAP(ptap_id)
 	execWB()
-	mergeDataDis_PTAP(ptap_id,user_id,study_case_id,'NBS')
+	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS' )
 	dictResult = dict()
 	dictResult['estado'] = True
 	dictResult['resultado'] = {"result":'Transacción exitosa'}
