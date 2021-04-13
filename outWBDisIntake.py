@@ -1,4 +1,3 @@
-
 import csv,os,sys
 sys.path.append('config')
 from config import config
@@ -6,8 +5,6 @@ from connect import connect
 import pandas as pd
 import numpy as np
 from pandas.core.common import flatten
-
-
 
 ruta = os.environ["PATH_FILES"]
 # ruta = 'D:/Descargas/Trabajo/Workspace/tnc/modelos'
@@ -26,7 +23,7 @@ def mergeDataDisBAU(intake_id,user_id,study_case_id):
     wp = pd.read_csv(anotherroute+'/WP_Results.csv', names=headers)
     wp_ret = pd.read_csv(anotherroute+'/WP_Ret_Results.csv', names=headers)
     wsed = pd.read_csv(anotherroute+'/WSed_Results.csv', names=headers)
-    # wsed_ret = pd.read_csv(anotherroute+'/WSed_Ret_Results.csv', names=headers)
+    wsed_ret = pd.read_csv(anotherroute+'/WSed_Ret_Results.csv', names=headers)
 
     # las cabeceras se pasan a tipo Lista para poder unirlas
     headerList=headers.tolist()
@@ -58,16 +55,16 @@ def mergeDataDisBAU(intake_id,user_id,study_case_id):
     wpdat = wp.to_numpy().flatten()
     wp_retdat = wp_ret.to_numpy().flatten()
     wseddat = wsed.to_numpy().flatten()
-    # wsed_retdat = wsed_ret.to_numpy().flatten()
+    wsed_retdat = wsed_ret.to_numpy().flatten()
     yeardat.sort()
     # se crea la matriz con todos los arreglos
-    final = pd.DataFrame(data=np.array([headerdat,yeardat,qdat,cndat,cpdat,cseddat,wndat,wpdat,wseddat,wn_retdat,wp_retdat]))
+    final = pd.DataFrame(data=np.array([headerdat,yeardat,qdat,cndat,cpdat,cseddat,wndat,wpdat,wseddat,wn_retdat,wp_retdat,wsed_retdat]))
     # print(final)
 
     for label,series in final.items():
         values = series.values
         # Por el momento se han agregado ceros en los datos que aun no han sido obtenidos
-        insertParameter(float(values[0]),intake_id,values[1],user_id,values[2],values[3],values[4],values[5],values[6],values[7],values[8],values[9],values[10],0,study_case_id,"BAU")
+        insertParameter(float(values[0]),intake_id,values[1],user_id,values[2],values[3],values[4],values[5],values[6],values[7],values[8],values[9],values[10],values[11],study_case_id,"BAU")
 
 
 def mergeDataDisNBS(intake_id,user_id,study_case_id):

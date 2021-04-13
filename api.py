@@ -12,13 +12,11 @@ from datetime import datetime
 from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters, parse_html_to_get_areas, processDissagregation, processRoi
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
-from getDataWB import generateAllData as InWB
-from getDataWBDisaggregation import generateAllDataDisaggBau as InWBDisaggBAU
-from getDataWBDisaggregation import generateAllDataDisaggNBS as InWBDisaggNBS
-from getDataWBPTAP import generateAllData as InWBPTAP
+from getDataInWB import DataInWB, DataInWBPTAP, DataInBAU, DataInNBS, DataInBAUPTAP, DataInNBSPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP
 from outWBDisIntake import mergeDataDisBAU,mergeDataDisNBS
+from outWBDisIntake_PTAP import mergeDataDis_PTAP
 from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
@@ -212,11 +210,10 @@ async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 	dictResult = dict()
 	dictResult['estado'] = False
 	# try:
-	InWBDisaggBAU(id_intake)
+	DataInBAU(id_intake)
 	execWB()
 	mergeDataDisBAU(id_intake,user_id,study_case_id)
-	# Todo bonito hasta aqui
-	InWBDisaggNBS(id_intake)
+	DataInNBS(id_intake)
 	execWB()
 	mergeDataDisNBS(id_intake,user_id,study_case_id)
 	dictResult = dict()
@@ -229,15 +226,17 @@ async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 
 # WB PTAP primera ejecucion tomando los valores de disaggregation
 @app.get("/wbdisaggregationPTAP")
-async def calculateWBDisaggregationPTAP(id_intake,user_id,study_case_id):
+async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	dictResult = dict()
 	dictResult['estado'] = False
 	# try:
-	InWBDisagg(id_intake)
+	DataInBAUPTAP(ptap_id)
 	execWB()
+	mergeDataDis_PTAP(ptap_id,user_id,study_case_id,'BAU')
 	# Todo bonito hasta aqui
-	# mergeDataDisPTAPBAU(id_intake,user_id,study_case_id)
-	# mergeDataDisPTAPNBS(id_intake,user_id,study_case_id)
+	DataInNBSPTAP(ptap_id)
+	execWB()
+	mergeDataDis_PTAP(ptap_id,user_id,study_case_id,'NBS')
 	dictResult = dict()
 	dictResult['estado'] = True
 	dictResult['resultado'] = {"result":'Transacción exitosa'}
@@ -252,7 +251,7 @@ async def calculateWB(id_intake):
 	dictResult = dict()
 	dictResult['estado'] = False
 	try:
-		InWB(id_intake)
+		DataInWB(id_intake)
 		execWB()
 		outFile = mergeData()
 		readSum(outFile)
@@ -270,7 +269,7 @@ async def calculateWBPTAP(id_ptap):
 	dictResult['estado'] = False
 	# try:
 	ptap_id = int(id_ptap)
-	InWBPTAP(ptap_id)
+	DataInWBPTAP(ptap_id)
 	execWB()
 	outFile = mergeDataPTAP()
 	readSumPTAP(outFile)
