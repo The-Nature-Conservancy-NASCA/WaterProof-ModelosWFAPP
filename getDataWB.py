@@ -92,10 +92,10 @@ def generateCsvQ( id, funcion_db, csv_in):
     pathF = path.join(ruta,"salidas","wb_test","INPUTS",csv_in)
     for r in results:
 
-        listData.append([0,r[1]])
+        listData.append([r[1]-1,r[2]])
         # Se adiciona el 1 porque la extración de agua
         # se realiza desde el segundo elemento del flujo
-        element = r[0]+1
+        element = r[0]
     generateCsv(["0",element],listData, pathF)
 
 def generateCsvQDisPTAP(csv_in):
