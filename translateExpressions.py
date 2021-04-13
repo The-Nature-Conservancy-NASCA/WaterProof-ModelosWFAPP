@@ -40,6 +40,9 @@ def eval_function(expr):
         'QCSINFRA' : '1000',
         'CsedCsinfraInput' : '1000',
         'CNCsinfrainput' : '1000',
+        'Csed' : '1000',
+        'Q' : '1000',
+        'CN' : '1000',
     }
 
     for r in result:
@@ -73,7 +76,8 @@ pilimoero_latex_expr = r"\left(\left(-4.4\cdot10^{-8}\right)\cdot QCINFRA^3+\lef
 #latex_expr = r"\min \left(\left(0.8515\cdot a\cdot \left(\frac{\left(1\cdot 10^3\right)}{31536}\right)\right),\left(0.0532\cdot b\cdot \left(\frac{\left(1\cdot 10^3\right)}{31536}\right)\right)\right)"
 
 test_exp = r"\left(\left(\left(2.25\cdot 10^{74}\right)\cdot \left(Q_{csin fra^{^3}}\right)-\left(4.44\cdot 10^{^{-6}}\right)\cdot Qc\sin fra^{^2}\right)+\left(41.27\cdot Qc\sin fra\right)+8625\right)\cdot \left(1+\left(0.24\cdot \left(\frac{Csed_{C\sin fraInput^{^{-56}}}^{ }}{56}\right)\right)+\left(0.06\cdot \left(CN_{\frac{C\sin fraInput^{^{-20}}}{20}}\right)\right)\right)"
-exp, result = eval_function(latex_expr)
+bombeo_expr = r"\left(\left(11126.6\cdot Q\right)+30929.7\right)\cdot \left(1+\left(0.24\cdot \left(\frac{Csed-56}{56}\right)\right)+\left(0.06\cdot \left(\frac{CN-20}{20}\right)\right)\right)"
+exp, result = eval_function(bombeo_expr)
 print("result :: ")
 print(exp)
 print(result)

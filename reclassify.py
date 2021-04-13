@@ -49,7 +49,7 @@ def reclassify(listTrans,pathFile,outPath,filename,lulc_path, nbs_id, json):
         # print(x[0])
         # print(x[2])
     # reclassification
-    for j in  range(file.RasterXSize):
+    for j in range(file.RasterXSize):
         for i in  range(file.RasterYSize):
             # print(lista[i,j])
             indice = lista[i,j]
@@ -57,9 +57,7 @@ def reclassify(listTrans,pathFile,outPath,filename,lulc_path, nbs_id, json):
             if indice != 255:
                 sbn = json[indice]
                 if not sbn in transformations:
-                    transformations[sbn] = getTranformations(sbn)
-
-                
+                    transformations[sbn] = getTranformations(sbn)              
 
                 for x in transformations[sbn]:
                     # print("Lista "+ str(lista_lulc[i,j]))
@@ -68,8 +66,7 @@ def reclassify(listTrans,pathFile,outPath,filename,lulc_path, nbs_id, json):
                         lista_lulc[i,j] = x[2]
                         break
             
-            print(lista_lulc)
-
+            # (lista_lulc)
                 # if lista_lulc[i,j] == nbs_id:
                 #     # lista[i,j] = x[2]
                 #     lulc_positions.append([i,j])
@@ -88,6 +85,7 @@ def reclassify(listTrans,pathFile,outPath,filename,lulc_path, nbs_id, json):
     file2.SetProjection(proj)
     file2.SetGeoTransform(georef)
     file2.FlushCache()
+    return pathTranslated
 
 def iterateFiles(path,nbs_id,lulc_path):
     listTransformations = getTranformations(nbs_id)
@@ -97,10 +95,13 @@ def iterateFiles(path,nbs_id,lulc_path):
     if not os.path.isdir(pathOut):
         os.mkdir(pathOut)
 
+    paths = []
     for filename in os.listdir(path):
         if filename.endswith(".tif"):
-            reclassify(listTransformations,os.path.join(path,filename),pathOut,filename,lulc_path,nbs_id,json)
+            path_file = reclassify(listTransformations,os.path.join(path,filename),pathOut,filename,lulc_path,nbs_id,json)
+            paths.append(path_file)
 
+    return paths
 
 # readJsonActivities('/home/skaphe/Documentos/tnc/modelos/salidas/9_2020_10_24/out/04-RIOS/1_investment_portfolio_adviser_workspace/activity_portfolios/continuous_activity_portfolios')
 # iterateFiles('/home/skaphe/Documentos/tnc/modelos/salidas/9_2020_10_24/out/04-RIOS/1_investment_portfolio_adviser_workspace/activity_portfolios/continuous_activity_portfolios',5,'/home/skaphe/Documentos/tnc/modelos/salidas/9_2020_10_24/in/04-RIOS/LULC_SA_1.tif')
