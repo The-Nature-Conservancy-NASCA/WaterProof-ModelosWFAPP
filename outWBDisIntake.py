@@ -40,7 +40,7 @@ def SaveInDB( function_db, ptap_id, user_id, study_case_id, scenario ):
         yeardat.append(year)
 
     # se repiten las cabeceras el numero de veces (archivos de salida)
-    for a in range(10):
+    for a in range(len(cn)):
         headersdat.append(headerList)
 
     # Se aplanan todas las matrices para trabajarlas como arreglos
@@ -58,9 +58,7 @@ def SaveInDB( function_db, ptap_id, user_id, study_case_id, scenario ):
     wsed_retdat = wsed_ret.to_numpy().flatten()
     yeardat.sort()
     # se crea la matriz con todos los arreglos
-    final = pd.DataFrame(data=np.array([headerdat, yeardat, qdat, cndat, cpdat, cseddat, wndat, wpdat, wseddat, wn_retdat, wp_retdat, wsed_retdat]))
-    # print(final)
-    print(final)
+    final = pd.DataFrame(data=np.array([headerdat,yeardat,qdat,cndat,cpdat,cseddat,wndat,wpdat,wseddat,wn_retdat,wp_retdat,wsed_retdat]))
     for label,series in final.items():
         val = series.values
         # Por el momento se han agregado ceros en los datos que aun no han sido obtenidos

@@ -37,13 +37,11 @@ def generateCsv( header, values, file ):
 
 def generateCsvTopology( id, function_db, csv_in ):
     results = getDataDB(id,function_db)
-    print(results)
     pathF = path.join(ruta,"salidas","wb_test","INPUTS","0_WI_Topology.csv")
     generateCsv(["From_Element","To_Element"],results, pathF)
 
 def generateCsvPerc( id, function_db, csv_in ):
     results = getDataDB( id, function_db )
-    # print(results)
     pathF = path.join(ruta,"salidas","wb_test","INPUTS",csv_in)
     generateCsv(["From_Element","PWater","RetSed","RetN","RetP"],results, pathF)
 
