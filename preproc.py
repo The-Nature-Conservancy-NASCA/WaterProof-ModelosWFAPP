@@ -33,8 +33,13 @@ from AdvancedHTMLParser import AdvancedTag
 from connect import connect
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 from ROI_WaterFunds.ROI import ROI_Analisys
-ruta = environ["PATH_FILES"]
+import logging
+import json
 
+logger = logging.getLogger(__name__) # grabs underlying WSGI logger
+logger.setLevel(logging.INFO)
+
+ruta = environ["PATH_FILES"]
 
 # Exportar cuenca delimitada a shp
 def exportToShp(catchment, path):
@@ -241,14 +246,15 @@ def calculateCarbonSum(catchment,path,label):
 	return statCalc
  
 # Procesar parametros
-def processParameters(parametersList, basin, catchment,pathF,type,model,user):
+def processParameters(parametersList, basin, catchment, pathF, type, model, user, year):
 	dictParameters = dict()
 	out_path = ""
 	in_path = ""
 	out_folder = parametersList[0][9]
 	out_folder_quality = parametersList[0][10]
-	print(out_folder)
-	print(out_folder_quality)
+	print("processParameters :: outFolder :: {%s}" % {out_folder})
+	print("processParameters :: out_folder_quality :: {%s}" % {out_folder_quality})
+	
 	if(type == "quality" or type == "currentCarbon"):
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder_quality)
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder_quality)
@@ -265,9 +271,15 @@ def processParameters(parametersList, basin, catchment,pathF,type,model,user):
 	if(not isdir):
 		os.mkdir(in_path)
 
+	default_year = "YEAR_0"
+	year_dir = "/YEAR_{}/".format(year)
+	
 	for parameter in parametersList:
 		name = parameter[0]
 		value = parameter[1]
+		if default_year in value:
+			value = value.replace(default_year, year_dir)
+
 		if(value == 'False'):
 			value = False
 		elif(value == 'True'):
@@ -312,14 +324,16 @@ def processParameters(parametersList, basin, catchment,pathF,type,model,user):
 		dictParameters[name] = value
 	return dictParameters,out_path,label
 
-def executeFunction(basin,model,type,id_catchment,id_usuario):
+def executeFunction(basin,model,type,id_catchment,id_usuario, year):
+	logger.info("execFunction :: start")
+	print(":: execFunction :: start")
 	date = datetime.date.today()
 	path = createFolder(id_usuario,date)
 
 	list = getParameters(basin,model)	
 	catchment = exportToShp(id_catchment, path)
-	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario)
-	print(parameters)
+	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year)
+	print(json.dumps(parameters, indent=2))
 
 	if(model == 'awy'):
 		awy.execute(parameters)
@@ -398,7 +412,7 @@ def processDissagregation(user_id, study_cases_id):
 	cursor.callproc('__wpget_nbs_data',[study_cases_id])
 	result = cursor.fetchall()
 
-	path_file = '/usr/local/wfapp_py3/ipa_report_Dummy.html'
+	path_file = '/app/ipa_report_Dummy.html'
 	areas = parse_html_to_get_areas(path_file)
 	input_nbs = []
 	in_time = 0
