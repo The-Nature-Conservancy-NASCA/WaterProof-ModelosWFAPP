@@ -17,8 +17,8 @@ def reprojectMassive(inputFolder, outFolder, outSrs):
             srcPath = os.path.join(inputFolder,filename)
             reprojectRaster(srcPath, outPath, outSrs)
             # resamplingRaster(templatePath,srcPath,outPath)
-            print(outPath)
-            print(srcPath)
+            # print(outPath)
+            # print(srcPath)
 
 def reprojectMassiveDirectories(inputFolder, outFolder, outSrs):
     listOfFile = os.listdir(inputFolder)
