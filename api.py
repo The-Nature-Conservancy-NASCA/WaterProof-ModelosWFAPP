@@ -206,16 +206,16 @@ async def ptapSelect(listcs:ListCS):
 # WB intake primera ejecucion tomando los valores de disaggregation
 @app.get("/wbdisaggregationIntake")
 async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
-	function_db = '__wp_intake_insert_report'
+	function_db = "__wp_intake_insert_report"
 	dictResult = dict()
 	dictResult['estado'] = False
 	# try:
 	DataInBAU(id_intake)
 	execWB()
-	SaveInDB( function_db, id_intake, user_id, study_case_id, 'BAU' )
+	SaveInDB( function_db, id_intake, user_id, study_case_id, "BAU" )
 	DataInNBS(id_intake)
 	execWB()
-	SaveInDB( function_db, id_intake, user_id, study_case_id, 'NBS' )
+	SaveInDB( function_db, id_intake, user_id, study_case_id, "NBS" )
 	dictResult = dict()
 	dictResult['estado'] = True
 	dictResult['resultado'] = {"result":'Transacción exitosa'}
