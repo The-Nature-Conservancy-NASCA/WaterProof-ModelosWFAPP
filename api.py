@@ -25,6 +25,17 @@ import pandas as pd
 import requests
 from connect import connect
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
+import logging
+import ptvsd
+
+logger = logging.getLogger(__name__) # grabs underlying WSGI logger
+logger.setLevel(logging.INFO)
+
+# Only attach the debugger when we're the Django that deals with requests
+# if os.environ.get('RUN_MAIN') or os.environ.get('WERKZEUG_RUN_MAIN'):
+ptvsd.enable_attach(address=('0.0.0.0', 3000), redirect_output=True)
+
+
 # from workers import execInv
 
 class ListCS(BaseModel):
@@ -46,7 +57,7 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-	return {"message":"Hello World"}
+	return {"message":"Hello World :: %s" % {__name__}}
  
 @app.get("/snapPoint")
 async def snap(x,y):
@@ -91,15 +102,22 @@ async def delineateCatchment(x,y):
 # 	execInv.delay(type,id_usuario,basin,models,catchment)
 @app.get("/execInvest")
 async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Query(None),catchment:List[int] = Query(None)):
+	logger.info("execInvest start")
 	dictResult = dict()
 	dictResult['estado'] = False
 	catch = sorted(catchment,key=int)
 
+	year = "0"
+	if type == "BaU":
+		year = 10
+	
 	# try:
 	for model in models:
-		catchmentShp,path,label = executeFunction(basin,model,type,catchment,id_usuario)
+		logger.info("executeFunction for model :: %s" % {model})
+		print(":: executeFunction for model :: %s" % {model})
+		catchmentShp,path,label = executeFunction(basin,model,type,catchment,id_usuario, year)
 
-	dictResult['resultado'] = 'Ejecucion exitosa'
+	dictResult['resultado'] = 'successful execution for type :: {}'.format(type)
 
 	if(type == "quality"):
 		execute = verifyExec(path)
@@ -141,7 +159,6 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 			}
 			})
 			cont = cont + 1	
-
 			
 	elif(type == "currentCarbon"):
 		sumCarbon = calculateCarbonSum(catchmentShp,path,label)
@@ -151,7 +168,20 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 		}
 
 	elif type == "current":
-		dictResult['resultado'] = 'Ejecucion exitosa current scenario'
+		# Nothing ToDo, is equal to quality
+		print (type)
+		# dictResult['resultado'] = 'Ejecucion exitosa current scenario'
+
+	# Revisar para solicitar como parámetro el ultimo año
+	# TODO :: Revisar para implementar
+	# elif type == "BaU":  
+	#	dictResult['resultado'] = 'Ejecucion exitosa BaU'
+	
+	# TODO :: Revisar para implementar
+	# Se ejecuta una vez x cada año
+	# capa lulc tomada del resultado del traductor de cobertura	
+	elif type == "NBS":  
+		dictResult['resultado'] = 'Ejecucion exitosa NBS'
 
 
 	dictResult['estado'] = True
@@ -260,15 +290,16 @@ async def calculateWBPTAP(id_ptap):
 
 @app.get("/cobTrans")
 async def cobTrans(pathCobs,nbs_id,pathLULC):
+	print ("cobTrans :: start")
 	dictResult = dict()
-
+	dictResult['estado'] = True
 	try:
-		iterateFiles(pathCobs,5,pathLULC)
-		dictResult['estado'] = True
-		dictResult['resultado'] = {"result":'Transacción exitosa'}
+		paths = iterateFiles(pathCobs,nbs_id,pathLULC)		
+		dictResult['resultado'] = {"result":'successful execution'}
+		dictResult['paths'] = paths
 	except Exception as e:
 		dictResult['estado'] = False
-		dictResult['error'] = "Todo lo que podia fallar falló!!!!"
+		dictResult['error'] = "Everything that could fail, failed!!!"
 
 	return dictResult
 
@@ -294,7 +325,7 @@ async def disaggregation(user_id):
 	current_dir = pathlib.Path().absolute()
 	demo_data = "/Disaggregation_WaterFunds/Project"
 	path_data = str(current_dir) + demo_data
-	Desaggregation_BaU_NBS(path_data)
+	Desaggregation_BaU_NBS(path_data, path_data)
 
 	dict_result = dict()
 	dict_result['status'] = True
