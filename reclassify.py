@@ -66,7 +66,8 @@ def reclassify(listTrans,pathFile,outPath,filename,lulc_path, nbs_id, json):
                         lista_lulc[i,j] = x[2]
                         break
             
-            # (lista_lulc)
+            # print(lista_lulc)
+
                 # if lista_lulc[i,j] == nbs_id:
                 #     # lista[i,j] = x[2]
                 #     lulc_positions.append([i,j])
