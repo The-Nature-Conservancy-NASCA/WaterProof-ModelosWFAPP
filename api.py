@@ -118,7 +118,7 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 
 	dictResult['resultado'] = 'successful execution for type :: {}'.format(type)
 
-	if(type == "quality"):
+	if(type == "quality" or type == "BaU"):
 		execute = verifyExec(path)
 		cont = 0
 		dictResult['resultado'] = []
