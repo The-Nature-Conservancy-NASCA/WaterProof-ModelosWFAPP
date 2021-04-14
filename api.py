@@ -108,7 +108,7 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 
 	year = "0"
 	if type == "BaU":
-		year = 10  # TODO: get the true last year from case study analysis_period_value
+		year = 30  # TODO: get the true last year from case study analysis_period_value
 	
 	# try:
 	for model in models:

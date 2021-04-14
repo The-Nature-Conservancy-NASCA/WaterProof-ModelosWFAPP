@@ -32,9 +32,9 @@ def SaveInDB( function_db, ptap_id, user_id, study_case_id, scenario ):
     # print(len(cn))
     count = 0
     year=[]
-    for b in range(len(cn)):
-        count+=1
+    for b in range(len(cn)):        
         year.append(count)
+        count+=1
 
     for a in range(len(headerList)):
         yeardat.append(year)
