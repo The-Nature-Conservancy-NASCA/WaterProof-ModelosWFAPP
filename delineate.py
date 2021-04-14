@@ -20,10 +20,10 @@ sys.path.append('config')
 from connect import connect
 
 # Argumentos
-parser = argparse.ArgumentParser()
-parser.add_argument("-s","--snap", nargs='*',help="Snap to pour point")
-parser.add_argument("-d","--delineate",nargs='*',help="Delineate catchment")
-args = vars(parser.parse_args())
+# parser = argparse.ArgumentParser()
+# parser.add_argument("-s","--snap", nargs='*',help="Snap to pour point")
+# parser.add_argument("-d","--delineate",nargs='*',help="Delineate catchment")
+# args = vars(parser.parse_args())
 
 # Variables de entorno
 ruta = os.environ["PATH_FILES"]
@@ -137,18 +137,18 @@ def delineateCatchment(path,x,y):
 
       
 # Validacion de parametros
-if (args['snap']):
-	x = float(args['snap'][0])
-	y = float(args['snap'][1])
-	basin = getRegionFromCoord(x,y)
-	path = getPath(basin,2)
-	path = cutRaster(path,x,y,5)
-	[x,y] = snap(path,x,y)
-elif (args['delineate']):
-	x = float(args['delineate'][0])
-	y = float(args['delineate'][1])
-	basin = getRegionFromCoord(x,y)
-	path = getPath(basin,1)
-	delineateCatchment(path,x,y)
+# if (args['snap']):
+# 	x = float(args['snap'][0])
+# 	y = float(args['snap'][1])
+# 	basin = getRegionFromCoord(x,y)
+# 	path = getPath(basin,2)
+# 	path = cutRaster(path,x,y,5)
+# 	[x,y] = snap(path,x,y)
+# elif (args['delineate']):
+# 	x = float(args['delineate'][0])
+# 	y = float(args['delineate'][1])
+# 	basin = getRegionFromCoord(x,y)
+# 	path = getPath(basin,1)
+# 	delineateCatchment(path,x,y)
 
 

@@ -1,5 +1,12 @@
-version: '2'
+version: '3'
 
+# volumes:
+#   outputs:
+#     external: true
+#   inputs:
+#     external: true
+
+    
 services:
   wfapp_py3:
     image: wfapp_py3
@@ -21,6 +28,7 @@ services:
       - E:\Descargas\Trabajo\Workspace\tnc\modelos\salidas:/home/skaphe/Documentos/tnc/modelos/salidas
     ports:
       - 8000:8000
+      - 3000:3000
     networks:
       - shared-models
       
