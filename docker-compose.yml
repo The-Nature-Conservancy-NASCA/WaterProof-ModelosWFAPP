@@ -17,8 +17,8 @@ services:
       - PATH_FILES=/home/skaphe/Documentos/tnc/modelos
       - GDAL_DATA=/usr/share/gdal
     volumes:
-      - /home/skaphe/Documentos/tnc/modelos/entradas:/home/skaphe/Documentos/tnc/modelos/entradas
-      - /home/skaphe/Documentos/tnc/modelos/salidas:/home/skaphe/Documentos/tnc/modelos/salidas
+      - E:\Descargas\Trabajo\Workspace\tnc\modelos\entradas:/home/skaphe/Documentos/tnc/modelos/entradas
+      - E:\Descargas\Trabajo\Workspace\tnc\modelos\salidas:/home/skaphe/Documentos/tnc/modelos/salidas
     ports:
       - 8000:8000
     networks:
