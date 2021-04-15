@@ -12,6 +12,7 @@ from datetime import datetime
 from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters, parse_html_to_get_areas, processDissagregation, processRoi
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
+from getDataWB import getDataDB
 from getDataInWB import DataInWB, DataInWBPTAP, DataInBAU, DataInNBS, DataInBAUPTAP, DataInNBSPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP
@@ -109,9 +110,10 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 	year = "0"
 	if type == "BaU":
 		year = 30  # TODO: get the true last year from case study analysis_period_value
-	
+
 	# try:
 	for model in models:
+		getDataDB( catchment, "__wp_intake_emptycols" )
 		logger.info("executeFunction for model :: %s" % {model})
 		print(":: executeFunction for model :: %s" % {model})
 		catchmentShp,path,label = executeFunction(basin,model,type,catchment,id_usuario, year)
