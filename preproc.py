@@ -333,7 +333,7 @@ def executeFunction(basin,model,type,id_catchment,id_usuario, year):
 	list = getParameters(basin,model)	
 	catchment = exportToShp(id_catchment, path)
 	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year)
-	print(json.dumps(parameters, indent=2))
+	# print(json.dumps(parameters, indent=2))
 
 	if(model == 'awy'):
 		awy.execute(parameters)
@@ -344,7 +344,7 @@ def executeFunction(basin,model,type,id_catchment,id_usuario, year):
 	elif(model == 'ndr'):
 		ndr.execute(parameters)
 	elif(model == 'swy'):
-		swy.execute(parameters)
+		swy.execute(parameters) 
 
 	return catchment,path,label
 
@@ -432,6 +432,6 @@ def processRoi(user_id, study_cases_id):
 	current_dir = pathlib.Path().absolute()
 	demo_data = "/ROI_WaterFunds/Project"
 	path_data = str(current_dir) + demo_data
-	print ("path_data :: " + path_data)
+	print ("processROI :: path_data :: " + path_data)
 	
 	return ROI_Analisys(path_data)
