@@ -15,10 +15,10 @@ services:
     environment:
       - PG_HOST=water-proof.org
       - PG_GEO_DATABASE=geonode_data
-      - PG_GEO_USER=postgres
+      - PG_GEO_USER=geonode
       - PG_GEO_PASSWORD=G30N0D3
       - PG_DATABASE=geonode
-      - PG_USER=postgres
+      - PG_USER=geonode
       - PG_PASSWORD=G30N0D3
       - PG_PORT=5432
       - PATH_FILES=/home/skaphe/Documentos/tnc/modelos
