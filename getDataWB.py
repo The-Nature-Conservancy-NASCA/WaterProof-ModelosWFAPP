@@ -72,7 +72,7 @@ def generateCsvDataDis( ptap_id, function_db,csv_in, pos, csv_dis ):
     # Se crea un arreglo con el valor del rio
     for row in result:
         listHeader.append(row[0])
-        listResultsDB.append(row[1])
+        listResultsDB.append(0)
     # se crea la ruta del archivo a generar
     pathF = path.join(ruta,"salidas","wb_test","INPUTS",csv_in)
     # se lee el archivo generado por el modelo de disaggregation

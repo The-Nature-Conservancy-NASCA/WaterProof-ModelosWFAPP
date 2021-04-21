@@ -2,6 +2,7 @@ import sys,csv,os
 sys.path.append('config')
 from config import config
 from connect import connect
+from getDataWB import getDataDB
 
 ruta = os.environ["PATH_FILES"]
 
@@ -45,7 +46,7 @@ def generateCsv(header,values, file):
     with open(file,"w",newline='') as file:
         writer = csv.writer(file)
         writer.writerows(row_list)
-
+        
 # def generateAWYCsv(list_cs):
 #     results = getTopologyData(catchment_id)
 #     # print(results)
@@ -69,6 +70,7 @@ def generateAll(list_cs):
     p = []
     p_item = []
     p_item.append("1")
+    norm = getDataDB(list_cs[0],"__wp_ptap_normquality")
     for d in data:
         h.append("Csinfra-" + str(d[0][0]))
         awy_item.append(d[0][7])
@@ -86,6 +88,7 @@ def generateAll(list_cs):
     generateCsv(headers[0],sed,os.path.join(ruta,"salidas","ptap_test","INPUTS","2_WI_WSed.csv"))
     generateCsv(headers[0],n,os.path.join(ruta,"salidas","ptap_test","INPUTS","3_WI_WN.csv"))
     generateCsv(headers[0],p,os.path.join(ruta,"salidas","ptap_test","INPUTS","4_WI_WP.csv"))
+    generateCsv(['Quatily'],norm,os.path.join(ruta,"salidas","ptap_test","INPUTS","7_NormQuality.csv"))
 
     return p
 

@@ -212,10 +212,8 @@ async def calculateAqueduct(id_usuario,fecha):
 async def ptapSelect(listcs:ListCS):
 	dictResult = dict()
 	dictResult['estado'] = False
-	print(listcs.csinfras)
 	# try:
 	result = generateAll(listcs.csinfras)
-	print(result)
 	r,awy,cn,cp,cs,wn,wp,ws = Select_PTAP(result)
 	dictResult = dict()
 	dictResult['estado'] = True
