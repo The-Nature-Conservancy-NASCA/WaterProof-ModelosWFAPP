@@ -3,10 +3,12 @@ import os
 import csv
 
 def calculateStatistic(types,raster,catchment):
+	print ("calculateStatistic")
 	stats = zonal_stats(catchment,raster,stats=types)
 	return stats
  
 def calculateRainfallDayMonth(folder,catchment,label):
+	print ("calculateRainfallDayMonth")
 	months = dict()
 	months['JAN'] = 1
 	months['FEB'] = 2
@@ -32,7 +34,7 @@ def calculateRainfallDayMonth(folder,catchment,label):
 			monthName = filename.split("_")[1]
 			monthNumber = months[monthName]
 			fileRaster = os.path.join(folder,filename)
-			#print(monthNumber)
+			print("calculateStatistic for %s" % monthName)
 			zs = calculateStatistic(typeStat,fileRaster,catchment)
 			result = zs[0]
 			print(filename)
