@@ -12,6 +12,7 @@ from datetime import datetime
 from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters, parse_html_to_get_areas, processDissagregation, processRoi
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
+from getDataWB import getDataDB
 from getDataInWB import DataInWB, DataInWBPTAP, DataInBAU, DataInNBS, DataInBAUPTAP, DataInNBSPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP
@@ -28,7 +29,7 @@ import logging
 import ptvsd
 
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 # Only attach the debugger when we're the Django that deals with requests
 # if os.environ.get('RUN_MAIN') or os.environ.get('WERKZEUG_RUN_MAIN'):
@@ -56,6 +57,8 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
+	logger.debug("Hello world")
+	print("Hello world  with print")
 	return {"message":"Hello World :: %s" % {__name__}}
  
 @app.get("/snapPoint")
@@ -100,8 +103,8 @@ async def delineateCatchment(x,y):
 # def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Query(None),catchment:List[int] = Query(None)):
 # 	execInv.delay(type,id_usuario,basin,models,catchment)
 @app.get("/execInvest")
-async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Query(None),catchment:List[int] = Query(None)):
-	logger.info("execInvest start")
+async def execInvest(type:str,id_usuario:int, basin:int, models: List[str] = Query(None),catchment:List[int] = Query(None)):
+	logger.debug("execInvest start")
 	dictResult = dict()
 	dictResult['estado'] = False
 	catch = sorted(catchment,key=int)
@@ -110,19 +113,31 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 	if type == "BaU":
 		year = 30  # TODO: get the true last year from case study analysis_period_value
 	
+	carbon = False
 	# try:
 	for model in models:
-		logger.info("executeFunction for model :: %s" % {model})
+		logger.debug("executeFunction for model :: %s" % {model})
 		print(":: executeFunction for model :: %s" % {model})
 		catchmentShp,path,label = executeFunction(basin,model,type,catchment,id_usuario, year)
+		if (model == 'carbon'):
+			carbon = True
 
 	dictResult['resultado'] = 'successful execution for type :: {}'.format(type)
+
+	dictResult['resultado'] = {}
+	
+
+	sum_carbon = -999 # TODO :: Validate if can be negative as disable value
+	if (carbon):
+		print ("Calculate carbon sum,")
+		sum_carbon = calculateCarbonSum(catchmentShp,path,label)
 
 	if(type == "quality" or type == "BaU"):
 		execute = verifyExec(path)
 		cont = 0
 		dictResult['resultado'] = []
 		for c in catch:
+			
 			s,n,p,q,sW,nW,pW = calcConc(execute,path,label,cont)
 			if math.isnan(s):
 				s = 0
@@ -138,13 +153,13 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 				nW = 0
 			elif math.isnan(pW):
 				pW = 0
-
 			
 			InsertQualityParameters(c,'RIVER',q,sW,nW,pW,s,n,p)
 
 
 			dictResult['resultado'].append({
 				"catchment": c,
+				"carbon" : sum_carbon,	
 				"awy": q,
 				"w": {
 					"sediment":sW,
@@ -152,23 +167,27 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 					"phosporus":pW
 				},
 				"concentrations": {
-				"sediment":s,
-				"nitrogen":n,
-				"phosporus":p
-			}
+					"sediment":s,
+					"nitrogen":n,
+					"phosporus":p
+				}
 			})
 			cont = cont + 1	
 			
-	elif(type == "currentCarbon"):
-		sumCarbon = calculateCarbonSum(catchmentShp,path,label)
-		result = 0.0
-		dictResult['resultado'] = {
-			"carbon":sumCarbon
-		}
+	# elif(type == "currentCarbon"):
+	# 	sumCarbon = calculateCarbonSum(catchmentShp,path,label)
+	# 	result = 0.0
+	# 	dictResult['resultado'] = {
+	# 		"carbon":sumCarbon
+	# 	}
 
 	elif type == "current":
 		# Nothing ToDo, is equal to quality
 		print (type)
+		dictResult['resultado'].append({
+				"catchment": c,
+				"carbon" : sum_carbon,					
+			})
 		# dictResult['resultado'] = 'Ejecucion exitosa current scenario'
 
 	# Revisar para solicitar como parámetro el ultimo año
@@ -210,10 +229,8 @@ async def calculateAqueduct(id_usuario,fecha):
 async def ptapSelect(listcs:ListCS):
 	dictResult = dict()
 	dictResult['estado'] = False
-	print(listcs.csinfras)
 	# try:
 	result = generateAll(listcs.csinfras)
-	print(result)
 	r,awy,cn,cp,cs,wn,wp,ws = Select_PTAP(result)
 	dictResult = dict()
 	dictResult['estado'] = True

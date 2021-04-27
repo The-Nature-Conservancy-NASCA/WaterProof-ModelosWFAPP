@@ -39,7 +39,7 @@ def SaveInDB( function_db, ptap_id, user_id, study_case_id, scenario ):
     for a in range(len(headerList)):
         yeardat.append(year)
 
-    # se repiten las cabeceras el numero de veces (archivos de salida)
+    # se repiten las cabeceras el numero de veces (años)
     for a in range(len(cn)):
         headersdat.append(headerList)
 
@@ -72,6 +72,6 @@ def insertParameter( function_db, element_id, ptap_id, year, user_id, awy, cn_mg
 	conn.commit()
 	cursor.close()
 	conn.close()
-    
+
 # if __name__ == "__main__":
 #     mergeDataDis()
