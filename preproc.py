@@ -18,7 +18,7 @@ from natcap.invest import carbon
 from zonalStatistics import calculateRainfallDayMonth,calculateStatistic
 from zonalStatistics import saveCsv
 from calculateConcentrations import calcConcentrations as cntr
-from createBioParamCsv import getColsParams,generateCsv
+from createBioParamCsv import getColsParams,generateCsv, getBiophysicParams
 sys.path.append('config')
 from config import config
 from connect import connect
@@ -293,12 +293,19 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 		outPathType = parameter[8]
 		calculado = parameter[11]
 		bio_param = parameter[13]
+		
 		if(suffix):
 			region = getRegionFromId(basin)
 			label = region[4]
 			value = label
 		if(constant):
-			constantValue = getConstantFromBasin(basin,name)
+			if (name == 'k_param' and model == 'ndr'):
+				constantValue = getConstantFromBasin(basin,'k_param_ndr')
+			elif(name == 'k_param' and model == 'sdr'):
+				constantValue = getConstantFromBasin(basin,'k_param_sdr')
+			else:
+				constantValue = getConstantFromBasin(basin,name)
+						
 			value = constantValue[2]
 		if(empty):
 			value = ''
@@ -318,7 +325,9 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 			region = getRegionFromId(basin)
 			label = region[4]
 			file = os.path.join(os.getcwd(),pathF,'in',"biophysical_table.csv")
-			values,headers = getColsParams("apps.skaphe.com",27017,"waterProof","parametros_biofisicos",user,label,True)
+			# values,headers = getColsParams("apps.skaphe.com",27017,"waterProof","parametros_biofisicos",user,label,True)
+			default = 'y'
+			values, headers = getBiophysicParams(user, label, default)
 			generateCsv(headers,values,file)
 			value = file
 		dictParameters[name] = value
@@ -333,7 +342,7 @@ def executeFunction(basin,model,type,id_catchment,id_usuario, year):
 	list = getParameters(basin,model)	
 	catchment = exportToShp(id_catchment, path)
 	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year)
-	print(json.dumps(parameters, indent=2))
+	# print(json.dumps(parameters, indent=2))
 
 	if(model == 'awy'):
 		awy.execute(parameters)
@@ -344,7 +353,7 @@ def executeFunction(basin,model,type,id_catchment,id_usuario, year):
 	elif(model == 'ndr'):
 		ndr.execute(parameters)
 	elif(model == 'swy'):
-		swy.execute(parameters)
+		swy.execute(parameters) 
 
 	return catchment,path,label
 
@@ -432,6 +441,6 @@ def processRoi(user_id, study_cases_id):
 	current_dir = pathlib.Path().absolute()
 	demo_data = "/ROI_WaterFunds/Project"
 	path_data = str(current_dir) + demo_data
-	print ("path_data :: " + path_data)
+	print ("processROI :: path_data :: " + path_data)
 	
 	return ROI_Analisys(path_data)

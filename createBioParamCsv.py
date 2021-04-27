@@ -1,5 +1,6 @@
 from pymongo import MongoClient
 import os, csv
+from connect import connect
 
 # Author: Diego Fernando Rodríguez
 # Date: 29/11/2020
@@ -64,7 +65,23 @@ def generateCsv(header,values, file):
         writer.writerows(row_list)
 
 
-
+# Get Biophysical parameter filters by macroregion
+def getBiophysicParams(user,macro_region,default):
+    results = list()
+    keys=list()
+    cursor = connect('postgresql_alfa').cursor()
+    cursor.callproc('get_biophysycal_params', [macro_region,default,user])
+    result = cursor.fetchall()
+    resultKeys=cursor.description
+    for key in resultKeys:
+        #print("RESULT KEY")
+        #print(key[0])
+        keys.append(key[0])
+    for row in result:
+        #print("Row")
+        #print(row)
+        results.append(row)
+    return results,keys
 
 
 
