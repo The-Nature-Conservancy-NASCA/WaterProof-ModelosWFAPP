@@ -18,7 +18,7 @@ from natcap.invest import carbon
 from zonalStatistics import calculateRainfallDayMonth,calculateStatistic
 from zonalStatistics import saveCsv
 from calculateConcentrations import calcConcentrations as cntr
-from createBioParamCsv import getColsParams,generateCsv
+from createBioParamCsv import getColsParams,generateCsv, getBiophysicParams
 sys.path.append('config')
 from config import config
 from connect import connect
@@ -293,12 +293,19 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 		outPathType = parameter[8]
 		calculado = parameter[11]
 		bio_param = parameter[13]
+		
 		if(suffix):
 			region = getRegionFromId(basin)
 			label = region[4]
 			value = label
 		if(constant):
-			constantValue = getConstantFromBasin(basin,name)
+			if (name == 'k_param' and model == 'ndr'):
+				constantValue = getConstantFromBasin(basin,'k_param_ndr')
+			elif(name == 'k_param' and model == 'sdr'):
+				constantValue = getConstantFromBasin(basin,'k_param_sdr')
+			else:
+				constantValue = getConstantFromBasin(basin,name)
+						
 			value = constantValue[2]
 		if(empty):
 			value = ''
@@ -318,7 +325,9 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 			region = getRegionFromId(basin)
 			label = region[4]
 			file = os.path.join(os.getcwd(),pathF,'in',"biophysical_table.csv")
-			values,headers = getColsParams("apps.skaphe.com",27017,"waterProof","parametros_biofisicos",user,label,True)
+			# values,headers = getColsParams("apps.skaphe.com",27017,"waterProof","parametros_biofisicos",user,label,True)
+			default = 'y'
+			values, headers = getBiophysicParams(user, label, default)
 			generateCsv(headers,values,file)
 			value = file
 		dictParameters[name] = value
