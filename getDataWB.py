@@ -98,6 +98,6 @@ def generateCsvQ( id, funcion_db, csv_in):
 
 def generateCsvQDisPTAP(csv_in):
     pathF = path.join(ruta,"salidas","wb_test","INPUTS",csv_in)
-    generateCsv(["0",'-1'],['0','0'], pathF)
+    generateCsv(["0","-1"],[["0","0"]], pathF)
 
 
