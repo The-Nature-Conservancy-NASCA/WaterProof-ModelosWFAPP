@@ -1,5 +1,5 @@
 
-from getDataWB import generateCsvTopology, generateCsvPerc, generateCsvData, generateCsvDataDis, generateCsvQ, generateCsvQDisPTAP
+from getDataWB import generateCsvTopology, generateCsvPerc, generateCsvData, generateCsvDataDis,generateCsvDataDisPTAP, generateCsvQ, generateCsvQDisPTAP
 
 def DataInWB( id_intake ):
     generateCsvTopology( id_intake, '__wpgettopologybycatchment', "0_WI_Topology.csv" )
@@ -42,18 +42,18 @@ def DataInNBS(id_intake):
 def DataInBAUPTAP(id_ptap):
     generateCsvTopology( id_ptap, '__wpgettopologybyptap', "0_WI_Topology.csv" )
     generateCsvPerc( id_ptap, '__wpgetpercentagesbyptap', "1_WI_Elements_Param.csv" )
-    generateCsvDataDis( id_ptap, '__wpgetawybyptap', "2_WI_AWYInputs.csv", 1, '02-OUTPUTS_BaU.csv' )
-    generateCsvDataDis( id_ptap, '__wpgetsedbyptap', "2_WI_WSedInputs.csv", 2, '02-OUTPUTS_BaU.csv' )
-    generateCsvDataDis( id_ptap, '__wpgetnbyptap', "2_WI_WNInputs.csv", 3, '02-OUTPUTS_BaU.csv' )
-    generateCsvDataDis( id_ptap, '__wpgetpbyptap', "2_WI_WPInputs.csv", 4, '02-OUTPUTS_BaU.csv' )
+    generateCsvDataDisPTAP( id_ptap, '__wpgetawybyptap', "2_WI_AWYInputs.csv", 'awy', 'BAU' )
+    generateCsvDataDisPTAP( id_ptap, '__wpgetsedbyptap', "2_WI_WSedInputs.csv", 'wsed_ton', 'BAU' )
+    generateCsvDataDisPTAP( id_ptap, '__wpgetnbyptap', "2_WI_WNInputs.csv", 'wn_kg', 'BAU' )
+    generateCsvDataDisPTAP( id_ptap, '__wpgetpbyptap', "2_WI_WPInputs.csv", 'wp_kg', 'BAU' )
     generateCsvQDisPTAP( "3_Water_Extraction.csv" )
 
 def DataInNBSPTAP(id_ptap):
     generateCsvTopology( id_ptap, '__wpgettopologybyptap', "0_WI_Topology.csv" )
     generateCsvPerc( id_ptap, '__wpgetpercentagesbyptap', "1_WI_Elements_Param.csv" )
-    generateCsvDataDis( id_ptap, '__wpgetawybyptap', "2_WI_AWYInputs.csv", 1, '02-OUTPUTS_NBS.csv' )
-    generateCsvDataDis( id_ptap, '__wpgetsedbyptap', "2_WI_WSedInputs.csv", 2, '02-OUTPUTS_NBS.csv' )
-    generateCsvDataDis( id_ptap, '__wpgetnbyptap', "2_WI_WNInputs.csv", 3, '02-OUTPUTS_NBS.csv' )
-    generateCsvDataDis( id_ptap, '__wpgetpbyptap', "2_WI_WPInputs.csv", 4, '02-OUTPUTS_NBS.csv' )
+    generateCsvDataDisPTAP( id_ptap, '__wpgetawybyptap', "2_WI_AWYInputs.csv", 'awy', 'NBS' )
+    generateCsvDataDisPTAP( id_ptap, '__wpgetsedbyptap', "2_WI_WSedInputs.csv", 'wsed_ton', 'NBS' )
+    generateCsvDataDisPTAP( id_ptap, '__wpgetnbyptap', "2_WI_WNInputs.csv", 'wn_kg', 'NBS' )
+    generateCsvDataDisPTAP( id_ptap, '__wpgetpbyptap', "2_WI_WPInputs.csv", 'wp_kg', 'NBS' )
     generateCsvQDisPTAP( "3_Water_Extraction.csv" )
 
