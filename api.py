@@ -8,8 +8,8 @@ import math
 import pathlib
 import os
 import shutil
+import preproc
 from datetime import datetime
-from preproc import executeFunction,verifyExec,calcConc,calculateCarbonSum,InsertQualityParameters, parse_html_to_get_areas, processDissagregation, processRoi
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
 from getDataWB import getDataDB
@@ -23,7 +23,6 @@ from Select_PTAP import Select_PTAP
 from reclassify import iterateFiles
 import pandas as pd
 import requests
-from connect import connect
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 import logging
 import ptvsd
@@ -60,6 +59,7 @@ async def root():
 	logger.debug("Hello world")
 	print("Hello world  with print")
 	return {"message":"Hello World :: %s" % {__name__}}
+
  
 @app.get("/snapPoint")
 async def snap(x,y):
@@ -103,7 +103,7 @@ async def delineateCatchment(x,y):
 # def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Query(None),catchment:List[int] = Query(None)):
 # 	execInv.delay(type,id_usuario,basin,models,catchment)
 @app.get("/execInvest")
-async def execInvest(type:str,id_usuario:int, basin:int, models: List[str] = Query(None),catchment:List[int] = Query(None)):
+async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[str] = Query(None),catchment:List[int] = Query(None)):
 	logger.debug("execInvest start")
 	dictResult = dict()
 	dictResult['estado'] = False
@@ -111,14 +111,15 @@ async def execInvest(type:str,id_usuario:int, basin:int, models: List[str] = Que
 
 	year = "0"
 	if type == "BaU":
-		year = 30  # TODO: get the true last year from case study analysis_period_value
-	
+		year = preproc.analysisPeriodFromStudyCase(case)
+		# 30  # TODO: get the true last year from case study analysis_period_value
+
 	carbon = False
 	# try:
 	for model in models:
 		logger.debug("executeFunction for model :: %s" % {model})
 		print(":: executeFunction for model :: %s" % {model})
-		catchmentShp,path,label = executeFunction(basin,model,type,catchment,id_usuario, year)
+		catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, year)
 		if (model == 'carbon'):
 			carbon = True
 
@@ -130,15 +131,15 @@ async def execInvest(type:str,id_usuario:int, basin:int, models: List[str] = Que
 	sum_carbon = -999 # TODO :: Validate if can be negative as disable value
 	if (carbon):
 		print ("Calculate carbon sum,")
-		sum_carbon = calculateCarbonSum(catchmentShp,path,label)
+		sum_carbon = preproc.calculateCarbonSum(catchmentShp,path,label)
 
 	if(type == "quality" or type == "BaU"):
-		execute = verifyExec(path)
+		execute = preproc.verifyExec(path)
 		cont = 0
 		dictResult['resultado'] = []
 		for c in catch:
 			
-			s,n,p,q,sW,nW,pW = calcConc(execute,path,label,cont)
+			s,n,p,q,sW,nW,pW = preproc.calcConc(execute,path,label,cont)
 			if math.isnan(s):
 				s = 0
 			elif math.isnan(n):
@@ -154,7 +155,7 @@ async def execInvest(type:str,id_usuario:int, basin:int, models: List[str] = Que
 			elif math.isnan(pW):
 				pW = 0
 			
-			InsertQualityParameters(c,'RIVER',q,sW,nW,pW,s,n,p)
+			preproc.InsertQualityParameters(c,'RIVER',q,sW,nW,pW,s,n,p)
 
 
 			dictResult['resultado'].append({
@@ -411,12 +412,12 @@ async def disaggregation(user_id):
 @app.get("/disaggregation2")
 def disaggregation2(user_id, study_cases_id):
 
-	return processDissagregation(user_id, study_cases_id)
+	return preproc.processDissagregation(user_id, study_cases_id)
 
 @app.get("/roiExecution")
 def roiExecution(user_id, study_cases_id):
 
-	return processRoi(user_id,study_cases_id)
+	return preproc.processRoi(user_id,study_cases_id)
 
 @app.get("/download")
 def download(user_dir, topic , file):
