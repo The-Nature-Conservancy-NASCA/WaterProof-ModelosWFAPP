@@ -66,9 +66,9 @@ def generateCsv(header,values, file):
 
 
 # Get Biophysical parameter filters by macroregion
-def getBiophysicParams(user,macro_region,default)
+def getBiophysicParams(user,macro_region,default):
     print("getBiophysicParams :: init")
-    print("user: %s,macro_region: %s,default: %s" % user,macro_region,default):
+    print("user: %s,macro_region: %s,default: %s" % user,macro_region,default)
     results = list()
     keys=list()
     cursor = connect('postgresql_alfa').cursor()
