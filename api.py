@@ -104,7 +104,7 @@ async def delineateCatchment(x,y):
 # 	execInv.delay(type,id_usuario,basin,models,catchment)
 @app.get("/execInvest")
 async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[str] = Query(None),catchment:List[int] = Query(None)):
-	logger.debug("execInvest start")
+	print("execInvest start, Type: %s" % type)
 	dictResult = dict()
 	dictResult['estado'] = False
 	catch = sorted(catchment,key=int)
