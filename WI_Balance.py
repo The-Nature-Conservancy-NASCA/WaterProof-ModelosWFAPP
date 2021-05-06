@@ -554,30 +554,40 @@ def execWB():
     """
     # AWY elemento de captación
     Posi  = np.where(Final_Order_Solution == Extract_Element)
-    Data1 = AWY_Results[:,Posi[0][0]]
-
-    # AWY Elemento conectado a la captación
-    Posi  = np.where(Topology[:,1] == Extract_Element)
-    Posi  = np.where(Final_Order_Solution == Topology[Posi[0],0])
-    Data2 = AWY_Results[:,Posi[0][0]]
-    for i in range(1,len(Posi)):
-        Data2 = Data2 + AWY_Results[:,Posi[0][i]]
-
-    Check = []
-    for i in range(0,len(Data1)):
-        Check.append(Data2[i] < Data1[i])
-
-    Check = np.sum(Check)
-
-    myFile = open(os.path.join(ruta,'salidas','wb_test','OUTPUTS', 'SystemErrors.txt'), 'w', newline='')
-    with myFile:
-        if Check > 0:
-            Choco = "1"
-        else:
+    if np.sum((Final_Order_Solution == Extract_Element)) == 0:
+        # Caso Particular - PTAP
+        myFile = open(os.path.join(ruta,'salidas','wb_test','OUTPUTS', 'SystemErrors.txt'), 'w', newline='')
+        with myFile:
             Choco = "0"
+            myFile.writelines(Choco)
+            myFile.close()
 
-        myFile.writelines(Choco)
-        myFile.close()
+    else: 
+        # Casp Particular - Captación
+        Data1 = AWY_Results[:,Posi[0][0]]
+
+        # AWY Elemento conectado a la captación
+        Posi  = np.where(Topology[:,1] == Extract_Element)
+        Posi  = np.where(Final_Order_Solution == Topology[Posi[0],0])
+        Data2 = AWY_Results[:,Posi[0][0]]
+        for i in range(1,len(Posi)):
+            Data2 = Data2 + AWY_Results[:,Posi[0][i]]
+
+        Check = []
+        for i in range(0,len(Data1)):
+            Check.append(Data2[i] < Data1[i])
+
+        Check = np.sum(Check)
+
+        myFile = open(os.path.join(ruta,'salidas','wb_test','OUTPUTS', 'SystemErrors.txt'), 'w', newline='')
+        with myFile:
+            if Check > 0:
+                Choco = "1"
+            else:
+                Choco = "0"
+
+            myFile.writelines(Choco)
+            myFile.close()
 
 
     # Annual Water Yield (AWY) / Caudales Trasportados en cada Elemento

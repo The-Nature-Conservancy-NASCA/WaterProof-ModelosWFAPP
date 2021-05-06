@@ -183,12 +183,16 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	# 	}
 
 	elif type == "current":
+
+
 		# Nothing ToDo, is equal to quality
+		dictResult['resultado']=[]
 		print (type)
-		dictResult['resultado'].append({
-				"catchment": c,
-				"carbon" : sum_carbon,					
-			})
+		for c in catch:
+			dictResult['resultado'].append({
+					"catchment": c,
+					"carbon" : sum_carbon,					
+				})
 		# dictResult['resultado'] = 'Ejecucion exitosa current scenario'
 
 	# Revisar para solicitar como parámetro el ultimo año
