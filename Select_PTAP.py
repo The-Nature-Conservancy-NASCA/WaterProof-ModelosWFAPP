@@ -6,6 +6,7 @@ import pandas as pd
 ruta = os.environ["PATH_FILES"]
 
 def Select_PTAP(PathProject_PTAP):
+    print("Select_PTAP")
     # Leer Archivos de entrada
     AWY = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","1_WI_AWY.csv"),  index_col=0)
     N   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS","3_WI_WN.csv"),  index_col=0)

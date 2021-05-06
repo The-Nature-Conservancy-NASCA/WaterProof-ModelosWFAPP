@@ -30,7 +30,6 @@ import geopandas as gpd
 import AdvancedHTMLParser
 import requests
 from AdvancedHTMLParser import AdvancedTag
-from connect import connect
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 from ROI_WaterFunds.ROI import ROI_Analisys
 import logging
@@ -52,13 +51,16 @@ def exportToShp(catchment, path):
 
 	output = os.path.join(path,"in","catchment","catchment.shp")
 	source = osr.SpatialReference()
-	source.ImportFromEPSG(4326)
+	epsg_4326 = 4326
+	source.ImportFromEPSG(epsg_4326)
 	target = osr.SpatialReference()
-	target.ImportFromEPSG(3857)
+	# epsg_3857 = 3857
+	epsg_54004 = 54004
+	target.ImportFromEPSG(epsg_54004)
 	transform = osr.CoordinateTransformation(source, target)
 
 	# Schema definition of SHP file
-	out_driver = ogr.GetDriverByName( 'ESRI Shapefile' )
+	out_driver = ogr.GetDriverByName('ESRI Shapefile')
 	out_ds = out_driver.CreateDataSource(output)
 
 	out_layer = out_ds.CreateLayer("catchment", target, ogr.wkbPolygon)
@@ -342,6 +344,11 @@ def executeFunction(basin,model,type,id_catchment,id_usuario, year):
 	list = getParameters(basin,model)	
 	catchment = exportToShp(id_catchment, path)
 	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year)
+	json_parameters = json.dumps(parameters, indent=2)
+	print("writing file %s/parameters_.json" % (path))
+	txt_file = open(os.path.join(path,"parameters" + model + ".json"), "w")
+	txt_file.write(json_parameters)
+	txt_file.close()
 	# print(json.dumps(parameters, indent=2))
 
 	if(model == 'awy'):
@@ -444,3 +451,18 @@ def processRoi(user_id, study_cases_id):
 	print ("processROI :: path_data :: " + path_data)
 	
 	return ROI_Analisys(path_data)
+
+
+def analysisPeriodFromStudyCase(id):
+	print("analysisPeriodFromStudyCase - id::%s" % id)
+	conn = connect('postgresql_alfa')
+	cursor = conn.cursor()
+	sql = "select analysis_period_value from public.waterproof_study_cases_studycases where id = %s" % id
+	cursor.execute(sql)
+	year = 1
+	try:
+		row = cursor.fetchone()
+		year = row[0]
+	except:
+		year=-1
+	return year
