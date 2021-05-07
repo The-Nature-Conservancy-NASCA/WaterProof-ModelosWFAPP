@@ -116,8 +116,10 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 
 	carbon = False
 	# try:
+	for i in catch:
+		getDataDB( catch[i], "__wp_intake_emptycols" )
+
 	for model in models:
-		getDataDB( catchment[0], "__wp_intake_emptycols" )
 		logger.debug("executeFunction for model :: %s" % {model})
 		print(":: executeFunction for model :: %s" % {model})
 		catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, year)
