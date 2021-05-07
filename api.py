@@ -113,7 +113,7 @@ async def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Quer
 
 	# try:
 	for model in models:
-		getDataDB( catchment, "__wp_intake_emptycols" )
+		getDataDB( catchment[0], "__wp_intake_emptycols" )
 		logger.info("executeFunction for model :: %s" % {model})
 		print(":: executeFunction for model :: %s" % {model})
 		catchmentShp,path,label = executeFunction(basin,model,type,catchment,id_usuario, year)
