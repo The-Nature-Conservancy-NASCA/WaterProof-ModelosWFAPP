@@ -16,6 +16,7 @@ ruta = os.environ["PATH_FILES"]
 #     return resultado
 
 def getDataCsInfra(csinfra_id):
+    print("getDataCsInfra")
     result = ''
     listResult = []
     conn = connect('postgresql_alfa')
@@ -29,6 +30,7 @@ def getDataCsInfra(csinfra_id):
     return listResult
 
 def allData(list_csinfras):
+    print("allData")
     result = []
     for cs in list_csinfras:
         data = getDataCsInfra(cs)
@@ -37,6 +39,7 @@ def allData(list_csinfras):
     return result
 
 def generateCsv(header,values, file):
+    print("generateCsv")
     row_list = []
     row_list.append(header)
 
@@ -54,6 +57,7 @@ def generateCsv(header,values, file):
 #     generateCsv(["From_Element","To_Element"],results, pathF)
 
 def generateAll(list_cs):
+    print("generateAll")
     data = allData(list_cs)
     headers = []
     h = []
