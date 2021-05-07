@@ -24,6 +24,18 @@ def getDataDB( id, funcion_db ):
 
     return listResult
 
+def updateDataDB( id, funcion_db ):
+    
+    listResult = []
+    conn = connect('postgresql_alfa')
+    cursor = conn.cursor()
+    cursor.callproc(funcion_db,[id])
+    conn.commit()
+    cursor.close()
+    conn.close()
+    
+    return True
+
 def getDataDBPTAP( id, funcion_db, types, scenario ):
     result = ''
     listResult = []
