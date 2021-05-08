@@ -12,7 +12,7 @@ import preproc
 from datetime import datetime
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
-from getDataWB import getDataDB
+from getDataWB import getDataDB, updateDataDB
 from getDataInWB import DataInWB, DataInWBPTAP, DataInBAU, DataInNBS, DataInBAUPTAP, DataInNBSPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP
@@ -111,13 +111,15 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	dictResult = dict()
 	dictResult['estado'] = False
 	catch = sorted(catchment,key=int)
-
+	updateDataDB( catch[0], "__wp_intake_emptycols" )
 	year = "0"
 	if type == "BaU" or type == "NBS": # TODO: Para current tambien se necesita
 		year = preproc.analysisPeriodFromStudyCase(case)
 		# 30  # TODO: get the true last year from case study analysis_period_value (done)
 	carbon = False
 	# try:
+	
+
 	for model in models:
 		#logger.debug("executeFunction for model :: %s" % {model})
 		#print(":: executeFunction for model :: %s" % {model})

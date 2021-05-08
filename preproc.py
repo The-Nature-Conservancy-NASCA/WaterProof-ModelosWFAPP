@@ -207,7 +207,7 @@ def InsertQualityParameters(catchment,element,awy,wsed,wn,wp,csed,cn,cp):
 	listResult = []
 	conn = connect('postgresql_alfa')
 	cursor = conn.cursor()
-	cursor.callproc('insertConcentrationsInVEST',[catchment,element,awy,wsed,wn,wp,csed,cn,cp])
+	cursor.callproc('__wp_insertConcentrationsInVEST',[catchment,element,awy,wsed,wn,wp,csed,cn,cp])
 	conn.commit()
 	cursor.close()
 	conn.close()
