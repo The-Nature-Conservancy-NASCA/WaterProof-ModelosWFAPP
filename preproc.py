@@ -261,7 +261,7 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder_quality)
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder_quality)
 	else:
-		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder)
+		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder, 'YEAR_' + str(year))
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder)
 	
 
@@ -346,7 +346,7 @@ def executeFunction(basin,model,type,id_catchment,id_usuario, year):
 	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year)
 	json_parameters = json.dumps(parameters, indent=2)
 	print("writing file %s/parameters_.json" % (path))
-	txt_file = open(os.path.join(path,"parameters" + model + ".json"), "w")
+	txt_file = open(os.path.join(path,"parameters_" + model + ".json"), "w")
 	txt_file.write(json_parameters)
 	txt_file.close()
 	# print(json.dumps(parameters, indent=2))

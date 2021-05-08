@@ -69,8 +69,11 @@ async def snap(x,y):
 		x = float(x)
 		y = float(y)
 		basin = delineate.getRegionFromCoord(x,y)
+		dictResult['basin'] = basin
 		path = delineate.getPath(basin,2)
+		dictResult['path'] = path
 		path = delineate.cutRaster(path,x,y,5)
+		dictResult['path_raster'] = path
 		[x,y] = delineate.snap(path,x,y)
 		dictResult = dict()
 		dictResult['estado'] = True
@@ -110,16 +113,20 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	catch = sorted(catchment,key=int)
 
 	year = "0"
-	if type == "BaU":
+	if type == "BaU" or type == "NBS": # TODO: Para current tambien se necesita
 		year = preproc.analysisPeriodFromStudyCase(case)
-		# 30  # TODO: get the true last year from case study analysis_period_value
-
+		# 30  # TODO: get the true last year from case study analysis_period_value (done)
 	carbon = False
 	# try:
 	for model in models:
-		logger.debug("executeFunction for model :: %s" % {model})
-		print(":: executeFunction for model :: %s" % {model})
-		catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, year)
+		#logger.debug("executeFunction for model :: %s" % {model})
+		#print(":: executeFunction for model :: %s" % {model})
+		if type == "NBS":
+			for x in range(0,year):
+				print(":: executeFunction model %s , Type: NBS for Year :: %s of %s" % (model, x, year))
+				catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, x)
+		else:
+			catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, year)
 		if (model == 'carbon'):
 			carbon = True
 
@@ -157,7 +164,6 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 			
 			preproc.InsertQualityParameters(c,'RIVER',q,sW,nW,pW,s,n,p)
 
-
 			dictResult['resultado'].append({
 				"catchment": c,
 				"carbon" : sum_carbon,	
@@ -183,8 +189,6 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	# 	}
 
 	elif type == "current":
-
-
 		# Nothing ToDo, is equal to quality
 		dictResult['resultado']=[]
 		print (type)
