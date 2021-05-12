@@ -8,7 +8,7 @@ from connect import connect
 def readJsonActivities(path):
     p = Path(path).parents[0]
     pathJson = os.path.join(p,'activity_raster_id.json')
-    f = open(pathJson,) 
+    f = open(pathJson) 
     jsonFile = json.load(f)
     dictIds = {}
 
@@ -18,12 +18,12 @@ def readJsonActivities(path):
     return dictIds
 
 
-def getTranformations(name):
+def getTranformations_by_id(id):
     result = ''
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc('gettransformations',[name])
+    cursor.callproc('gettransformationsById',[id])
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
@@ -31,7 +31,21 @@ def getTranformations(name):
     conn.close()
     return listResult
 
-def reclassify(listTrans,pathFile,outPath,filename,lulc_path, nbs_id, json):
+
+def getTranformations_by_name(name):
+    result = ''
+    listResult = []
+    conn = connect('postgresql_alfa')
+    cursor = conn.cursor()
+    cursor.callproc('gettransformationsByName',[name])
+    result = cursor.fetchall()
+    for row in result:
+        listResult.append(row)
+    cursor.close()
+    conn.close()
+    return listResult
+
+def reclassify(pathFile,outPath,filename,lulc_path,json):
     driver = gdal.GetDriverByName('GTiff')
     file = gdal.Open(pathFile)
     file_lulc = gdal.Open(lulc_path)
@@ -45,10 +59,6 @@ def reclassify(listTrans,pathFile,outPath,filename,lulc_path, nbs_id, json):
 
     transformations = {}
 
-    # for x in listTrans:
-        # print(x[0])
-        # print(x[2])
-    # reclassification
     for j in range(file.RasterXSize):
         for i in  range(file.RasterYSize):
             # print(lista[i,j])
@@ -57,23 +67,15 @@ def reclassify(listTrans,pathFile,outPath,filename,lulc_path, nbs_id, json):
             if indice != 255:
                 sbn = json[indice]
                 if not sbn in transformations:
-                    transformations[sbn] = getTranformations(sbn)              
+                    transformations[sbn] = getTranformations_by_name(sbn) 
 
                 for x in transformations[sbn]:
                     # print("Lista "+ str(lista_lulc[i,j]))
                     # print("X 0 " + str(x[0]))
                     if lista_lulc[i,j] == x[0]:
                         lista_lulc[i,j] = x[2]
-                        break
-            
-            # print(lista_lulc)
-
-                # if lista_lulc[i,j] == nbs_id:
-                #     # lista[i,j] = x[2]
-                #     lulc_positions.append([i,j])
-
-    # print(lulc_positions)
-
+                        break            
+           
     pathTranslated = os.path.join(outPath,filename)
     # create new file
     file2 = driver.Create(pathTranslated, file_lulc.RasterXSize , file_lulc.RasterYSize , 1)
@@ -88,8 +90,8 @@ def reclassify(listTrans,pathFile,outPath,filename,lulc_path, nbs_id, json):
     file2.FlushCache()
     return pathTranslated
 
-def iterateFiles(path,nbs_id,lulc_path):
-    listTransformations = getTranformations(nbs_id)
+def iterateFiles(path,lulc_path):
+    
     pathOut = os.path.join(path,"translated_cob")
     json = readJsonActivities(path)
 
@@ -99,7 +101,7 @@ def iterateFiles(path,nbs_id,lulc_path):
     paths = []
     for filename in os.listdir(path):
         if filename.endswith(".tif"):
-            path_file = reclassify(listTransformations,os.path.join(path,filename),pathOut,filename,lulc_path,nbs_id,json)
+            path_file = reclassify(os.path.join(path,filename),pathOut,filename,lulc_path,json)
             paths.append(path_file)
 
     return paths
