@@ -339,12 +339,12 @@ async def calculateWBPTAP(id_ptap):
 	return dictResult
 
 @app.get("/cobTrans")
-async def cobTrans(pathCobs,nbs_id,pathLULC):
+async def cobTrans(pathCobs,pathLULC):
 	print ("cobTrans :: start")
 	dictResult = dict()
 	dictResult['estado'] = True
 	try:
-		paths = iterateFiles(pathCobs,nbs_id,pathLULC)		
+		paths = iterateFiles(pathCobs,pathLULC)		
 		dictResult['resultado'] = {"result":'successful execution'}
 		dictResult['paths'] = paths
 	except Exception as e:
