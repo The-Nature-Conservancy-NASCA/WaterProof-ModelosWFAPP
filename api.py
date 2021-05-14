@@ -7,6 +7,7 @@ import delineate
 import math
 import pathlib
 import os
+from os import environ,path
 import shutil
 import preproc
 from datetime import datetime
@@ -21,12 +22,14 @@ from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
 from reclassify import iterateFiles
+from dissagregation import DataCSVDis
 import pandas as pd
 import requests
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 import logging
 import ptvsd
 
+ruta = environ["PATH_FILES"]
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
 logger.setLevel(logging.DEBUG)
 
@@ -355,64 +358,19 @@ async def cobTrans(pathCobs,pathLULC):
 
 
 @app.get("/disaggregation")
-async def disaggregation(user_id):
-	
-	query = {'type':'quality', 'id_usuario':'1', 'basin' : '44', 'models' : 'sdr', 'catchment' : '1', 'models' : 'amy', 'models' : 'ndr'}
-	print (query)
-	
-	api_url = "http://dev.skaphe.com:8000/execInvest"
-	response = requests.get(api_url, params=query)
-	print(response.json())
-	return response.json()
-	
-	in_invest = '01-INPUTS_InVEST.csv'
-	in_nbs    = '01-INPUTS_NBS.csv'
-	in_time   = '01-INPUTS_Time.csv'
-	out_bau = '02-OUTPUTS_BaU.csv'
-	out_nbs = '02-OUTPUTS_NBS.csv'
-	DISAGGREGATION = 'DISAGGREGATION'
-	name_cols = ['AWY (m3)','Wsed (Ton)','WN (Kg)','WP (kg)','BF (m3)','WC (Ton)']
-	current_dir = pathlib.Path().absolute()
-	demo_data = "/Disaggregation_WaterFunds/Project"
-	path_data = str(current_dir) + demo_data
-	Desaggregation_BaU_NBS(path_data, path_data)
+async def disaggregation(types, id_usuario, basin, case, models, catchment):
+
+	path_data_in = path.join( ruta, "salidas", "disaggregation", "INPUTS" )
+	path_data_out = path.join( ruta, "salidas", "disaggregation", "Out" )
 
 	dict_result = dict()
 	dict_result['status'] = True
-    
-	dict_result['nbs'] = pd.read_csv(os.path.join(path_data, out_nbs),usecols=name_cols)
-	dict_result['bau'] = pd.read_csv(os.path.join(path_data, out_bau),usecols=name_cols)
-
-	PATH_FILES = os.environ["PATH_FILES"]
-	date_ymd = datetime.today().strftime('%Y-%m-%d')
-	user_dir = user_id + '_' + date_ymd
-	path = os.path.join(PATH_FILES,'salidas', user_dir)
-	validate_and_create_dir (path)
-	path_out_in = os.path.join(path,'in')
-	validate_and_create_dir (path_out_in)	
-	path_in_dissagregation = os.path.join(path_out_in, DISAGGREGATION)
-	validate_and_create_dir (path_in_dissagregation)
-
-	path_out_out = os.path.join(path,'out')
-	validate_and_create_dir (path_out_out)
-	path_out_dissagregation = os.path.join(path_out_out, DISAGGREGATION)
-	validate_and_create_dir (path_out_dissagregation)
-
-	dict_result["output"] = {}
-	dict_result["output"]["user_dir"] = user_dir
-	dict_result["output"]["topic"] = DISAGGREGATION
-	dict_result["output"]["files"] = [out_bau, out_nbs]	 
-	base_url = "/download?user_dir=" + user_dir + "&topic="+DISAGGREGATION + "&file="
-	dict_result["output"]["urls"] = [base_url + out_bau, base_url + out_nbs]
-
-	print ("export inputs to: " + path_in_dissagregation)
-	shutil.copyfile(os.path.join(path_data,in_invest), os.path.join(path_in_dissagregation,in_invest))
-	shutil.copyfile(os.path.join(path_data,in_nbs), os.path.join(path_in_dissagregation,in_nbs))
-	shutil.copyfile(os.path.join(path_data,in_time), os.path.join(path_in_dissagregation,in_time))
-
-	print ("export outputs to: " + path_out_dissagregation)
-	shutil.copyfile(os.path.join(path_data,out_bau), os.path.join(path_out_dissagregation,out_bau))
-	shutil.copyfile(os.path.join(path_data,out_nbs), os.path.join(path_out_dissagregation,out_nbs))
+    # try:
+	DataCSVDis(types, catchment, case)
+	Desaggregation_BaU_NBS(path_data_in, path_data_out)
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
 	return dict_result
 
 @app.get("/disaggregation2")
