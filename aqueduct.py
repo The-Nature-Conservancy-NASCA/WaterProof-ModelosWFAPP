@@ -55,8 +55,6 @@ def cutShp(catchment, layer, out):
     inDataSource.Destroy()
     inClipSource.Destroy()
     outDataSource.Destroy()
-
-
 	
     # ## Input
     # driverName = "ESRI Shapefile"
@@ -95,7 +93,7 @@ def cutShp(catchment, layer, out):
 def getpath(basin,constantName):
 	result = ''
 	cursor = connect('postgresql_alfa').cursor()
-	cursor.callproc('wfa.getpathbasinparameter',[basin,constantName])
+	cursor.callproc('__wp_getpathbasinparameter',[basin,constantName])
 	result = cursor.fetchall()
 	for row in result:
 		result = row[0]
@@ -224,13 +222,7 @@ def cutAqueduct(usuario,fecha):
             # print("Water Demand: " + str(ut20) + "/" + ut20Lbl)
             # print("Season Variablity: " + str(sv20) + "/" + sv20Lbl)
 
-    return resultado
-
-        
-
-
-
-
+    return resultado       
 
 def calculateArea(shp):
     driverName = "ESRI Shapefile"

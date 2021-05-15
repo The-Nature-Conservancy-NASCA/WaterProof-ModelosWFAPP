@@ -21,7 +21,7 @@ def getDataCsInfra(csinfra_id):
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc('getcsinfra',[csinfra_id])
+    cursor.callproc('__wp_getcsinfra',[csinfra_id])
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
