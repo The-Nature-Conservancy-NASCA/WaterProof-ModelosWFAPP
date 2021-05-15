@@ -23,7 +23,7 @@ def getTranformations_by_id(id):
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc('gettransformationsById',[id])
+    cursor.callproc('__wp_gettransformationsById',[id])
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
@@ -37,7 +37,7 @@ def getTranformations_by_name(name):
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc('gettransformationsByName',[name])
+    cursor.callproc('__wp_gettransformationsByName',[name])
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
