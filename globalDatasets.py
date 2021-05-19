@@ -173,7 +173,7 @@ def savePathParameter(paths,model):
 def getParametersByModel(model):
     results = []
     cursor = connect('postgresql_alfa').cursor()
-    cursor.callproc('getparametersbymodel',[model])
+    cursor.callproc('__wp_getparametersbymodel',[model])
     result = cursor.fetchall()
     for row in result:
         results.append(row)
@@ -185,7 +185,7 @@ def getParametersByModel(model):
 def getParameter(name):
 	result = ''
 	cursor = connect('postgresql').cursor()
-	cursor.callproc('getparameterbyname',[name])
+	cursor.callproc('__wp_getparameterbyname',[name])
 	result = cursor.fetchall()
 	for row in result:
 		result = row
@@ -196,7 +196,7 @@ def getParameter(name):
 def getAllBasins():
     results = []
     cursor = connect('postgresql').cursor()
-    cursor.callproc('getallbasins',[])
+    cursor.callproc('__wp_getallbasins',[])
     result = cursor.fetchall()
     for row in result:
         results.append(row)
@@ -207,7 +207,7 @@ def getAllBasins():
 def BasinByLabel(label):
     results = ""
     cursor = connect('postgresql').cursor()
-    cursor.callproc('getbasinbylabel',[label])
+    cursor.callproc('__wp_getbasinbylabel',[label])
     result = cursor.fetchall()
     for row in result:
         result = row

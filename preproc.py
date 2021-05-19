@@ -167,7 +167,7 @@ def getRegionFromId(basin):
 	result = ''
 	conn = connect('postgresql_alfa')
 	cursor = conn.cursor()
-	cursor.callproc('getBasin',[basin])
+	cursor.callproc('__wp_getBasin',[basin])
 	result = cursor.fetchall()
 	for row in result:
 		result = row
@@ -180,7 +180,7 @@ def getConstantFromBasin(basin,constantName):
 	result = ''
 	conn = connect('postgresql_alfa')
 	cursor = conn.cursor()
-	cursor.callproc('getconstant',[basin,constantName])
+	cursor.callproc('__wp_getconstant',[basin,constantName])
 	result = cursor.fetchall()
 	for row in result:
 		result = row
@@ -194,7 +194,7 @@ def getParameters(basin,model):
 	listResult = []
 	conn = connect('postgresql_alfa')
 	cursor = conn.cursor()
-	cursor.callproc('getparametersmodel',[basin,model])
+	cursor.callproc('__wp_getparametersmodel',[basin,model])
 	result = cursor.fetchall()
 	for row in result:
 		listResult.append(row)

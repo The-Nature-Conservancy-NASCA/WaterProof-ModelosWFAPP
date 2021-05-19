@@ -72,7 +72,7 @@ def getBiophysicParams(user,macro_region,default):
     results = list()
     keys=list()
     cursor = connect('postgresql_alfa').cursor()
-    cursor.callproc('get_biophysycal_params', [macro_region,default,user])
+    cursor.callproc('__wp_getpathbasinparameter', [macro_region,default,user])
     result = cursor.fetchall()
     resultKeys=cursor.description
     for key in resultKeys:
