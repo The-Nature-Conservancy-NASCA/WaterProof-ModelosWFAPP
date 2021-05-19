@@ -119,8 +119,7 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 
 	carbon = False
 	# try:
-	for i in catch:
-		getDataDB( catch[i], "__wp_intake_emptycols" )
+	getDataDB( i, "__wp_intake_emptycols" )
 
 	for model in models:
 		logger.debug("executeFunction for model :: %s" % {model})
