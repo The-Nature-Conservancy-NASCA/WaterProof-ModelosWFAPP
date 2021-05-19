@@ -358,7 +358,7 @@ async def cobTrans(pathCobs,pathLULC):
 
 
 @app.get("/disaggregation")
-async def disaggregation(types, id_usuario, basin, case, models, catchment):
+async def disaggregation( id_usuario, basin, case, catchment):
 
 	path_data_in = path.join( ruta, "salidas", "disaggregation", "INPUTS" )
 	path_data_out = path.join( ruta, "salidas", "disaggregation", "Out" )

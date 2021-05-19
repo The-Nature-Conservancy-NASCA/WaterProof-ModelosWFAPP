@@ -17,14 +17,14 @@ in_nbs    = '01-INPUTS_NBS.csv'
 in_time   = '01-INPUTS_Time.csv'
 
 def DataCSVDis(type,catchment,studycase):
-    genCSVInvest(catchment, '__wp_dissagregation_invest',in_invest)
+    genCSVInvest(catchment,studycase, '__wp_dissagregation_invest',in_invest)
     genCSVNBS(studycase, '__wp_dissagregation_nbs_first', '__wp_dissagregation_nbs_second',in_nbs)
     genCSVTime(studycase, '__wp_dissagregation_time',in_time)
 
 
-def genCSVInvest(catchment, function_id, csv_in):
+def genCSVInvest(catchment,studycase, function_id, csv_in):
     header=["Scenario-InVEST","AWY (m3)","Wsed (Ton)","WN (Kg)","WP (kg)","BF (m3)","WC (Ton)"]
-    results = getDataDB( catchment, function_id )
+    results = getDataDBInVEST( catchment, studycase, function_id )
     pathcsv= path.join( ruta, "salidas", "disaggregation", "INPUTS", csv_in )
     generateCsv( header, results, pathcsv )
 
@@ -57,4 +57,18 @@ def genCSVTime(studycase, function_id, csv_in):
     pathcsv= path.join( ruta, "salidas", "disaggregation", "INPUTS", csv_in )
     generateCsv( header, results, pathcsv )
 
+def getDataDBInVEST( catchment, studycase,  funcion_db ):
+    result = ''
+    listResult = []
+    conn = connect('postgresql_alfa')
+    cursor = conn.cursor()
+    cursor.callproc(funcion_db,[catchment,studycase])
+    result = cursor.fetchall()
+    for row in result:
+        listResult.append(row)
+    cursor.close()
+    conn.close()
+    if (listResult ==[]):
+        raise Exception(f'Sin datos para el id: {id}')
 
+    return listResult
