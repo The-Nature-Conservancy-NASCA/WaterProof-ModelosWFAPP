@@ -24,12 +24,10 @@ services:
       - PATH_FILES=/home/skaphe/Documentos/tnc/modelos
       - GDAL_DATA=/usr/share/gdal
     volumes:
-      # - /home/skaphe/Documentos/tnc/modelos/entradas/:/home/skaphe/Documentos/tnc/modelos/entradas/
-      # - /home/skaphe/Documentos/tnc/modelos/salidas/:/home/skaphe/Documentos/tnc/modelos/salidas/
-      # - /Users/edwin/geonode/workspace/models/data/inputs/:/home/skaphe/Documentos/tnc/modelos/entradas/
-      # - /Users/edwin/geonode/workspace/models/data/outputs/:/home/skaphe/Documentos/tnc/modelos/salidas/
-      - F:/PROYECTOS/TNC/WFAPP/modelos/entradas/:/home/skaphe/Documentos/tnc/modelos/entradas/
-      - F:/PROYECTOS/TNC/WFAPP/modelos/salidas/:/home/skaphe/Documentos/tnc/modelos/salidas/
+      - /home/skaphe/tnc/models/inputs/:/home/skaphe/Documentos/tnc/modelos/entradas/
+      - /home/skaphe/tnc/models/outputs/:/home/skaphe/Documentos/tnc/modelos/salidas/
+      # - F:/PROYECTOS/TNC/WFAPP/modelos/entradas/:/home/skaphe/Documentos/tnc/modelos/entradas/
+      # - F:/PROYECTOS/TNC/WFAPP/modelos/salidas/:/home/skaphe/Documentos/tnc/modelos/salidas/
     ports:
       - 8000:8000
       - 3000:3000
