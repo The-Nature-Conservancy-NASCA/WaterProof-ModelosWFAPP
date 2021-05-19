@@ -246,9 +246,21 @@ def calculateCarbonSum(catchment,path,label):
 	raster = os.path.join(path,'out','01-INVEST_QUALITY','CARBON','tot_c_cur_' + label + '.tif')
 	statCalc = calculateStatistic(stats,raster,catchment)
 	return statCalc
- 
+
+def getPathsClimateValueFromStudyCaseId(id):
+	listResult = []
+	conn = connect('postgresql_alfa')
+	cursor = conn.cursor()
+	cursor.callproc('__wpget_paths_climate_value',[id])
+	result = cursor.fetchall()
+	for row in result:
+		listResult.append(row)
+	cursor.close()
+	conn.close()
+	return listResult
+
 # Procesar parametros
-def processParameters(parametersList, basin, catchment, pathF, type, model, user, year):
+def processParameters(parametersList, basin, catchment, pathF, type, model, user, year, id_case):
 	dictParameters = dict()
 	out_path = ""
 	in_path = ""
@@ -275,12 +287,44 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 
 	default_year = "YEAR_0"
 	year_dir = "/YEAR_{}/".format(year)
+
+	paths_climate_value = getPathsClimateValueFromStudyCaseId(id_case)
+	erosivity_path_cv = ''
+	eto_path_cv = ''
+	precipitation_path_cv = ''
+	
+	PRECIPITATION = '01-Precipitation'
+	EVAPOTRANSPIRATION = '02-Evapotranspiration'
+	RAINFALL_EROSIVITY = '06-Rainfall_Erosivity'
+	
+	EROSIVITY_PATH = 'erosivity_path'
+	ETO_PATH = 'eto_path'
+	PRECIPITATION_PATH = 'precipitation_path'
+
+	if (len(paths_climate_value) > 0):
+		for p in paths_climate_value:
+			path = p[2]
+			if (PRECIPITATION in path):
+				precipitation_path_cv = path
+			elif (EVAPOTRANSPIRATION in path):
+				eto_path_cv = path
+			elif (RAINFALL_EROSIVITY in path):
+				erosivity_path_cv = path	
 	
 	for parameter in parametersList:
 		name = parameter[0]
 		value = parameter[1]
 		if default_year in value:
 			value = value.replace(default_year, year_dir)
+
+		if (name == PRECIPITATION_PATH and precipitation_path_cv != ''):
+			value = precipitation_path_cv
+
+		if (name == ETO_PATH and eto_path_cv != ''):
+			value = eto_path_cv
+
+		if (name == EROSIVITY_PATH and erosivity_path_cv != ''):
+			value = erosivity_path_cv
 
 		if(value == 'False'):
 			value = False
@@ -335,7 +379,7 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 		dictParameters[name] = value
 	return dictParameters,out_path,label
 
-def executeFunction(basin,model,type,id_catchment,id_usuario, year):
+def executeFunction(basin,model,type,id_catchment,id_usuario, year, id_case):
 	logger.info("execFunction :: start")
 	print(":: execFunction :: start")
 	date = datetime.date.today()
@@ -343,7 +387,7 @@ def executeFunction(basin,model,type,id_catchment,id_usuario, year):
 
 	list = getParameters(basin,model)	
 	catchment = exportToShp(id_catchment, path)
-	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year)
+	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year, id_case)
 	json_parameters = json.dumps(parameters, indent=2)
 	print("writing file %s/parameters_.json" % (path))
 	txt_file = open(os.path.join(path,"parameters_" + model + ".json"), "w")

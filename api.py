@@ -129,9 +129,9 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 		if type == "NBS":
 			for x in range(0,year):
 				print(":: executeFunction model %s , Type: NBS for Year :: %s of %s" % (model, x, year))
-				catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, x)
+				catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, x, case)
 		else:
-			catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, year)
+			catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, year, case)
 		if (model == 'carbon'):
 			carbon = True
 
