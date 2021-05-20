@@ -119,9 +119,15 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	if type == "BaU" or type == "NBS": # TODO: Para current tambien se necesita
 		year = preproc.analysisPeriodFromStudyCase(case)
 		# 30  # TODO: get the true last year from case study analysis_period_value (done)
+	elif type == "current":
+		year = 0
 	carbon = False
 	# try:
 	
+	model_dir = '01-INVEST_QUALITY';
+	year_dir = 'YEAR_' + str(year)
+	if(type != "quality"):
+		model_dir = '03-INVEST';
 
 	for model in models:
 		#logger.debug("executeFunction for model :: %s" % {model})
@@ -138,20 +144,18 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	dictResult['resultado'] = 'successful execution for type :: {}'.format(type)
 
 	dictResult['resultado'] = {}
-	
 
 	sum_carbon = -999 # TODO :: Validate if can be negative as disable value
 	if (carbon):
 		print ("Calculate carbon sum,")
-		sum_carbon = preproc.calculateCarbonSum(catchmentShp,path,label)
-
+		sum_carbon = preproc.calculateCarbonSum(catchmentShp,path,label, model_dir, year_dir)
+	
 	if(type == "quality" or type == "BaU"):
-		execute = preproc.verifyExec(path)
+		execute = preproc.verifyExec(path, model_dir)
 		cont = 0
 		dictResult['resultado'] = []
 		for c in catch:
-			
-			s,n,p,q,sW,nW,pW = preproc.calcConc(execute,path,label,cont)
+			s,n,p,q,sW,nW,pW,bf = preproc.calcConc(execute,path,label,cont, model_dir, year_dir)
 			if math.isnan(s):
 				s = 0
 			elif math.isnan(n):
@@ -184,7 +188,8 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 					"phosporus":p
 				}
 			})
-			cont = cont + 1	
+			cont = cont + 1
+			preproc.insertInvestResult(year,type,q,nW,pW,s,bf,sum_carbon[0]['sum'],c, case, id_usuario)
 			
 	# elif(type == "currentCarbon"):
 	# 	sumCarbon = calculateCarbonSum(catchmentShp,path,label)

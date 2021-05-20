@@ -202,7 +202,7 @@ def getParameters(basin,model):
 	conn.close()
 	return listResult
 
-# Obtener parametros de modelo
+# Insert Quqlity Parameters
 def InsertQualityParameters(catchment,element,awy,wsed,wn,wp,csed,cn,cp):
 	listResult = []
 	conn = connect('postgresql_alfa')
@@ -213,8 +213,9 @@ def InsertQualityParameters(catchment,element,awy,wsed,wn,wp,csed,cn,cp):
 	conn.close()
 
 # Evaluar si existen las ejecuciones realizadas para AWY, SDR y NDR para calcular concentraciones
-def verifyExec(path):
-	pathWs = os.path.join(path,"out","01-INVEST_QUALITY")
+def verifyExec(path, sub_dir):
+	#sub_dir = "01-INVEST_QUALITY"
+	pathWs = os.path.join(path,"out",sub_dir)
 	execute = True
 	execList = []
 	execList.append("AWY")
@@ -231,19 +232,20 @@ def verifyExec(path):
 	return execute
  
 # Ejecutar calculo de concentraciones
-def calcConc(execute,path,label,cont):
+def calcConc(execute,path,label,cont, sub_dir, year_dir):
 	pathWs = os.path.join(path,"out")
 	if(execute):
-		s,n,p,q,sW,nW,pW = cntr(pathWs,label,cont)
+		s,n,p,q,sW,nW,pW,bf = cntr(pathWs,label,cont, sub_dir, year_dir)
 	else:
-		s,n,p,q,sW,nW,pW = [-1,-1,-1,-1,-1,-1,-1]
+		s,n,p,q,sW,nW,pW,bf = [-1,-1,-1,-1,-1,-1,-1,-1]
 
-	return s,n,p,q,sW,nW,pW
+	return s,n,p,q,sW,nW,pW,bf
  
 #Calcular sumatoria de resultado de carbon
-def calculateCarbonSum(catchment,path,label):
+def calculateCarbonSum(catchment,path,label, model_dir, year_dir):
 	stats = ['sum']
-	raster = os.path.join(path,'out','01-INVEST_QUALITY','CARBON','tot_c_cur_' + label + '.tif')
+	#model_dir = '01-INVEST_QUALITY'
+	raster = os.path.join(path,'out',model_dir,'CARBON', year_dir,'tot_c_cur_' + label + '.tif')
 	statCalc = calculateStatistic(stats,raster,catchment)
 	return statCalc
 
@@ -267,8 +269,12 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 	out_folder = parametersList[0][9]
 	out_folder_quality = parametersList[0][10]
 	print("processParameters :: outFolder :: {%s}" % {out_folder})
-	print("processParameters :: out_folder_quality :: {%s}" % {out_folder_quality})
+	print("processParameters :: out_folder_quality :: {%s}" % {out_folder_quality})	
 	
+	erosivity_path_cv = ''
+	eto_path_cv = ''
+	precipitation_path_cv = ''
+
 	if(type == "quality" or type == "currentCarbon"):
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder_quality)
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder_quality)
@@ -279,8 +285,31 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 			os.mkdir(out_path)
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder, 'YEAR_' + str(year))
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder)
-	
 
+		if (type != "current"):
+			paths_climate_value = getPathsClimateValueFromStudyCaseId(id_case)
+						
+			PRECIPITATION = '01-Precipitation'
+			EVAPOTRANSPIRATION = '02-Evapotranspiration'
+			RAINFALL_EROSIVITY = '06-Rainfall_Erosivity'
+			
+			EROSIVITY_PATH = 'erosivity_path'
+			ETO_PATH = 'eto_path'
+			PRECIPITATION_PATH = 'precipitation_path'
+
+			if (len(paths_climate_value) > 0):
+				for p in paths_climate_value:
+					path = p[2]
+					if (PRECIPITATION in path):
+						print("Using Climate Value PATH for: %s" % PRECIPITATION)
+						precipitation_path_cv = path
+					elif (EVAPOTRANSPIRATION in path):
+						eto_path_cv = path
+						print("Using Climate Value PATH for: %s" % EVAPOTRANSPIRATION)
+					elif (RAINFALL_EROSIVITY in path):
+						print("Using Climate Value PATH for: %s" % RAINFALL_EROSIVITY)
+						erosivity_path_cv = path	
+				
 	isdir = os.path.isdir(out_path)
 	if(not isdir):
 		os.mkdir(out_path)
@@ -291,32 +320,7 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 
 	default_year = "YEAR_0"
 	year_dir = "/YEAR_{}/".format(year)
-
-	paths_climate_value = getPathsClimateValueFromStudyCaseId(id_case)
-	erosivity_path_cv = ''
-	eto_path_cv = ''
-	precipitation_path_cv = ''
 	
-	PRECIPITATION = '01-Precipitation'
-	EVAPOTRANSPIRATION = '02-Evapotranspiration'
-	RAINFALL_EROSIVITY = '06-Rainfall_Erosivity'
-	
-	EROSIVITY_PATH = 'erosivity_path'
-	ETO_PATH = 'eto_path'
-	PRECIPITATION_PATH = 'precipitation_path'
-
-	if (len(paths_climate_value) > 0):
-		for p in paths_climate_value:
-			path = p[2]
-			if (PRECIPITATION in path):
-				print("Using Climate Value PATH for: %s" % PRECIPITATION)
-				precipitation_path_cv = path
-			elif (EVAPOTRANSPIRATION in path):
-				eto_path_cv = path
-				print("Using Climate Value PATH for: %s" % EVAPOTRANSPIRATION)
-			elif (RAINFALL_EROSIVITY in path):
-				print("Using Climate Value PATH for: %s" % RAINFALL_EROSIVITY)
-				erosivity_path_cv = path	
 	
 	for parameter in parametersList:
 		name = parameter[0]
@@ -517,3 +521,13 @@ def analysisPeriodFromStudyCase(id):
 	except:
 		year=-1
 	return year
+
+# Insert Invest Result
+def insertInvestResult(year, type, awy, wn_kg, wp_kg, wsed_ton, bf_m3, wc_ton,intake_id, study_case_id, user_id):
+	listResult = []
+	conn = connect('postgresql_alfa')
+	cursor = conn.cursor()
+	cursor.callproc('__wp_invest_result_insert',[year, type, awy, wn_kg, wp_kg, wsed_ton, bf_m3, wc_ton,intake_id, study_case_id, user_id])
+	conn.commit()
+	cursor.close()
+	conn.close()
