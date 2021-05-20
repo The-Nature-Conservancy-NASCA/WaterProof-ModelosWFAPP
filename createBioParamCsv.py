@@ -72,20 +72,14 @@ def getBiophysicParams(user,macro_region,default):
     results = list()
     keys=list()
     cursor = connect('postgresql_alfa').cursor()
-    cursor.callproc('__wp_getpathbasinparameter', [macro_region,default,user])
+    cursor.callproc('__wp_get_biophysycal_params', [macro_region,default,user])
     result = cursor.fetchall()
     resultKeys=cursor.description
     for key in resultKeys:
-        #print("RESULT KEY")
-        #print(key[0])
         keys.append(key[0])
     for row in result:
-        #print("Row")
-        #print(row)
         results.append(row)
     return results,keys
-
-
 
 # connectMongo("apps.skaphe.com",27017,"waterProof","parametros_biofisicos")
 

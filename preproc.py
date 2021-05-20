@@ -273,6 +273,10 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder_quality)
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder_quality)
 	else:
+		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder)
+		isdir = os.path.isdir(out_path)
+		if(not isdir):
+			os.mkdir(out_path)
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder, 'YEAR_' + str(year))
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder)
 	
@@ -305,10 +309,13 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 		for p in paths_climate_value:
 			path = p[2]
 			if (PRECIPITATION in path):
+				print("Using Climate Value PATH for: %s" % PRECIPITATION)
 				precipitation_path_cv = path
 			elif (EVAPOTRANSPIRATION in path):
 				eto_path_cv = path
+				print("Using Climate Value PATH for: %s" % EVAPOTRANSPIRATION)
 			elif (RAINFALL_EROSIVITY in path):
+				print("Using Climate Value PATH for: %s" % RAINFALL_EROSIVITY)
 				erosivity_path_cv = path	
 	
 	for parameter in parametersList:
