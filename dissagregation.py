@@ -16,7 +16,7 @@ in_invest = '01-INPUTS_InVEST.csv'
 in_nbs    = '01-INPUTS_NBS.csv'
 in_time   = '01-INPUTS_Time.csv'
 
-def DataCSVDis(type,catchment,studycase):
+def DataCSVDis(catchment,studycase):
     genCSVInvest(catchment,studycase, '__wp_dissagregation_invest',in_invest)
     genCSVNBS(studycase, '__wp_dissagregation_nbs_first', '__wp_dissagregation_nbs_second',in_nbs)
     genCSVTime(studycase, '__wp_dissagregation_time',in_time)
