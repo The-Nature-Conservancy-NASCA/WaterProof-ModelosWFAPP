@@ -189,7 +189,7 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 				}
 			})
 			cont = cont + 1
-			preproc.insertInvestResult(year,type,q,nW,pW,s,bf,sum_carbon[0]['sum'],c, case, id_usuario)
+			preproc.insertInvestResult(year,type,q,nW,pW,sW,bf,sum_carbon[0]['sum'],c, case, id_usuario)
 			
 	# elif(type == "currentCarbon"):
 	# 	sumCarbon = calculateCarbonSum(catchmentShp,path,label)

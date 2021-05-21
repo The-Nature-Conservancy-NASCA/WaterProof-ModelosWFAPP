@@ -81,8 +81,4 @@ def getBiophysicParams(user,macro_region,default):
         results.append(row)
     return results,keys
 
-# connectMongo("apps.skaphe.com",27017,"waterProof","parametros_biofisicos")
-
-# values,headers = getColsParams("apps.skaphe.com",27017,"waterProof","parametros_biofisicos",1,"SA_1",True)
-# generateCsv(headers,values)
 

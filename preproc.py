@@ -275,6 +275,13 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 	eto_path_cv = ''
 	precipitation_path_cv = ''
 
+	PRECIPITATION = '01-Precipitation'
+	EVAPOTRANSPIRATION = '02-Evapotranspiration'
+	RAINFALL_EROSIVITY = '06-Rainfall_Erosivity'
+	
+	EROSIVITY_PATH = 'erosivity_path'
+	ETO_PATH = 'eto_path'
+	PRECIPITATION_PATH = 'precipitation_path'
 	if(type == "quality" or type == "currentCarbon"):
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder_quality)
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder_quality)
@@ -288,14 +295,6 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 
 		if (type != "current"):
 			paths_climate_value = getPathsClimateValueFromStudyCaseId(id_case)
-						
-			PRECIPITATION = '01-Precipitation'
-			EVAPOTRANSPIRATION = '02-Evapotranspiration'
-			RAINFALL_EROSIVITY = '06-Rainfall_Erosivity'
-			
-			EROSIVITY_PATH = 'erosivity_path'
-			ETO_PATH = 'eto_path'
-			PRECIPITATION_PATH = 'precipitation_path'
 
 			if (len(paths_climate_value) > 0):
 				for p in paths_climate_value:
@@ -382,7 +381,6 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 			region = getRegionFromId(basin)
 			label = region[4]
 			file = os.path.join(os.getcwd(),pathF,'in',"biophysical_table.csv")
-			# values,headers = getColsParams("apps.skaphe.com",27017,"waterProof","parametros_biofisicos",user,label,True)
 			default = 'y'
 			values, headers = getBiophysicParams(user, label, default)
 			generateCsv(headers,values,file)
