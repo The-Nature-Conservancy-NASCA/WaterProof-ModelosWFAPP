@@ -22,7 +22,7 @@ services:
       - PG_PASSWORD=${PG_PASSWORD}
       - PG_PORT=${PG_PORT}
       - PATH_FILES=${PATH_FILES}
-      - GDAL_DATA=${GDAL_DATA}
+      - GDAL_DATA=/usr/share/gdal
     volumes:
       - /home/skaphe/Documentos/tnc/modelos/entradas/:/home/skaphe/Documentos/tnc/modelos/entradas/
       - /home/skaphe/Documentos/tnc/modelos/salidas/:/home/skaphe/Documentos/tnc/modelos/salidas/      
