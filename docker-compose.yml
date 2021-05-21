@@ -13,21 +13,19 @@ services:
     container_name: wfapp_py3_container
     build: .
     environment:
-      - PG_HOST=dev.skaphe.com
-      - PG_GEO_DATABASE=geonode_data
-      - PG_GEO_USER=postgres
-      - PG_GEO_PASSWORD=bYMk&M{6E]9s?g"*[Q^;I^m4@x5qkO
-      - PG_DATABASE=geonode
-      - PG_USER=postgres
-      - PG_PASSWORD=bYMk&M{6E]9s?g"*[Q^;I^m4@x5qkO
-      - PG_PORT=5432
-      - PATH_FILES=/home/skaphe/Documentos/tnc/modelos
-      - GDAL_DATA=/usr/share/gdal
+      - PG_HOST=${PG_HOST}
+      - PG_GEO_DATABASE=${PG_GEO_DATABASE}
+      - PG_GEO_USER=${PG_GEO_USER}
+      - PG_GEO_PASSWORD=${PG_GEO_PASSWORD}
+      - PG_DATABASE=${PG_DATABASE}
+      - PG_USER=${PG_USER}
+      - PG_PASSWORD=${PG_PASSWORD}
+      - PG_PORT=${PG_PORT}
+      - PATH_FILES=${PATH_FILES}
+      - GDAL_DATA=${GDAL_DATA}
     volumes:
-      - /home/skaphe/tnc/models/inputs/:/home/skaphe/Documentos/tnc/modelos/entradas/
-      - /home/skaphe/tnc/models/outputs/:/home/skaphe/Documentos/tnc/modelos/salidas/
-      # - F:/PROYECTOS/TNC/WFAPP/modelos/entradas/:/home/skaphe/Documentos/tnc/modelos/entradas/
-      # - F:/PROYECTOS/TNC/WFAPP/modelos/salidas/:/home/skaphe/Documentos/tnc/modelos/salidas/
+      - /home/skaphe/Documentos/tnc/modelos/entradas/:/home/skaphe/Documentos/tnc/modelos/entradas/
+      - /home/skaphe/Documentos/tnc/modelos/salidas/:/home/skaphe/Documentos/tnc/modelos/salidas/      
     ports:
       - 8000:8000
       - 3000:3000
