@@ -34,6 +34,8 @@ from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregat
 from ROI_WaterFunds.ROI import ROI_Analisys
 import logging
 import json
+import re
+import math
 
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
 logger.setLevel(logging.INFO)
@@ -529,3 +531,82 @@ def insertInvestResult(year, type, awy, wn_kg, wp_kg, wsed_ton, bf_m3, wc_ton,in
 	conn.commit()
 	cursor.close()
 	conn.close()
+
+''' Calculate Cost function '''
+def costFunctionExecute(intake_id, study_case_id, user_id):
+
+	conn = connect('postgresql_alfa')
+	cursor = conn.cursor()
+	cursor.callproc('__wp_get_function_cost_study_cases',[study_case_id])
+	rows = cursor.fetchall()
+	cursor.close()
+	Q = 'Q'
+	CN = 'CN'
+	CP = 'CP'
+	CSed = 'CSed'
+	WN = 'WN'
+	WP = 'WP' 
+	WSed = 'WSed'
+	WSedRet = 'WSedRet'
+	WNRet = 'WNRet'
+	WPRet = 'WPRet'
+	expression = ''
+	
+	for row in rows:
+		vars = dict()
+		graphid = str(row[17])
+		year = row[0]
+		element = row[1]
+		money = row[2]
+		factor = float(row[3])
+		stage = row[4]		
+		awy = row[5]
+		
+		vars[Q + graphid] = row[6] 
+		vars[CN + graphid] = row[7]
+		vars[CP + graphid] = row[8]
+		vars[CSed + graphid] = row[9]
+		vars[WN + graphid] = row[10]
+		vars[WP + graphid] = row[11]
+		vars[WSed + graphid] = row[12]
+		vars[WNRet + graphid] = row[13]
+		vars[WPRet + graphid] = row[14]
+		vars[WSedRet + graphid] = row[15]
+		expression = row[16]
+				
+		if (not expression is None and expression.strip() != ''):
+			args = re.findall(r'[a-zA-Z_]\w*', expression)
+			ALLOWED_NAMES = {
+				k: v for k, v in math.__dict__.items() if not k.startswith("__")
+			}
+			args = remove_no_vars(args)
+			# global_vars = dict()
+			# for v in args:
+			# 	global_vars[v] = 1
+			result = -99999
+			try:
+				code = compile(expression, "<string>", "eval")
+				result = eval(code,vars,ALLOWED_NAMES)	
+				result_factor = result * factor
+			except:
+				result = -99999
+
+			cursor = conn.cursor()
+			cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_id, element, year, result_factor, money, study_case_id, user_id])
+			conn.commit()
+			cursor.close()
+	
+	conn.close()
+	return True
+
+""" Remove special functions o math expressions"""
+""" (i.e: min: E2, E3) """
+def remove_no_vars(vars):
+
+	special_values = ['min', 'E2', 'E3']
+	# if (settings.WATERPROOF_SPECIAL_VALUES):
+	#	special_values = settings.WATERPROOF_SPECIAL_VALUES
+	for v in special_values:
+		while v in vars:
+			vars.remove(v)    
+	return vars
