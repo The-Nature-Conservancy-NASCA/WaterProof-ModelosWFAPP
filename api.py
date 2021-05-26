@@ -136,7 +136,7 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 		#logger.debug("executeFunction for model :: %s" % {model})
 		#print(":: executeFunction for model :: %s" % {model})
 		if type == constants.INVEST_TYPE_NBS:
-			for y in range(1,year):
+			for y in range(1,year+1):
 				print(":: executeFunction model %s , Type: NBS for Year :: %s of %s" % (model, y, year))
 				catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, y, case)
 		else:
