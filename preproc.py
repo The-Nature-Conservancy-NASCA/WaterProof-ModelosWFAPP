@@ -420,15 +420,15 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 		dictParameters[name] = value
 	return dictParameters,out_path,label
 
-def executeFunction(basin,model,type,id_catchment,id_usuario, year, id_case):
+def executeFunction(basin,model,type,catchments,id_usuario, year, id_case):
 	logger.info("execFunction :: start")
 	print(":: execFunction :: start")
 	date = datetime.date.today()
 	path = createFolder(id_usuario,date)
 
 	list = getParameters(basin,model)	
-	catchment = exportToShp(id_catchment, path)
-	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year, id_case, id_catchment)
+	catchment = exportToShp(catchments, path)
+	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year, id_case, catchment[0])
 	json_parameters = json.dumps(parameters, indent=2)
 	print("writing file %s/parameters_.json" % (path))
 	txt_file = open(os.path.join(path,"parameters_" + model + "_" + type + ".json"), "w")
