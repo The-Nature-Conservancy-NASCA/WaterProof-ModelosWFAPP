@@ -18,7 +18,7 @@ from natcap.invest import carbon
 from zonalStatistics import calculateRainfallDayMonth,calculateStatistic
 from zonalStatistics import saveCsv
 from calculateConcentrations import calcConcentrations as cntr
-from createBioParamCsv import getColsParams,generateCsv, getBiophysicParams
+from createBioParamCsv import generateCsv, getDefaultBiophysicParams, getUserBiophysicParams
 sys.path.append('config')
 from config import config
 from connect import connect
@@ -405,8 +405,17 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 			label = region[4]
 			file = os.path.join(os.getcwd(),pathF,'in',"biophysical_table.csv")
 			default = 'y'
-			values, headers = getBiophysicParams(user, label, default)
-			generateCsv(headers,values,file)
+			#values, headers = getBiophysicParams(user, label, default)
+
+			values,headers=getDefaultBiophysicParams(label,default)
+			valuesUser,headersUser=getUserBiophysicParams(catchment,id_case,user,label,'N')
+            # Reemplazar los parametros del usuario 
+            # en los parametros por defecto
+			for userIdx,valUser in enumerate(valuesUser):
+				for defIdx,defVal in enumerate(values):
+					if (valUser[0]==defVal[0]):
+						values[defIdx]=valUser
+			generateCsv(headers, values, file)
 			value = file
 		dictParameters[name] = value
 	return dictParameters,out_path,label
@@ -422,7 +431,7 @@ def executeFunction(basin,model,type,id_catchment,id_usuario, year, id_case):
 	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year, id_case)
 	json_parameters = json.dumps(parameters, indent=2)
 	print("writing file %s/parameters_.json" % (path))
-	txt_file = open(os.path.join(path,"parameters_" + model + ".json"), "w")
+	txt_file = open(os.path.join(path,"parameters_" + model + "_" + type + ".json"), "w")
 	txt_file.write(json_parameters)
 	txt_file.close()
 	# print(json.dumps(parameters, indent=2))

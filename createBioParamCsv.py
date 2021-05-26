@@ -66,18 +66,56 @@ def generateCsv(header,values, file):
 
 
 # Get Biophysical parameter filters by macroregion
-def getBiophysicParams(user,macro_region,default):
-    #print("getBiophysicParams :: init")
-    #print("user: %s,macro_region: %s,default: %s" % (user,macro_region,default))
+# def getBiophysicParams(user,macro_region,default):
+#     #print("getBiophysicParams :: init")
+#     #print("user: %s,macro_region: %s,default: %s" % (user,macro_region,default))
+#     results = list()
+#     keys=list()
+#     cursor = connect('postgresql_alfa').cursor()
+#     cursor.callproc('__wp_get_biophysycal_params', [macro_region,default,user])
+#     result = cursor.fetchall()
+#     resultKeys=cursor.description
+#     for key in resultKeys:
+#         keys.append(key[0])
+#     for row in result:
+#         results.append(row)
+#     return results,keys
+
+
+def getDefaultBiophysicParams(macro_region,default):
     results = list()
     keys=list()
     cursor = connect('postgresql_alfa').cursor()
-    cursor.callproc('__wp_get_biophysycal_params', [macro_region,default,user])
+    cursor.callproc('get_default_biophysycal_params', [macro_region,default])
     result = cursor.fetchall()
     resultKeys=cursor.description
     for key in resultKeys:
+        # print("RESULT KEY")
+        # print(key[0])
         keys.append(key[0])
     for row in result:
+        # print("Row")
+        # print(row)
+        results.append(row)
+    return results,keys
+
+# Obtener parametros biofisicos por defecto filtrados por
+# macroregion 
+
+def getUserBiophysicParams(intake,studyCase,user,macro_region,default):
+    results = list()
+    keys=list()
+    cursor = connect('postgresql_alfa').cursor()
+    cursor.callproc('get_user_biophysycal_params', [macro_region,default,intake,studyCase,user])
+    result = cursor.fetchall()
+    resultKeys=cursor.description
+    for key in resultKeys:
+        # print("RESULT KEY")
+        # print(key[0])
+        keys.append(key[0])
+    for row in result:
+        # print("Row")
+        # print(row)
         results.append(row)
     return results,keys
 
