@@ -26,15 +26,20 @@ def calcConcentrations(path,label,cont,sub_dir,year_dir):
 	swy_file = os.path.join(path,sub_dir,'SWY',year_dir,'aggregated_results_swy_%s.dbf' % str(label))
 
 	swy_file_shp = swy_file.replace(".dbf",".shp")
-	area =  aqueduct.calculateArea(swy_file_shp)
+	area = 0.0
+	bf_value = 0.0
+	try:
+		area =  aqueduct.calculateArea(swy_file_shp)
+		bf_value = readDBF(swy_file,'qb',cont)  # mm
+		bf_value = (bf_value*area)/1000 # m3
+	except:
+		print("error executing swy model, maybe is not required...")
 
 	awy_value = readDBF(awy_file,'wyield_vol',cont) # m3
 	sdr_value = readDBF(sdr_file,'sed_export',cont) # Ton/year
 	ndrn_value = readDBF(ndr_file,'n_exp_tot',cont) # Kg/year
 	ndrp_value = readDBF(ndr_file,'p_exp_tot',cont) # Kg/year
-	bf_value = readDBF(swy_file,'qb',cont)  # mm
-
-	bf_value = (bf_value*area)/1000 # m3
+		
 	q = awy_value # l/s
 	sdrW = sdr_value # Ton/year
 	ndrnW = ndrn_value # Kg/year
