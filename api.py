@@ -116,9 +116,10 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	catch = sorted(catchment,key=int)
 	updateDataDB( catch[0], "__wp_intake_emptycols" )
 	year = "0"
-	if type == "BaU" or type == "NBS": # TODO: Para current tambien se necesita
-		year = preproc.analysisPeriodFromStudyCase(case)
-		# 30  # TODO: get the true last year from case study analysis_period_value (done)
+	if type == "NBS": 
+		year = preproc.timeImplementFromStudyCase(case)		
+	if type == "BaU": 
+		year = preproc.analysisPeriodFromStudyCase(case)		
 	elif type == "current":
 		year = 0
 	carbon = False
@@ -133,9 +134,13 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 		#logger.debug("executeFunction for model :: %s" % {model})
 		#print(":: executeFunction for model :: %s" % {model})
 		if type == "NBS":
-			for x in range(0,year):
-				print(":: executeFunction model %s , Type: NBS for Year :: %s of %s" % (model, x, year))
-				catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, x, case)
+			for y in range(1,year):
+				print(":: executeFunction model %s , Type: NBS for Year :: %s of %s" % (model, y, year))
+				catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, y, case)
+		if type == "BaU":
+			for y in range(1,year):
+				print(":: executeFunction model %s , Type: BaU for Year :: %s of %s" % (model, y, year))
+				catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, y, case)
 		else:
 			catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, year, case)
 		if (model == 'carbon'):

@@ -40,7 +40,7 @@ import math
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
 logger.setLevel(logging.INFO)
 
-ruta = environ["PATH_FILES"]
+base_path = environ["PATH_FILES"]
 
 # Exportar cuenca delimitada a shp
 def exportToShp(catchment, path):
@@ -105,9 +105,10 @@ def exportToShp(catchment, path):
 	return os.path.join(os.getcwd(),output)
 
 # Crear directorio para almacenar procesamientos
-def createFolder(user,date):
-	pathF = path.join(ruta,"salidas",str(user) + "_" + str(date.year) + "_" + str(date.month) + "_" + str(date.day))
-	# pathF = ruta + str(user) + "_" + str(date.year) + "_" + str(date.month) + "_" + str(date.day)
+def createFolder(user, id_case, date):
+	usr_folder = "%s_%s_%s-%s-%s" % (user,id_case, date.year, date.month, date.day)
+	out_folder = path.join(base_path,"out", usr_folder)
+	
 	folders = {
 		"in":[
 			"catchment",
@@ -127,22 +128,22 @@ def createFolder(user,date):
 			"06-AQUEDUCT"
 		]
 	}
-	isdir = path.isdir(pathF)
+	isdir = path.isdir(out_folder)
 	if(not isdir):
-		os.mkdir(pathF)
+		os.mkdir(out_folder)
 
 	for key in folders:
-		pathNew = os.path.join(pathF,key)
+		pathNew = os.path.join(out_folder,key)
 		isdirF = path.isdir(pathNew)
 		if(not isdirF):
 			os.mkdir(pathNew)
 		for item in folders[key]:
-			pathNew2 = os.path.join(pathF,key,item)
+			pathNew2 = os.path.join(out_folder,key,item)
 			isdirFF = path.isdir(pathNew2)
 			if(not isdirFF):
 				os.mkdir(pathNew2)
 	
-	return pathF
+	return out_folder
    
 # Cortar raster
 def cutRaster(catchment,path,out_path):
@@ -424,7 +425,7 @@ def executeFunction(basin,model,type,catchments,id_usuario, year, id_case):
 	logger.info("execFunction :: start")
 	print(":: execFunction :: start")
 	date = datetime.date.today()
-	path = createFolder(id_usuario,date)
+	path = createFolder(id_usuario, id_case, date)
 
 	list = getParameters(basin,model)	
 	shp_catchment_path = exportToShp(catchments, path)
@@ -552,6 +553,21 @@ def analysisPeriodFromStudyCase(id):
 	except:
 		year=-1
 	return year
+
+def timeImplementFromStudyCase(id):
+	print("timeImplementFromStudyCase - id::%s" % id)
+	conn = connect('postgresql_alfa')
+	cursor = conn.cursor()
+	sql = "select time_implement from public.waterproof_study_cases_studycases where id = %s" % id
+	cursor.execute(sql)
+	year = 1
+	try:
+		row = cursor.fetchone()
+		year = row[0]
+	except:
+		year=-1
+	return year
+
 
 # Insert Invest Result
 def insertInvestResult(year, type, awy, wn_kg, wp_kg, wsed_ton, bf_m3, wc_ton,intake_id, study_case_id, user_id):
