@@ -105,10 +105,10 @@ def exportToShp(catchment, path):
 	return os.path.join(os.getcwd(),output)
 
 # Crear directorio para almacenar procesamientos
-def createFolder(user, id_case, date):
+def createFolder(user, id_case, id_catchment ,date):
 	usr_folder = "%s_%s_%s-%s-%s" % (user,id_case, date.year, date.month, date.day)
 	out_folder = path.join(base_path,"salidas", usr_folder)
-	
+	wi_folder = "WI_%s" % (id_catchment)
 	folders = {
 		"in":[
 			"catchment",
@@ -128,22 +128,28 @@ def createFolder(user, id_case, date):
 			"06-AQUEDUCT"
 		]
 	}
+	
 	isdir = path.isdir(out_folder)
 	if(not isdir):
 		os.mkdir(out_folder)
 
+	out_folder_wi = path.join(out_folder, wi_folder)
+	isdir = path.isdir(out_folder_wi)
+	if(not isdir):
+		os.mkdir(out_folder_wi)
+
 	for key in folders:
-		pathNew = os.path.join(out_folder,key)
+		pathNew = os.path.join(out_folder_wi,key)
 		isdirF = path.isdir(pathNew)
 		if(not isdirF):
 			os.mkdir(pathNew)
 		for item in folders[key]:
-			pathNew2 = os.path.join(out_folder,key,item)
+			pathNew2 = os.path.join(out_folder_wi,key,item)
 			isdirFF = path.isdir(pathNew2)
 			if(not isdirFF):
 				os.mkdir(pathNew2)
 	
-	return out_folder
+	return out_folder_wi
    
 # Cortar raster
 def cutRaster(catchment,path,out_path):
@@ -425,11 +431,12 @@ def executeFunction(basin,model,type,catchments,id_usuario, year, id_case):
 	logger.info("execFunction :: start")
 	print(":: execFunction :: start")
 	date = datetime.date.today()
-	path = createFolder(id_usuario, id_case, date)
+	id_catchment = catchments[0]
+	path = createFolder(id_usuario, id_case, id_catchment ,date)
 
 	list = getParameters(basin,model)	
 	shp_catchment_path = exportToShp(catchments, path)
-	id_catchment = catchments[0]
+	
 	parameters,pathF,label = processParameters(list,basin,shp_catchment_path,path,type,model,id_usuario, year, id_case, id_catchment)
 	json_parameters = json.dumps(parameters, indent=2)
 	print("writing file %s/parameters_.json" % (path))
