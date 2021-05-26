@@ -408,7 +408,7 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 			#values, headers = getBiophysicParams(user, label, default)
 
 			values,headers=getDefaultBiophysicParams(label,default)
-			valuesUser,headersUser=getUserBiophysicParams(catchment,id_case,user,label,'N')
+			valuesUser,headersUser=getUserBiophysicParams(basin,id_case,user,label,'N')
             # Reemplazar los parametros del usuario 
             # en los parametros por defecto
 			for userIdx,valUser in enumerate(valuesUser):
