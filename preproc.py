@@ -264,7 +264,7 @@ def getPathsClimateValueFromStudyCaseId(id):
 	return listResult
 
 # Procesar parametros
-def processParameters(parametersList, basin, catchment, pathF, type, model, user, year, id_case):
+def processParameters(parametersList, basin, catchment, pathF, type, model, user, year, id_case, id_catchment):
 	dictParameters = dict()
 	out_path = ""
 	in_path = ""
@@ -408,7 +408,7 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 			#values, headers = getBiophysicParams(user, label, default)
 
 			values,headers=getDefaultBiophysicParams(label,default)
-			valuesUser,headersUser=getUserBiophysicParams(basin,id_case,user,label,'N')
+			valuesUser,headersUser=getUserBiophysicParams(id_catchment,id_case,user,label,'N')
             # Reemplazar los parametros del usuario 
             # en los parametros por defecto
 			for userIdx,valUser in enumerate(valuesUser):
@@ -428,7 +428,7 @@ def executeFunction(basin,model,type,id_catchment,id_usuario, year, id_case):
 
 	list = getParameters(basin,model)	
 	catchment = exportToShp(id_catchment, path)
-	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year, id_case)
+	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year, id_case, id_catchment)
 	json_parameters = json.dumps(parameters, indent=2)
 	print("writing file %s/parameters_.json" % (path))
 	txt_file = open(os.path.join(path,"parameters_" + model + "_" + type + ".json"), "w")
