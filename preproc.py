@@ -427,8 +427,9 @@ def executeFunction(basin,model,type,catchments,id_usuario, year, id_case):
 	path = createFolder(id_usuario,date)
 
 	list = getParameters(basin,model)	
-	catchment = exportToShp(catchments, path)
-	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year, id_case, catchment[0])
+	shp_catchment_path = exportToShp(catchments, path)
+	id_catchment = catchments[0]
+	parameters,pathF,label = processParameters(list,basin,shp_catchment_path,path,type,model,id_usuario, year, id_case, id_catchment)
 	json_parameters = json.dumps(parameters, indent=2)
 	print("writing file %s/parameters_.json" % (path))
 	txt_file = open(os.path.join(path,"parameters_" + model + "_" + type + ".json"), "w")
@@ -447,7 +448,7 @@ def executeFunction(basin,model,type,catchments,id_usuario, year, id_case):
 	elif(model == 'swy'):
 		swy.execute(parameters) 
 
-	return catchment,path,label
+	return shp_catchment_path,path,label
 
 
 """ Function to get the areas from IPO (Invest Portfolio)"""
