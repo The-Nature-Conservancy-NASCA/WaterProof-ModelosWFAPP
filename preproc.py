@@ -4,6 +4,7 @@
 
 
 # Importacion de librerias
+from constants import INVEST_TYPE_NBS, INVEST_TYPE_QUALITY
 import sys
 import os.path
 from os import path, environ
@@ -36,6 +37,7 @@ import logging
 import json
 import re
 import math
+import constants
 
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
 logger.setLevel(logging.INFO)
@@ -77,8 +79,6 @@ def exportToShp(catchment, path):
 		for c in catchment:
 			params = params + str(c) + ','
 		params = params[:-1] + ')'
-
-
 
 	if(catchment != -1):
 		sql = "select * from waterproof_intake_polygon where delimitation_type = 'SBN' and intake_id" + str(params)
@@ -295,7 +295,7 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 	PRECIPITATION_DIR = 'precip_dir'
 	ET0_DIR = 'et0_dir'
 
-	if(type == "quality" or type == "currentCarbon"):
+	if(type == INVEST_TYPE_QUALITY):
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder_quality)
 		isdir = os.path.isdir(out_path)
 		if(not isdir):
@@ -351,6 +351,12 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 
 		if (name == EROSIVITY_PATH and erosivity_path_cv != ''):
 			value = erosivity_path_cv
+
+		if (name == 'lulc_path' and type == constants.INVEST_TYPE_NBS):
+			# /home/skaphe/Documentos/tnc/modelos/salidas/1000-70-1-2021-5-25/WI_86
+			path_coverages = 'out/04-RIOS/1_investment_portfolio_adviser_workspace/activity_portfolios/continuous_activity_portfolios/translated_cob/'
+			raster_coverage_name = 'activity_portfolio_continuous_year_%s.tif' % year
+			value = os.path.join(pathF, path_coverages,raster_coverage_name)
 
 		if(value == 'False'):
 			value = False

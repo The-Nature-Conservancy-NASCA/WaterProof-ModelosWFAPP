@@ -28,8 +28,10 @@ import requests
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 import logging
 import ptvsd
+import constants
 
-ruta = environ["PATH_FILES"]
+
+base_path = environ["PATH_FILES"]
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
 logger.setLevel(logging.DEBUG)
 
@@ -125,15 +127,15 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	carbon = False
 	# try:
 	
-	model_dir = '01-INVEST_QUALITY';
+	model_dir = constants.INVEST_QUALITY_DIR
 	year_dir = 'YEAR_' + str(year)
-	if(type != "quality"):
+	if(type != constants.INVEST_TYPE_QUALITY):
 		model_dir = '03-INVEST';
 
 	for model in models:
 		#logger.debug("executeFunction for model :: %s" % {model})
 		#print(":: executeFunction for model :: %s" % {model})
-		if type == "NBS":
+		if type == constants.INVEST_TYPE_NBS:
 			for y in range(1,year):
 				print(":: executeFunction model %s , Type: NBS for Year :: %s of %s" % (model, y, year))
 				catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, y, case)
@@ -361,8 +363,8 @@ async def cobTrans(pathCobs,pathLULC):
 @app.get("/disaggregation")
 async def disaggregation( id_usuario, basin, case, catchment):
 
-	path_data_in = path.join( ruta, "salidas", "disaggregation", "INPUTS" )
-	path_data_out = path.join( ruta, "salidas", "disaggregation", "Out" )
+	path_data_in = path.join( base_path, "salidas", "disaggregation", "INPUTS" )
+	path_data_out = path.join( base_path, "salidas", "disaggregation", "Out" )
 
 	dict_result = dict()
 	dict_result['status'] = True
