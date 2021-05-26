@@ -146,11 +146,12 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	dictResult['resultado'] = {}
 
 	sum_carbon = -999 # TODO :: Validate if can be negative as disable value
+	sum_carbon_val = -999
 	if (carbon):
 		print ("Calculate carbon sum,")
 		sum_carbon = preproc.calculateCarbonSum(catchmentShp,path,label, model_dir, year_dir)
-	
-	if(type == "quality" or type == "BaU"):
+		sum_carbon_val = sum_carbon[0]['sum']
+	if(type == "quality" or type == "BaU" or type == "current"):
 		execute = preproc.verifyExec(path, model_dir)
 		cont = 0
 		dictResult['resultado'] = []
@@ -189,15 +190,9 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 				}
 			})
 			cont = cont + 1
-			preproc.insertInvestResult(year,type,q,nW,pW,sW,bf,sum_carbon[0]['sum'],c, case, id_usuario)
+			if (type != "quality"):
+				preproc.insertInvestResult(year,type,q,nW,pW,sW,bf,sum_carbon_val,c, case, id_usuario)
 			
-	# elif(type == "currentCarbon"):
-	# 	sumCarbon = calculateCarbonSum(catchmentShp,path,label)
-	# 	result = 0.0
-	# 	dictResult['resultado'] = {
-	# 		"carbon":sumCarbon
-	# 	}
-
 	elif type == "current":
 		# Nothing ToDo, is equal to quality
 		dictResult['resultado']=[]

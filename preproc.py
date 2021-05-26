@@ -286,6 +286,10 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 	PRECIPITATION_PATH = 'precipitation_path'
 	if(type == "quality" or type == "currentCarbon"):
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder_quality)
+		isdir = os.path.isdir(out_path)
+		if(not isdir):
+			os.mkdir(out_path)
+		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder_quality, 'YEAR_' + str(year))	
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder_quality)
 	else:
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder)
