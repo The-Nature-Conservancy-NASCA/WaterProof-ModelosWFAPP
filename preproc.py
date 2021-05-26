@@ -18,7 +18,7 @@ from natcap.invest import carbon
 from zonalStatistics import calculateRainfallDayMonth,calculateStatistic
 from zonalStatistics import saveCsv
 from calculateConcentrations import calcConcentrations as cntr
-from createBioParamCsv import getColsParams,generateCsv, getBiophysicParams
+from createBioParamCsv import generateCsv, getDefaultBiophysicParams, getUserBiophysicParams
 sys.path.append('config')
 from config import config
 from connect import connect
@@ -284,6 +284,10 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 	EROSIVITY_PATH = 'erosivity_path'
 	ETO_PATH = 'eto_path'
 	PRECIPITATION_PATH = 'precipitation_path'
+
+	PRECIPITATION_DIR = 'precip_dir'
+	ET0_DIR = 'et0_dir'
+
 	if(type == "quality" or type == "currentCarbon"):
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder_quality)
 		isdir = os.path.isdir(out_path)
@@ -325,12 +329,11 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 
 	default_year = "YEAR_0"
 	year_dir = "/YEAR_{}/".format(year)
-	
-	
+		
 	for parameter in parametersList:
 		name = parameter[0]
 		value = parameter[1]
-		if default_year in value:
+		if (default_year in value):
 			value = value.replace(default_year, year_dir)
 
 		if (name == PRECIPITATION_PATH and precipitation_path_cv != ''):
@@ -356,10 +359,24 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 		calculado = parameter[11]
 		bio_param = parameter[13]
 		
+		if (name == PRECIPITATION_DIR and precipitation_path_cv != ''):			
+			if (model == 'swy'):
+				region = getRegionFromId(basin)
+				region_name = region[4]
+				value = os.path.dirname(precipitation_path_cv) + "/" + region_name
+				print ("get DIR for %s: %s" % (name, value))
+
+		if (name == ET0_DIR and eto_path_cv != ''):
+			if (model == 'swy'):
+				region = getRegionFromId(basin)
+				region_name = region[4]
+				value = os.path.dirname(eto_path_cv) + "/" + region_name
+				print ("get DIR for %s: %s" % (name, value))
+			
 		if(suffix):
 			region = getRegionFromId(basin)
-			label = region[4]
-			value = label
+			value = region[4]
+			
 		if(constant):
 			if (name == 'k_param' and model == 'ndr'):
 				constantValue = getConstantFromBasin(basin,'k_param_ndr')
@@ -388,8 +405,17 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 			label = region[4]
 			file = os.path.join(os.getcwd(),pathF,'in',"biophysical_table.csv")
 			default = 'y'
-			values, headers = getBiophysicParams(user, label, default)
-			generateCsv(headers,values,file)
+			#values, headers = getBiophysicParams(user, label, default)
+
+			values,headers=getDefaultBiophysicParams(label,default)
+			valuesUser,headersUser=getUserBiophysicParams(catchment,id_case,user,label,'N')
+            # Reemplazar los parametros del usuario 
+            # en los parametros por defecto
+			for userIdx,valUser in enumerate(valuesUser):
+				for defIdx,defVal in enumerate(values):
+					if (valUser[0]==defVal[0]):
+						values[defIdx]=valUser
+			generateCsv(headers, values, file)
 			value = file
 		dictParameters[name] = value
 	return dictParameters,out_path,label
@@ -405,7 +431,7 @@ def executeFunction(basin,model,type,id_catchment,id_usuario, year, id_case):
 	parameters,pathF,label = processParameters(list,basin,catchment,path,type,model,id_usuario, year, id_case)
 	json_parameters = json.dumps(parameters, indent=2)
 	print("writing file %s/parameters_.json" % (path))
-	txt_file = open(os.path.join(path,"parameters_" + model + ".json"), "w")
+	txt_file = open(os.path.join(path,"parameters_" + model + "_" + type + ".json"), "w")
 	txt_file.write(json_parameters)
 	txt_file.close()
 	# print(json.dumps(parameters, indent=2))

@@ -8,9 +8,7 @@ def readDBF(dbfFile,field,cont):
 	result = 0
 	result = table.records[cont][field]
 	return result
-   
-
-   
+      
 file = "watershed_results_wyield_SA_1.dbf"
 path = "/home/skaphe/Documentos/tnc/modelos/Workspace_BasinDelineation/tmp/1_2020_10_6/out/"
 
