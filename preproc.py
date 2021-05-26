@@ -107,7 +107,7 @@ def exportToShp(catchment, path):
 # Crear directorio para almacenar procesamientos
 def createFolder(user, id_case, date):
 	usr_folder = "%s_%s_%s-%s-%s" % (user,id_case, date.year, date.month, date.day)
-	out_folder = path.join(base_path,"out", usr_folder)
+	out_folder = path.join(base_path,"salidas", usr_folder)
 	
 	folders = {
 		"in":[
