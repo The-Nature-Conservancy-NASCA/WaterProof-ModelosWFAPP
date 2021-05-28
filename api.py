@@ -69,7 +69,7 @@ async def root():
 @app.get("/snapPoint")
 async def snap(x,y):
 	dictResult = dict()
-	dictResult['estado'] = False
+	dictResult['status'] = False
 	try:
 		x = float(x)
 		y = float(y)
@@ -81,17 +81,17 @@ async def snap(x,y):
 		dictResult['path_raster'] = path
 		[x,y] = delineate.snap(path,x,y)
 		dictResult = dict()
-		dictResult['estado'] = True
-		dictResult['resultado'] = {"x_snap":x,"y_snap":y}
+		dictResult['status'] = True
+		dictResult['result'] = {"x_snap":x,"y_snap":y}
 	except Exception as e:
-		dictResult['estado'] = False
+		dictResult['status'] = False
 		dictResult['error'] = e.args
 	return dictResult
  
 @app.get("/delineateCatchment")
 async def delineateCatchment(x,y):
 	dictResult = dict()
-	dictResult['estado'] = False
+	dictResult['status'] = False
 	try:
 		x = float(x)
 		y = float(y)
@@ -99,12 +99,12 @@ async def delineateCatchment(x,y):
 		path = delineate.getPath(basin,1)
 		catchment = delineate.delineateCatchment(path,x,y)
 		dictResult = dict()
-		dictResult['estado'] = True
-		dictResult['resultado'] = {}
-		dictResult['resultado']['basin'] = basin
-		dictResult['resultado']['geometry'] = catchment
+		dictResult['status'] = True
+		dictResult['result'] = {}
+		dictResult['result']['basin'] = basin
+		dictResult['result']['geometry'] = catchment
 	except Exception as e:
-		dictResult['estado'] = False
+		dictResult['status'] = False
 		dictResult['error'] = e.args
 	return dictResult
 
@@ -114,15 +114,18 @@ async def delineateCatchment(x,y):
 async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[str] = Query(None),catchment:List[int] = Query(None)):
 	print("execInvest start, Type: %s" % type)
 	dictResult = dict()
-	dictResult['estado'] = False
+	dictResult['status'] = False
 	catch = sorted(catchment,key=int)
 	updateDataDB( catch[0], "__wp_intake_emptycols" )
 	year = "0"
-	if type == "NBS": 
+
+	type = type.upper()
+
+	if type == constants.INVEST_TYPE_NBS: 
 		year = preproc.timeImplementFromStudyCase(case)		
-	if type == "BaU": 
+	if type == constants.INVEST_TYPE_BAU: 
 		year = preproc.analysisPeriodFromStudyCase(case)		
-	elif type == "current":
+	elif type == constants.INVEST_TYPE_CURRENT:
 		year = 0
 	carbon = False
 	# try:
@@ -144,114 +147,127 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 		if (model == 'carbon'):
 			carbon = True
 
-	dictResult['resultado'] = 'successful execution for type :: {}'.format(type)
+	dictResult['result'] = 'successful execution for type :: {}'.format(type)
 
-	dictResult['resultado'] = {}
+	dictResult['result'] = {}
 
 	sum_carbon = -999 # TODO :: Validate if can be negative as disable value
 	sum_carbon_val = -999
 	if (carbon):
-		print ("Calculate carbon sum,")
+		print ("Calculate carbon sum")
 		sum_carbon = preproc.calculateCarbonSum(catchmentShp,path,label, model_dir, year_dir)
 		sum_carbon_val = sum_carbon[0]['sum']
-	if(type == "quality" or type == "BaU" or type == "current"):
+	if(type == constants.INVEST_TYPE_QUALITY or type == constants.INVEST_TYPE_BAU or 
+		type == constants.INVEST_TYPE_CURRENT or type == constants.INVEST_TYPE_NBS):
 		execute = preproc.verifyExec(path, model_dir)
 		cont = 0
-		dictResult['resultado'] = []
-		for c in catch:
-			s,n,p,q,sW,nW,pW,bf = preproc.calcConc(execute,path,label,cont, model_dir, year_dir)
-			if math.isnan(s):
-				s = 0
-			elif math.isnan(n):
-				n = 0
-			elif math.isnan(p):
-				p = 0
-			elif math.isnan(q):
-				q = 0
-			elif math.isnan(sW):
-				sW = 0
-			elif math.isnan(nW):
-				nW = 0
-			elif math.isnan(pW):
-				pW = 0
-			
-			preproc.InsertQualityParameters(c,'RIVER',q,sW,nW,pW,s,n,p)
+		dictResult['result'] = []
+		
+		if type == constants.INVEST_TYPE_NBS:
+			for y in range(1,year+1):
+				year_dir = 'YEAR_' + str(year)
 
-			dictResult['resultado'].append({
-				"catchment": c,
-				"carbon" : sum_carbon,	
-				"awy": q,
-				"w": {
-					"sediment":sW,
-					"nitrogen":nW,
-					"phosporus":pW
-				},
-				"concentrations": {
-					"sediment":s,
-					"nitrogen":n,
-					"phosporus":p
-				}
-			})
-			cont = cont + 1
-			if (type != "quality"):
-				preproc.insertInvestResult(year,type,q,nW,pW,sW,bf,sum_carbon_val,c, case, id_usuario)
+				for c in catch:
+					s,n,p,q,sW,nW,pW,bf = preproc.calcConc(execute,path,label,cont, model_dir, year_dir)												
+					dictResult['result'].append({
+						"catchment": c,
+						"carbon" : sum_carbon,	
+						"awy": q,
+						"year" : y,
+						"w": {
+							"sediment":sW,
+							"nitrogen":nW,
+							"phosporus":pW
+						},
+						"concentrations": {
+							"sediment":s,
+							"nitrogen":n,
+							"phosporus":p
+						}
+					})					
+					preproc.insertInvestResult(y,type,q,nW,pW,sW,bf,sum_carbon_val,c, case, id_usuario)
+		else:
+			for c in catch:
+				s,n,p,q,sW,nW,pW,bf = preproc.calcConc(execute,path,label,cont, model_dir, year_dir)
+							
+				preproc.InsertQualityParameters(c,'RIVER',q,sW,nW,pW,s,n,p)
+
+				dictResult['result'].append({
+					"catchment": c,
+					"carbon" : sum_carbon,	
+					"awy": q,
+					"year" : year,
+					"w": {
+						"sediment":sW,
+						"nitrogen":nW,
+						"phosporus":pW
+					},
+					"concentrations": {
+						"sediment":s,
+						"nitrogen":n,
+						"phosporus":p
+					}
+				})
+				cont = cont + 1
+				if (type != constants.INVEST_TYPE_QUALITY):
+					preproc.insertInvestResult(year,type,q,nW,pW,sW,bf,sum_carbon_val,c, case, id_usuario)
 			
-	elif type == "current":
+	elif type == constants.INVEST_TYPE_CURRENT:
 		# Nothing ToDo, is equal to quality
-		dictResult['resultado']=[]
+		dictResult['result']=[]
 		print (type)
 		for c in catch:
-			dictResult['resultado'].append({
+			dictResult['result'].append({
 					"catchment": c,
 					"carbon" : sum_carbon,					
 				})
-		# dictResult['resultado'] = 'Ejecucion exitosa current scenario'
+		# dictResult['result'] = 'Ejecucion exitosa current scenario'
 
 	# Revisar para solicitar como parámetro el ultimo año
 	# TODO :: Revisar para implementar
 	# elif type == "BaU":  
-	#	dictResult['resultado'] = 'Ejecucion exitosa BaU'
+	#	dictResult['result'] = 'Ejecucion exitosa BaU'
 	
 	# TODO :: Revisar para implementar
 	# Se ejecuta una vez x cada año
 	# capa lulc tomada del resultado del traductor de cobertura	
-	elif type == "NBS":  
-		dictResult['resultado'] = 'Ejecucion exitosa NBS'
+	elif type == constants.INVEST_TYPE_NBS:  
+		dictResult['result'] = 'Succesful NBS Execution'
 
 
-	dictResult['estado'] = True
+	dictResult['status'] = True
 	print(dictResult)
 
 	# except Exception as e:
-	# 	dictResult['estado'] = False
+	# 	dictResult['status'] = False
 	# 	dictResult['error'] = e.args
 	return dictResult
 
 @app.get("/aqueduct")
 async def calculateAqueduct(id_usuario,fecha):
 	dictResult = dict()
-	dictResult['estado'] = False
+	dictResult['status'] = False
 	try:
 		list = cutAqueduct(id_usuario,fecha)
 		print(list)
 		dictResult = dict()
-		dictResult['estado'] = True
-		dictResult['resultado'] = list
+		dictResult['status'] = True
+		dictResult['result'] = list
 	except Exception as e:
-		dictResult['estado'] = False
+		dictResult['status'] = False
 		dictResult['error'] = e.args
 	return dictResult
 
 @app.post("/ptapSelection")
 async def ptapSelect(listcs:ListCS):
 	dictResult = dict()
-	dictResult['estado'] = False
+	dictResult['status'] = False
 	# try:
 	result = generateAll(listcs.csinfras)
 	r,awy,cn,cp,cs,wn,wp,ws = Select_PTAP(result)
 	dictResult = dict()
-	dictResult['estado'] = True
-	dictResult['resultado'] = {
+	dictResult['status'] = True
+	dictResult['result'] = {
 		"ptap_type":r,
 		"awy":awy,
 		"cn": cn,
@@ -262,7 +278,7 @@ async def ptapSelect(listcs:ListCS):
 		"ws": ws
 		}
 	# except Exception as e:
-	# 	dictResult['estado'] = False
+	# 	dictResult['status'] = False
 	# 	dictResult['error'] = e.args
 		
 	return dictResult
@@ -272,7 +288,7 @@ async def ptapSelect(listcs:ListCS):
 async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 	function_db = "__wp_intake_insert_report"
 	dictResult = dict()
-	dictResult['estado'] = False
+	dictResult['status'] = False
 	# try:
 	DataInBAU(id_intake)
 	execWB()
@@ -281,10 +297,10 @@ async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 	execWB()
 	SaveInDB( function_db, id_intake, user_id, study_case_id, "NBS" )
 	dictResult = dict()
-	dictResult['estado'] = True
-	dictResult['resultado'] = {"result":'Transacción exitosa'}
+	dictResult['status'] = True
+	dictResult['result'] = {"result":'Transacción exitosa'}
 	# except Exception as e:
-	# 	dictResult['estado'] = False
+	# 	dictResult['status'] = False
 	# 	dictResult['error'] = e.args
 	return dictResult
 
@@ -293,7 +309,7 @@ async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	function_bd = '__wp_ptap_insert_report'
 	dictResult = dict()
-	dictResult['estado'] = False
+	dictResult['status'] = False
 	# try:
 	DataInBAUPTAP(ptap_id)
 	execWB()
@@ -302,10 +318,10 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	execWB()
 	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS' )
 	dictResult = dict()
-	dictResult['estado'] = True
-	dictResult['resultado'] = {"result":'Transacción exitosa'}
+	dictResult['status'] = True
+	dictResult['result'] = {"result":'Transacción exitosa'}
 	# except Exception as e:
-	# 	dictResult['estado'] = False
+	# 	dictResult['status'] = False
 	# 	dictResult['error'] = e.args
 	return dictResult
 
@@ -313,34 +329,34 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 @app.get("/wb")
 async def calculateWB(id_intake):
 	dictResult = dict()
-	dictResult['estado'] = False
+	dictResult['status'] = False
 	try:
 		DataInWB(id_intake)
 		execWB()
 		outFile = mergeData()
 		readSum(outFile)
 		dictResult = dict()
-		dictResult['estado'] = True
-		dictResult['resultado'] = {"result":'Transacción exitosa'}
+		dictResult['status'] = True
+		dictResult['result'] = {"result":'Transacción exitosa'}
 	except Exception as e:
-		dictResult['estado'] = False
+		dictResult['status'] = False
 		dictResult['error'] = e.args
 	return dictResult
 
 @app.get("/wbPTAP")
 async def calculateWBPTAP(id_ptap):
 	dictResult = dict()
-	dictResult['estado'] = False
+	dictResult['status'] = False
 	# try:
 	ptap_id = int(id_ptap)
 	DataInWBPTAP(ptap_id)
 	execWB()
 	outFile = mergeDataPTAP()
 	readSumPTAP(outFile)
-	dictResult['estado'] = True
-	dictResult['resultado'] = {"result":'Transacción exitosa'}
+	dictResult['status'] = True
+	dictResult['result'] = {"result":'Transacción exitosa'}
 	# except Exception as e:
-	# 	dictResult['estado'] = False
+	# 	dictResult['status'] = False
 	# 	dictResult['error'] = e.args
 	return dictResult
 
@@ -348,13 +364,13 @@ async def calculateWBPTAP(id_ptap):
 async def cobTrans(pathCobs,pathLULC):
 	print ("cobTrans :: start")
 	dictResult = dict()
-	dictResult['estado'] = True
+	dictResult['status'] = True
 	try:
 		paths = iterateFiles(pathCobs,pathLULC)		
-		dictResult['resultado'] = {"result":'successful execution'}
+		dictResult['result'] = {"result":'successful execution'}
 		dictResult['paths'] = paths
 	except Exception as e:
-		dictResult['estado'] = False
+		dictResult['status'] = False
 		dictResult['error'] = "Everything that could fail, failed!!!"
 
 	return dictResult
@@ -372,7 +388,7 @@ async def disaggregation( id_usuario, basin, case, catchment):
 	DataCSVDis(catchment, case)
 	Desaggregation_BaU_NBS(path_data_in, path_data_out)
 	# except Exception as e:
-	# 	dictResult['estado'] = False
+	# 	dictResult['status'] = False
 	# 	dictResult['error'] = e.args
 	return dict_result
 

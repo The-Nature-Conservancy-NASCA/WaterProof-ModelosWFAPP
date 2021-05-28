@@ -4,7 +4,7 @@
 
 
 # Importacion de librerias
-from constants import INVEST_TYPE_NBS, INVEST_TYPE_QUALITY
+from constants import INVEST_TYPE_CURRENT, INVEST_TYPE_NBS, INVEST_TYPE_QUALITY
 import sys
 import os.path
 from os import path, environ
@@ -310,7 +310,7 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 		out_path = os.path.join(os.getcwd(),pathF,'out',out_folder, 'YEAR_' + str(year))
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder)
 
-		if (type != "current"):
+		if (type != INVEST_TYPE_CURRENT):
 			paths_climate_value = getPathsClimateValueFromStudyCaseId(id_case)
 
 			if (len(paths_climate_value) > 0):
