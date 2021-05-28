@@ -23,9 +23,12 @@ from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
 from reclassify import iterateFiles
 from dissagregation import DataCSVDis
+from roi import DataCSVRoi
+from exchangeRateROI import ExchangeROI
 import pandas as pd
 import requests
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
+from ROI_WaterFunds.ROI import ROI_Analisys
 import logging
 import ptvsd
 
@@ -306,7 +309,7 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	# 	dictResult['error'] = e.args
 	return dictResult
 
-#water balance segunda ejecucion
+# water balance segunda ejecucion Intake
 @app.get("/wb")
 async def calculateWB(id_intake):
 	dictResult = dict()
@@ -324,6 +327,7 @@ async def calculateWB(id_intake):
 		dictResult['error'] = e.args
 	return dictResult
 
+# water balance segunda ejecucion PTAP
 @app.get("/wbPTAP")
 async def calculateWBPTAP(id_ptap):
 	dictResult = dict()
@@ -366,7 +370,7 @@ async def disaggregation( id_usuario, basin, case, catchment):
 	dict_result = dict()
 	dict_result['status'] = True
     # try:
-	DataCSVDis(types, catchment, case)
+	DataCSVDis( catchment, case)
 	Desaggregation_BaU_NBS(path_data_in, path_data_out)
 	# except Exception as e:
 	# 	dictResult['estado'] = False
@@ -379,9 +383,20 @@ def disaggregation2(user_id, study_cases_id):
 	return preproc.processDissagregation(user_id, study_cases_id)
 
 @app.get("/roiExecution")
-def roiExecution(user_id, study_cases_id):
-
-	return preproc.processRoi(user_id,study_cases_id)
+def roiExecution(user_id, study_cases_id, catchment):
+	
+	path_data = path.join( ruta, "salidas", "roi" )
+	dict_result = dict()
+	dict_result['status'] = True
+    # try:
+	ExchangeROI(study_cases_id)
+	DataCSVRoi( catchment, study_cases_id )
+	ROI_Analisys( path_data )
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
+	return dict_result
+	# return preproc.processRoi(user_id,study_cases_id)
 
 @app.get("/download")
 def download(user_dir, topic , file):

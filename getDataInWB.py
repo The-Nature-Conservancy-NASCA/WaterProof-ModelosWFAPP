@@ -1,6 +1,7 @@
 
 from getDataWB import generateCsvTopology, generateCsvPerc, generateCsvData, generateCsvDataDis,generateCsvDataDisPTAP, generateCsvQ, generateCsvQDisPTAP
 
+# Generación de csv para la segunda ejecución del Water Balance en Intake
 def DataInWB( id_intake ):
     generateCsvTopology( id_intake, '__wpgettopologybycatchment', "0_WI_Topology.csv" )
     generateCsvPerc( id_intake, '__wpgetpercentagesbycatchment', "1_WI_Elements_Param.csv" )
@@ -10,6 +11,7 @@ def DataInWB( id_intake ):
     generateCsvData( id_intake, '__wpgetpbycatchment', "2_WI_WPInputs.csv" )
     generateCsvQ( id_intake, '__wpgetqbycatchment', "3_Water_Extraction.csv" )
 
+# Generación de csv para la segunda ejecución del Water Balance en PTAP
 def DataInWBPTAP( id_ptap ):
     generateCsvTopology( id_ptap, '__wpgettopologybyptap', "0_WI_Topology.csv" )
     generateCsvPerc( id_ptap, '__wpgetpercentagesbyptap', "1_WI_Elements_Param.csv" )
@@ -19,7 +21,7 @@ def DataInWBPTAP( id_ptap ):
     generateCsvData( id_ptap, '__wpgetpbyptap', "2_WI_WPInputs.csv" )
     generateCsvQ( id_ptap, '__wpgetqbyptap', "3_Water_Extraction.csv" )
 
-
+# Genera los csv para la ejecución de WB en Intakes de dissagregation para el escenario BAU
 def DataInBAU(id_intake):
     generateCsvTopology( id_intake, '__wpgettopologybycatchment', "0_WI_Topology.csv" )
     generateCsvPerc( id_intake, '__wpgetpercentagesbycatchment', "1_WI_Elements_Param.csv" )
@@ -29,6 +31,7 @@ def DataInBAU(id_intake):
     generateCsvDataDis( id_intake, '__wpgetpbycatchment', "2_WI_WPInputs.csv", 4, '02-OUTPUTS_BaU.csv' )
     generateCsvQ( id_intake, '__wpgetqbycatchmentdis', "3_Water_Extraction.csv" )
 
+# Genera los csv para la ejecución de WB en Intakes de dissagregation para el escenario NBS
 def DataInNBS(id_intake):
     generateCsvTopology(id_intake, '__wpgettopologybycatchment', "0_WI_Topology.csv" )
     generateCsvPerc( id_intake, '__wpgetpercentagesbycatchment', "1_WI_Elements_Param.csv" )
@@ -38,7 +41,7 @@ def DataInNBS(id_intake):
     generateCsvDataDis( id_intake, '__wpgetpbycatchment', "2_WI_WPInputs.csv", 4, '02-OUTPUTS_NBS.csv' )
     generateCsvQ( id_intake, '__wpgetqbycatchmentdis', "3_Water_Extraction.csv" )
     
-
+# Genera los csv para la ejecución de WB en PTAP de dissagregation para el escenario BAU
 def DataInBAUPTAP(id_ptap):
     generateCsvTopology( id_ptap, '__wpgettopologybyptap', "0_WI_Topology.csv" )
     generateCsvPerc( id_ptap, '__wpgetpercentagesbyptap', "1_WI_Elements_Param.csv" )
@@ -48,6 +51,7 @@ def DataInBAUPTAP(id_ptap):
     generateCsvDataDisPTAP( id_ptap, '__wpgetpbyptap', "2_WI_WPInputs.csv", 'wp_kg', 'BAU' )
     generateCsvQDisPTAP( "3_Water_Extraction.csv" )
 
+# Genera los csv para la ejecución de WB en PTAP de dissagregation para el escenario NBS
 def DataInNBSPTAP(id_ptap):
     generateCsvTopology( id_ptap, '__wpgettopologybyptap', "0_WI_Topology.csv" )
     generateCsvPerc( id_ptap, '__wpgetpercentagesbyptap', "1_WI_Elements_Param.csv" )
