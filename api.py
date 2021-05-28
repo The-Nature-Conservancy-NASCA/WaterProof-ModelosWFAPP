@@ -404,7 +404,7 @@ def disaggregation2(user_id, study_cases_id):
 @app.get("/roiExecution")
 def roiExecution(user_id, study_cases_id, catchment):
 	
-	path_data = path.join( ruta, "salidas", "roi" )
+	path_data = path.join( base_path, "salidas", "roi" )
 	dict_result = dict()
 	dict_result['status'] = True
     # try:
