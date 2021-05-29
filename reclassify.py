@@ -4,6 +4,8 @@ from pathlib import Path
 sys.path.append('config')
 from config import config
 from connect import connect
+from osgeo import gdal
+
 
 def readJsonActivities(path):
     p = Path(path).parents[0]
@@ -45,7 +47,7 @@ def getTranformations_by_name(name):
     conn.close()
     return listResult
 
-def reclassify(pathFile,outPath,filename,lulc_path,json):
+def reclassify(pathFile,outPath,filename,lulc_path,json, is_future, future_lulc_path):
     driver = gdal.GetDriverByName('GTiff')
     file = gdal.Open(pathFile)
     file_lulc = gdal.Open(lulc_path)
@@ -53,7 +55,11 @@ def reclassify(pathFile,outPath,filename,lulc_path,json):
     band_lulc = file_lulc.GetRasterBand(1)
     lista = band.ReadAsArray()
     lista_lulc = band_lulc.ReadAsArray()
-    lulc_positions = []
+    
+    if (is_future):
+        file_future_lulc = gdal.Open(future_lulc_path)
+        band_future_lulc = file_future_lulc.GetRasterBand(1)
+        lista_future_lulc = band_future_lulc.ReadAsArray()
 
     # print(lista)
 
@@ -73,13 +79,19 @@ def reclassify(pathFile,outPath,filename,lulc_path,json):
                     # print("Lista "+ str(lista_lulc[i,j]))
                     # print("X 0 " + str(x[0]))
                     if lista_lulc[i,j] == x[0]:
-                        lista_lulc[i,j] = x[2]
+                        if (is_future):
+                            lista_future_lulc[i,j] = x[2]
+                        else:    
+                            lista_lulc[i,j] = x[2]
                         break            
            
     pathTranslated = os.path.join(outPath,filename)
     # create new file
     file2 = driver.Create(pathTranslated, file_lulc.RasterXSize , file_lulc.RasterYSize , 1)
-    file2.GetRasterBand(1).WriteArray(lista_lulc)
+    if (is_future):
+        file2.GetRasterBand(1).WriteArray(lista_future_lulc)
+    else:
+        file2.GetRasterBand(1).WriteArray(lista_lulc)
     file2.GetRasterBand(1).SetNoDataValue(255)
 
     # spatial ref system
@@ -90,7 +102,7 @@ def reclassify(pathFile,outPath,filename,lulc_path,json):
     file2.FlushCache()
     return pathTranslated
 
-def iterateFiles(path,lulc_path):
+def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path):
     
     pathOut = os.path.join(path,"translated_cob")
     json = readJsonActivities(path)
@@ -99,15 +111,20 @@ def iterateFiles(path,lulc_path):
         os.mkdir(pathOut)
 
     paths = []
+    TIF_EXT = '.tif'
+    FUTURE_TIF_SUFFIX = '_FUTURE.tif'
     for filename in os.listdir(path):
-        if filename.endswith(".tif"):
-            path_file = reclassify(os.path.join(path,filename),pathOut,filename,lulc_path,json)
+        if filename.endswith(TIF_EXT):
+            out_filename = filename
+            if (is_future):
+                out_filename = filename.replace(TIF_EXT, FUTURE_TIF_SUFFIX)
+            path_file = reclassify(os.path.join(path,filename),pathOut,out_filename,lulc_path,json, is_future, future_lulc_path)
             paths.append(path_file)
 
     return paths
 
 # readJsonActivities('/home/skaphe/Documentos/tnc/modelos/salidas/9_2020_10_24/out/04-RIOS/1_investment_portfolio_adviser_workspace/activity_portfolios/continuous_activity_portfolios')
-# iterateFiles('/home/skaphe/Documentos/tnc/modelos/salidas/9_2020_10_24/out/04-RIOS/1_investment_portfolio_adviser_workspace/activity_portfolios/continuous_activity_portfolios',5,'/home/skaphe/Documentos/tnc/modelos/salidas/9_2020_10_24/in/04-RIOS/LULC_SA_1.tif')
+# reclassifyFilesInFolder('/home/skaphe/Documentos/tnc/modelos/salidas/9_2020_10_24/out/04-RIOS/1_investment_portfolio_adviser_workspace/activity_portfolios/continuous_activity_portfolios',5,'/home/skaphe/Documentos/tnc/modelos/salidas/9_2020_10_24/in/04-RIOS/LULC_SA_1.tif')
 # reclassify(listTransformations)
 # print(listTransformations)
 
