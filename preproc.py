@@ -247,7 +247,22 @@ def calcConc(execute,path,label,cont, sub_dir, year_dir):
 		s,n,p,q,sW,nW,pW,bf = cntr(pathWs,label,cont, sub_dir, year_dir)
 	else:
 		s,n,p,q,sW,nW,pW,bf = [-1,-1,-1,-1,-1,-1,-1,-1]
-
+	
+	if math.isnan(s):
+		s = 0
+	elif math.isnan(n):
+		n = 0
+	elif math.isnan(p):
+		p = 0
+	elif math.isnan(q):
+		q = 0
+	elif math.isnan(sW):
+		sW = 0
+	elif math.isnan(nW):
+		nW = 0
+	elif math.isnan(pW):
+		pW = 0
+	
 	return s,n,p,q,sW,nW,pW,bf
  
 #Calcular sumatoria de resultado de carbon
