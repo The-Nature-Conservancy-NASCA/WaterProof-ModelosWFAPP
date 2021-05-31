@@ -10,8 +10,30 @@ from getDataWB import getDataDB,generateCsv
 
 ruta = environ["PATH_FILES"]
 
+# Consulta a Base de datos para los archivos 1-4
+def getDataDBCost(studycase,funcion_db, types,stage):
+    result = ''
+    listResult = []
+    conn = connect('postgresql_alfa')
+    cursor = conn.cursor()
+    args=[studycase,types,stage]
+    cursor.callproc( funcion_db, args )
+    result = cursor.fetchall()
+    for row in result:
+        listResult.append(list(row))
+    cursor.close()
+    conn.close()
+    if (listResult ==[]):
+        raise Exception(f'Sin datos para el id: {studycase}')
+
+    return listResult
+
 # Generación de los csv pertinentes para el algoritmo de ROI
-def DataCSVRoi( catchment, studycase ):
+def DataCSVRoi( studycase ):
+    genCSVCost ( studycase, '__wp_roi_cost', 'intake', 'NBS', '1_CostFunction_NBS_Cap.csv' )
+    genCSVCost ( studycase, '__wp_roi_cost', 'intake', 'BAU', '2_CostFunction_BaU_Cap.csv' )
+    genCSVCost( studycase, '__wp_roi_cost', 'PTAP', 'NBS', '3_CostFunction_NBS_PTAP.csv' )
+    genCSVCost( studycase, '__wp_roi_cost', 'PTAP', 'BAU', '4_CostFunction_BaU_PTAP.csv' )
     genCSVNBS_Cost( studycase, '__wp_roi_nbs_cost', '5_NBS_Cost.csv' )
     genCSVPort_NBS( studycase, '__wp_dissagregation_nbs_first', '__wp_dissagregation_nbs_second','6_Porfolio_NBS.csv' )
     genCSVFin_Par ( studycase, '__wp_roi_financial_parameters_first', '__wp_roi_financial_parameters_second', '7_Financial_Parmeters.csv' )
@@ -19,10 +41,38 @@ def DataCSVRoi( catchment, studycase ):
     # TODO: generar los cvs requeridos en cada función
     genCSVCO2_BaU ( studycase, '02-OUTPUTS_BaU.csv','9-CO2_BaU.csv' )
     genCSVCO2_NBS ( studycase, '02-OUTPUTS_NBS.csv','10-CO2_NBS.csv' )
-    genCSVNBS_CAP ( catchment, '', '1_CostFunction_NBS_Cap.csv' )
-    genCSVBau_CAP ( studycase, '', '2_CostFunction_BaU_Cap.csv' )
-    genCSVNBS_PTAP( studycase, '', '3_CostFunction_NBS_PTAP.csv' )
-    genCSVBaU_PTAP( catchment, '', '4_CostFunction_BaU_PTAP.csv' )
+ 
+# 1-4 Genera el archivo csv de costos para NBS-BAU para Intake-PTAP
+def genCSVCost( studycase, function_id,types,stage, csv_in ):
+    header =["Process","Cost_function"]
+    result = getDataDBCost(studycase,function_id,types,stage)
+
+    # encontrar los id
+    elements_id=[]
+    for res in result:
+        elements_id.append(res[0])
+    elements_id = list(set(elements_id))
+
+    results1tot=[]
+    header1=[]
+    for cab in elements_id:
+        cost_function=[]
+        opt = []
+        for res in result:
+            res = list(res)
+            if( cab == res[0]): 
+                opt.append(res[2])
+                header1.append(res[1])
+                cost_function.append(res[3])
+        cost_function = list(set(cost_function))
+        opt.insert(0,cost_function[0])
+        opt.insert(0,cab)
+        results1tot.append(opt)
+    header1 = list(set(header1))
+    header+=header1
+
+    pathcsv= path.join( ruta, "salidas", "roi", "INPUTS", csv_in )
+    generateCsv( header, results1tot, pathcsv )
 
 
 # 5 Genera el archivo csv de NBS_Cost

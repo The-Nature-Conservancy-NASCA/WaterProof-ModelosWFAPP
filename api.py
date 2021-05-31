@@ -402,14 +402,14 @@ def disaggregation2(user_id, study_cases_id):
 	return preproc.processDissagregation(user_id, study_cases_id)
 
 @app.get("/roiExecution")
-def roiExecution(user_id, study_cases_id, catchment):
+def roiExecution(user_id, study_cases_id):
 	
 	path_data = path.join( base_path, "salidas", "roi" )
 	dict_result = dict()
 	dict_result['status'] = True
     # try:
 	ExchangeROI(study_cases_id)
-	DataCSVRoi( catchment, study_cases_id )
+	DataCSVRoi( study_cases_id )
 	ROI_Analisys( path_data )
 	# except Exception as e:
 	# 	dictResult['estado'] = False
