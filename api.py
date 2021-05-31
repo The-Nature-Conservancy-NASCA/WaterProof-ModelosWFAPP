@@ -21,7 +21,7 @@ from outWBDisIntake import SaveInDB
 from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
-from reclassify import iterateFiles
+from reclassify import reclassifyFilesInFolder
 from dissagregation import DataCSVDis
 from roi import DataCSVRoi
 from exchangeRateROI import ExchangeROI
@@ -370,12 +370,25 @@ async def cobTrans(pathCobs,pathLULC):
 	dictResult = dict()
 	dictResult['status'] = True
 	try:
-		paths = iterateFiles(pathCobs,pathLULC)		
+		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'')
+		path_future_lulc = pathLULC.replace('04-RIOS','02-PREPROC_RIOS').replace('.tif','_FUTURE.tif')
+		if (os.path.isfile(path_future_lulc)):
+			# driver = gdal.GetDriverByName('GTiff')
+			# file_lulc = gdal.Open(pathLULC)
+			# band_lulc = file_lulc.GetRasterBand(1)
+			# file_lulc_future = gdal.Open(path_future_lulc)
+			# band_lulc_future = file_lulc_future.GetRasterBand(1)
+			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc)
+			# if (band_lulc.XSize != band_lulc_future.XSize or band_lulc.YSize != band_lulc_future.YSize):
+			# 	raster_lulc = rasterio.open(pathLULC)
+			# 	raster_lulc_future = rasterio.open(path_future_lulc)
+
 		dictResult['result'] = {"result":'successful execution'}
 		dictResult['paths'] = paths
+		dictResult['paths_future'] = paths_future
 	except Exception as e:
 		dictResult['status'] = False
-		dictResult['error'] = "Everything that could fail, failed!!!"
+		dictResult['error'] = e
 
 	return dictResult
 
