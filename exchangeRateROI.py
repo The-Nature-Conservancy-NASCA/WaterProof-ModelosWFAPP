@@ -81,11 +81,11 @@ def ExchangeROI(studyCase_id):
                 if(res_nbs[4]==res_rate[1]):
                     curren=res_nbs.pop(4)
                     id_nbs=res_nbs.pop(0)
-                    for sad in res_nbs:
+                    for idx, sad in enumerate(res_nbs):
                         res_first.append( sad*res_rate[2] )
-                        currency_db.append(curren)
-                        type_or_id.append(id_nbs)
-
+                        currency_db.append(res_rate[0])
+                        type_or_id.append(str(id_nbs))
+                        cost.append(cost_nbs[idx])
             else:
                 # for cost_in_nbs in range(len(res_nbs)-1):
                 #     cost + cost_nbs
