@@ -81,7 +81,8 @@ def exportToShp(catchment, path):
 		params = params[:-1] + ')'
 
 	if(catchment != -1):
-		sql = "select * from waterproof_intake_polygon where delimitation_type = 'SBN' and intake_id" + str(params)
+		# delimitation_type = 'SBN' and 
+		sql = "select * from waterproof_intake_polygon where intake_id" + str(params)
 
 		# layer = conn.GetLayerByName("delineated_catchment")
 		layer = conn.ExecuteSQL(sql)
