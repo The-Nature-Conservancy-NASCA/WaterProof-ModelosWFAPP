@@ -19,7 +19,8 @@ def DataCSVDis(path_data_in, catchment,studycase):
 def genCSVInvest(path_data_in, catchment,studycase, function_id, csv_in):
     header=["Scenario-InVEST","AWY (m3)","Wsed (Ton)","WN (Kg)","WP (kg)","BF (m3)","WC (Ton)"]
     results = getDataDBInVEST( catchment, studycase, function_id )
-    generateCsv( header, results, path_data_in)
+    pathcsv = path.join( path_data_in, csv_in)
+    generateCsv( header, results, pathcsv)
 
 # genera el archivo csv de NBS
 def genCSVNBS(path_data_in, studycase, function_id1, function_id2, csv_in):
@@ -45,14 +46,15 @@ def genCSVNBS(path_data_in, studycase, function_id1, function_id2, csv_in):
     # A-n (ha)
     for i in range(int(tot)):
         header.append('A-'+str(i+1)+' (ha)')
-        
-    generateCsv( header, results1tot, path_data_in)
+    pathcsv = path.join( path_data_in, csv_in)    
+    generateCsv( header, results1tot, pathcsv)
 
 # genera el archivo csv de Time
 def genCSVTime(path_data_in, studycase, function_id, csv_in):
     header=["Time"]
-    results = getDataDB( studycase, function_id )
-    generateCsv( header, results, path_data_in)
+    results = getDataDB( studycase, function_id)
+    pathcsv = path.join( path_data_in, csv_in)
+    generateCsv( header, results, pathcsv)
 
 # función para hacer el llamado de base de datos para el csv de invest
 def getDataDBInVEST( catchment, studycase,  funcion_db ):
