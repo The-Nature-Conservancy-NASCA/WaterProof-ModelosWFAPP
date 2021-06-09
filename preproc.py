@@ -150,6 +150,10 @@ def createFolder(user, id_case, id_catchment ,date):
 		isdir = path.isdir(out_folder_ptap)
 		if(not isdir):
 			os.mkdir(out_folder_ptap)
+			os.mkdir(path.join(out_folder_ptap,'in'))
+			os.mkdir(path.join(out_folder_ptap,'out'))
+			os.mkdir(path.join(out_folder_ptap,'in','08-WATER_BALANCE'))
+			os.mkdir(path.join(out_folder_ptap,'out','08-WATER_BALANCE'))
 
 	for key in folders:
 		pathNew = os.path.join(out_folder_wi,key)
