@@ -340,17 +340,17 @@ async def calculateWB(id_intake):
 	dictResult['status'] = False
 	path_data_wb_in = path.join(base_path, 'tmp')
 	path_data_wb_out = path.join(base_path, 'tmp')
-	try:
-		DataInWB(id_intake, path_data_wb_in)
-		execWB(path_data_wb_in, path_data_wb_out)
-		outFile = mergeData(path_data_wb_out)
-		readSum(outFile, path_data_wb_out)
-		dictResult = dict()
-		dictResult['status'] = True
-		dictResult['result'] = {"result":'Transacción exitosa'}
-	except Exception as e:
-		dictResult['status'] = False
-		dictResult['error'] = e.args
+	#try:
+	DataInWB(id_intake, path_data_wb_in)
+	execWB(path_data_wb_in, path_data_wb_out)
+	outFile = mergeData(path_data_wb_out)
+	readSum(outFile, path_data_wb_out)
+	dictResult = dict()
+	dictResult['status'] = True
+	dictResult['result'] = {"result":'Transacción exitosa'}
+	# except Exception as e:
+	# 	dictResult['status'] = False
+	# 	dictResult['error'] = e.args
 	return dictResult
 
 # water balance segunda ejecucion PTAP
