@@ -338,8 +338,9 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 async def calculateWB(id_intake):
 	dictResult = dict()
 	dictResult['status'] = False
-	path_data_wb_in = path.join(base_path, 'tmp')
-	path_data_wb_out = path.join(base_path, 'tmp')
+	OUT_BASE_DIR = "salidas"
+	path_data_wb_in = path.join(base_path, OUT_BASE_DIR, 'tmp')
+	path_data_wb_out = path.join(base_path, OUT_BASE_DIR, 'tmp')
 	#try:
 	DataInWB(id_intake, path_data_wb_in)
 	execWB(path_data_wb_in, path_data_wb_out)
