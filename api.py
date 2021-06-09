@@ -292,12 +292,14 @@ async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 	function_db = "__wp_intake_insert_report"
 	dictResult = dict()
 	dictResult['status'] = False
+	path_data_wb_in, path_data_wb_out, path_data_ds_out = path_wb(id_intake,user_id,study_case_id, 'WI')
+
 	# try:
-	DataInBAU(id_intake)
-	execWB()
+	DataInBAU(id_intake,path_data_wb_in,path_data_ds_out)
+	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_db, id_intake, user_id, study_case_id, "BAU" )
-	DataInNBS(id_intake)
-	execWB()
+	DataInNBS(id_intake,path_data_wb_in,path_data_ds_out)
+	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_db, id_intake, user_id, study_case_id, "NBS" )
 	dictResult = dict()
 	dictResult['status'] = True
@@ -313,13 +315,16 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	function_bd = '__wp_ptap_insert_report'
 	dictResult = dict()
 	dictResult['status'] = False
+
+	path_data_wb_in, path_data_wb_out, path_data_ds_out = path_wb(ptap_id,user_id,study_case_id, 'PTAP')
+
 	# try:
-	DataInBAUPTAP(ptap_id)
-	execWB()
-	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'BAU' )
-	DataInNBSPTAP(ptap_id)
-	execWB()
-	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS' )
+	DataInBAUPTAP(ptap_id, path_data_wb_in, path_data_ds_out)
+	execWB(path_data_wb_in, path_data_wb_out)
+	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'BAU')
+	DataInNBSPTAP(ptap_id, path_data_wb_in)
+	execWB(path_data_wb_in, path_data_wb_out)
+	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS')
 	dictResult = dict()
 	dictResult['status'] = True
 	dictResult['result'] = {"result":'Transacción exitosa'}
@@ -333,9 +338,11 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 async def calculateWB(id_intake):
 	dictResult = dict()
 	dictResult['status'] = False
+	path_data_wb_in = path.join(base_path, 'tmp')
+	path_data_wb_out = path.join(base_path, 'tmp')
 	try:
-		DataInWB(id_intake)
-		execWB()
+		DataInWB(id_intake, path_data_wb_in)
+		execWB(path_data_wb_in, path_data_wb_out)
 		outFile = mergeData()
 		readSum(outFile)
 		dictResult = dict()
@@ -405,7 +412,7 @@ async def disaggregation( id_usuario, basin, case, catchment):
 	path_data_in = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "in", DISAGGREGATION_DIR)
 	print("path_data_in : %s" % path_data_in)
 	# /home/skaphe/Documentos/tnc/salidas/1000_120_2021-05-10/WI_44/out/07-DISAGGREGATION
-	path_data_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", DISAGGREGATION_DIR )
+	path_data_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", DISAGGREGATION_DIR)
 	print("path_data_out : %s" % path_data_out)
 	dict_result = dict()
 	dict_result['status'] = True
@@ -455,6 +462,17 @@ def validate_and_create_dir(dir_to_validate):
 @app.get("/costFunctionExecute")
 def costFunctionExecute(user_id, intake_id, study_case_id):
 	
-
 	preproc.costFunctionExecute(intake_id, study_case_id, user_id)
 	return True
+
+def path_wb(id_intake,user_id,study_case_id, preffix):
+	DISAGGREGATION_DIR = "07-DISAGGREGATION"
+	WATER_BALANCE_DIR = "08-WATER_BALANCE"
+	OUT_BASE_DIR = "salidas"
+	wi_folder = "%s_%s" % (preffix, id_intake)
+	date = datetime.date.today()
+	usr_folder = "%s_%s_%s-%s-%s" % (user_id,study_case_id, date.year, date.month, date.day)
+	path_data_wb_in = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "in", WATER_BALANCE_DIR)
+	path_data_wb_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", WATER_BALANCE_DIR)
+	path_data_ds_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", DISAGGREGATION_DIR)
+	return path_data_wb_in, path_data_wb_out, path_data_ds_out

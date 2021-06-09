@@ -110,6 +110,7 @@ def createFolder(user, id_case, id_catchment ,date):
 	usr_folder = "%s_%s_%s-%s-%s" % (user,id_case, date.year, date.month, date.day)
 	out_folder = path.join(base_path,"salidas", usr_folder)
 	wi_folder = "WI_%s" % (id_catchment)
+	ptap_ids = ptap_ids_from_study_case(id_case)
 	folders = {
 		"in":[
 			"catchment",
@@ -120,6 +121,7 @@ def createFolder(user, id_case, id_catchment ,date):
 			"05-ROI",
 			"06-AQUEDUCT",
 			"07-DISAGGREGATION",
+			"08-WATER_BALANCE",
 		],
 		"out":[
 			"01-INVEST_QUALITY",
@@ -129,6 +131,7 @@ def createFolder(user, id_case, id_catchment ,date):
 			"05-ROI",
 			"06-AQUEDUCT",
 			"07-DISAGGREGATION",
+			"08-WATER_BALANCE",
 		]
 	}
 	
@@ -140,6 +143,13 @@ def createFolder(user, id_case, id_catchment ,date):
 	isdir = path.isdir(out_folder_wi)
 	if(not isdir):
 		os.mkdir(out_folder_wi)
+	
+	for ptap in ptap_ids:
+		ptap_folder = "PTAP_%s" & (ptap)
+		out_folder_ptap = path.join(out_folder, ptap_folder)
+		isdir = path.isdir(out_folder_ptap)
+		if(not isdir):
+			os.mkdir(out_folder_ptap)
 
 	for key in folders:
 		pathNew = os.path.join(out_folder_wi,key)
@@ -598,6 +608,15 @@ def timeImplementFromStudyCase(id):
 	except:
 		year=-1
 	return year
+
+def ptap_ids_from_study_case(studycase_id):
+	conn = connect('postgresql_alfa')
+	cursor = conn.cursor()
+	sql = "select header_id from public.waterproof_study_cases_studycases_ptaps where studycases_id = %s" % studycase_id
+	cursor.execute(sql)
+	result = cursor.fetchall()	
+	cursor.close()
+	return result
 
 
 # Insert Invest Result

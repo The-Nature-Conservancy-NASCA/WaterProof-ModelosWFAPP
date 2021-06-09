@@ -4,22 +4,20 @@ import numpy as np
 import csv
 from os import environ
 
-
 ruta = environ["PATH_FILES"]
 
-
-def execWB():
+def execWB(path_data_wb_in, path_data_wb_out):
     # Leer archivos base CSV
     # Los archivos CSV deberán ser construidos desde la interfaz WEB con la estructura propuesta
 
     # Leer archivo de topologia (Col1: From , Col2: To)
     # Archivo topologico basico que indica conexiones Desde (From) a (To)
-    Topology    = np.loadtxt(open(os.path.join(ruta,"salidas","wb_test","INPUTS",'0_WI_Topology.csv')), delimiter=",", skiprows=1)
+    Topology    = np.loadtxt(open(os.path.join(path_data_wb_in,'0_WI_Topology.csv')), delimiter=",", skiprows=1)
 
     # Leer archivo de parametros (Col1: Elemento, Col2: Porcentaje de agua transportada (%),
     # Col 3: Porcentaje de retencion de sedimentos (%) Col 4: Porcentaje de retencion de Nitrogeno (%),
     # Col 5: Porcentaje de retencion de fosforo (%))
-    Parameters  = np.loadtxt(open(os.path.join(ruta,"salidas","wb_test","INPUTS","1_WI_Elements_Param.csv")), delimiter=",", skiprows=1)
+    Parameters  = np.loadtxt(open(os.path.join(path_data_wb_in,"1_WI_Elements_Param.csv")), delimiter=",", skiprows=1)
     PWater      = Parameters[:, 1] #Porcentaje de agua que transporta el elemento
     RetSed      = Parameters[:, 2] #Porcentaje de retencion de Sedimentos en el elemento
     RetN        = Parameters[:, 3] #Porcentaje de retencion de Nitrogeno en el elemento
@@ -30,14 +28,14 @@ def execWB():
     # Col1: Anho, Cada columna de la 2 en adelante representa la serie de tiempo para cada elemento de captacion
     # La Fila 1 indica el ID del elemento de captacion al cual se asigna la serie de tiempo
     # La posicion 1,1 corresponde a un cero que no tiene significado dentro del analisis
-    AWYInputs   = np.loadtxt(open(os.path.join(ruta,"salidas","wb_test","INPUTS","2_WI_AWYInputs.csv")),  delimiter=",")
-    WSedInputs  = np.loadtxt(open(os.path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WSedInputs.csv")), delimiter=",")
-    WNInputs    = np.loadtxt(open(os.path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WNInputs.csv")),   delimiter=",")
-    WPInputs    = np.loadtxt(open(os.path.join(ruta,"salidas","wb_test","INPUTS","2_WI_WPInputs.csv")),   delimiter=",")
+    AWYInputs   = np.loadtxt(open(os.path.join(path_data_wb_in,"2_WI_AWYInputs.csv")),  delimiter=",")
+    WSedInputs  = np.loadtxt(open(os.path.join(path_data_wb_in,"2_WI_WSedInputs.csv")), delimiter=",")
+    WNInputs    = np.loadtxt(open(os.path.join(path_data_wb_in,"2_WI_WNInputs.csv")),   delimiter=",")
+    WPInputs    = np.loadtxt(open(os.path.join(path_data_wb_in,"2_WI_WPInputs.csv")),   delimiter=",")
 
     # Leer archivo de serie de tiempo de caudal extraido (l/s)
     # Col1: Anho Col 2: QExtract
-    QExtract    = np.loadtxt(open(os.path.join(ruta,"salidas","wb_test","INPUTS","3_Water_Extraction.csv"), "rb"), delimiter=",")
+    QExtract    = np.loadtxt(open(os.path.join(path_data_wb_in,"3_Water_Extraction.csv"), "rb"), delimiter=",")
 
     '''
     ------------------------------------------------------------------------------------------------------------------------
@@ -556,7 +554,7 @@ def execWB():
     Posi  = np.where(Final_Order_Solution == Extract_Element)
     if np.sum((Final_Order_Solution == Extract_Element)) == 0:
         # Caso Particular - PTAP
-        myFile = open(os.path.join(ruta,'salidas','wb_test','OUTPUTS', 'SystemErrors.txt'), 'w', newline='')
+        myFile = open(os.path.join(path_data_wb_out, 'SystemErrors.txt'), 'w', newline='')
         with myFile:
             Choco = "0"
             myFile.writelines(Choco)
@@ -579,7 +577,7 @@ def execWB():
 
         Check = np.sum(Check)
 
-        myFile = open(os.path.join(ruta,'salidas','wb_test','OUTPUTS', 'SystemErrors.txt'), 'w', newline='')
+        myFile = open(os.path.join(path_data_wb_out, 'SystemErrors.txt'), 'w', newline='')
         with myFile:
             if Check > 0:
                 Choco = "1"
@@ -591,61 +589,61 @@ def execWB():
 
 
     # Annual Water Yield (AWY) / Caudales Trasportados en cada Elemento
-    myFile = open(os.path.join(ruta,"salidas","wb_test",'OUTPUTS','Q_Results.csv'), 'w', newline='')
+    myFile = open(os.path.join(path_data_wb_out,'Q_Results.csv'), 'w', newline='')
     with myFile:
         writer = csv.writer(myFile)
         writer.writerows(AWY_Results)
 
     # Concentracion de sedimentos
-    myFile = open(os.path.join(ruta,"salidas","wb_test",'OUTPUTS','CSed_Results.csv'), 'w', newline='')
+    myFile = open(os.path.join(path_data_wb_out,'CSed_Results.csv'), 'w', newline='')
     with myFile:
         writer = csv.writer(myFile)
         writer.writerows(CSed_Results)
 
     # Carga de sedimentos
-    myFile = open(os.path.join(ruta,"salidas","wb_test",'OUTPUTS','WSed_Results.csv'), 'w', newline='')
+    myFile = open(os.path.join(path_data_wb_out,'WSed_Results.csv'), 'w', newline='')
     with myFile:
         writer = csv.writer(myFile)
         writer.writerows(WSed_Results)
 
     # Carga de sedimentos retenidos
-    myFile = open(os.path.join(ruta,"salidas","wb_test",'OUTPUTS','WSed_Ret_Results.csv'), 'w', newline='')
+    myFile = open(os.path.join(path_data_wb_out,'WSed_Ret_Results.csv'), 'w', newline='')
     with myFile:
         writer = csv.writer(myFile)
         writer.writerows(WSed_Ret_Results)
 
     # Concentracion de nitrogeno
-    myFile = open(os.path.join(ruta,"salidas","wb_test",'OUTPUTS','CN_Results.csv'), 'w', newline='')
+    myFile = open(os.path.join(path_data_wb_out,'CN_Results.csv'), 'w', newline='')
     with myFile:
         writer = csv.writer(myFile)
         writer.writerows(CN_Results)
 
     # Carga de nitrogeno
-    myFile = open(os.path.join(ruta,"salidas","wb_test",'OUTPUTS','WN_Results.csv'), 'w', newline='')
+    myFile = open(os.path.join(path_data_wb_out,'WN_Results.csv'), 'w', newline='')
     with myFile:
         writer = csv.writer(myFile)
         writer.writerows(WN_Results)
 
     # Carga de nitrogeno retenido
-    myFile = open(os.path.join(ruta,"salidas","wb_test",'OUTPUTS','WN_Ret_Results.csv'), 'w', newline='')
+    myFile = open(os.path.join(path_data_wb_out,'WN_Ret_Results.csv'), 'w', newline='')
     with myFile:
         writer = csv.writer(myFile)
         writer.writerows(WN_Ret_Results)
 
     # Concentracion de fosforo
-    myFile = open(os.path.join(ruta,"salidas","wb_test",'OUTPUTS','CP_Results.csv'), 'w', newline='')
+    myFile = open(os.path.join(path_data_wb_out,'CP_Results.csv'), 'w', newline='')
     with myFile:
         writer = csv.writer(myFile)
         writer.writerows(CP_Results)
 
     # Carga de fosforo
-    myFile = open(os.path.join(ruta,"salidas","wb_test",'OUTPUTS','WP_Results.csv'), 'w', newline='')
+    myFile = open(os.path.join(path_data_wb_out,'WP_Results.csv'), 'w', newline='')
     with myFile:
         writer = csv.writer(myFile)
         writer.writerows(WP_Results)
 
     # Carga de fosforo retenido
-    myFile = open(os.path.join(ruta,"salidas","wb_test",'OUTPUTS','WP_Ret_Results.csv'), 'w', newline='')
+    myFile = open(os.path.join(path_data_wb_out,'WP_Ret_Results.csv'), 'w', newline='')
     with myFile:
         writer = csv.writer(myFile)
         writer.writerows(WP_Ret_Results)
@@ -653,7 +651,7 @@ def execWB():
     # RESULTS ORDER
     #Order_Solution = Order_Solution[1:Last_Column]
     Order_Results = np.reshape(Final_Order_Solution, (1, Elements.shape[0]))
-    myFile = open(os.path.join(ruta,"salidas","wb_test",'OUTPUTS','Results_Order.csv'), 'w', newline='')
+    myFile = open(os.path.join(path_data_wb_out,'Results_Order.csv'), 'w', newline='')
     with myFile:
         writer = csv.writer(myFile)
         writer.writerows(Order_Results)
