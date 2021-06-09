@@ -45,7 +45,7 @@ def DataInNBS(id_intake, path_data_wb_in, path_data_ds_out):
     
 # Genera los csv para la ejecución de WB en PTAP de dissagregation para el escenario BAU
 def DataInBAUPTAP(id_ptap, path_data_wb_in, path_data_ds_out):
-    generateCsvTopology( id_ptap, '__wpgettopologybyptap')
+    generateCsvTopology( id_ptap, '__wpgettopologybyptap', path_data_wb_in)
     generateCsvPerc( id_ptap, '__wpgetpercentagesbyptap', "1_WI_Elements_Param.csv", path_data_wb_in )
     generateCsvDataDisPTAP( id_ptap, '__wpgetawybyptap', "2_WI_AWYInputs.csv", 'awy', 'BAU', path_data_wb_in, path_data_ds_out)
     generateCsvDataDisPTAP( id_ptap, '__wpgetsedbyptap', "2_WI_WSedInputs.csv", 'wsed_ton', 'BAU', path_data_wb_in, path_data_ds_out)
