@@ -118,7 +118,8 @@ def createFolder(user, id_case, id_catchment ,date):
 			"03-INVEST",
 			"04-RIOS",
 			"05-ROI",
-			"06-AQUEDUCT"
+			"06-AQUEDUCT",
+			"07-DISAGGREGATION",
 		],
 		"out":[
 			"01-INVEST_QUALITY",
@@ -126,7 +127,8 @@ def createFolder(user, id_case, id_catchment ,date):
 			"03-INVEST",
 			"04-RIOS",
 			"05-ROI",
-			"06-AQUEDUCT"
+			"06-AQUEDUCT",
+			"07-DISAGGREGATION",
 		]
 	}
 	

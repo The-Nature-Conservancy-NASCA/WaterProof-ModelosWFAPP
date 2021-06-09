@@ -10,7 +10,7 @@ import os
 from os import environ,path
 import shutil
 import preproc
-from datetime import datetime
+import datetime
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
 from getDataWB import getDataDB, updateDataDB
