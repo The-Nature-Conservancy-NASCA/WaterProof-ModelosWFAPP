@@ -1,4 +1,4 @@
-import sys, csv
+import sys, csv,os
 import numpy as np
 import pandas as pd
 from os import environ,path
@@ -29,7 +29,9 @@ def getDataDBCost(studycase,funcion_db, types,stage):
     return listResult
 
 # Generación de los csv pertinentes para el algoritmo de ROI
-def DataCSVRoi( studycase ):
+def DataCSVRoi( user_id, studycase, date ):
+    genCSVCO2 ( studycase, '02-OUTPUTS_BaU.csv','9-CO2_BaU.csv', date, user_id )
+    genCSVCO2 ( studycase, '02-OUTPUTS_NBS.csv','10-CO2_NBS.csv', date, user_id )
     genCSVCost ( studycase, '__wp_roi_cost', 'intake', 'NBS', '1_CostFunction_NBS_Cap.csv' )
     genCSVCost ( studycase, '__wp_roi_cost', 'intake', 'BAU', '2_CostFunction_BaU_Cap.csv' )
     genCSVCost( studycase, '__wp_roi_cost', 'PTAP', 'NBS', '3_CostFunction_NBS_PTAP.csv' )
@@ -38,10 +40,7 @@ def DataCSVRoi( studycase ):
     genCSVPort_NBS( studycase, '__wp_dissagregation_nbs_first', '__wp_dissagregation_nbs_second','6_Porfolio_NBS.csv' )
     genCSVFin_Par ( studycase, '__wp_roi_financial_parameters_first', '__wp_roi_financial_parameters_second', '7_Financial_Parmeters.csv' )
     genCSVTime    ( studycase, '__wp_roi_time','8_Time.csv' )
-    # TODO: generar los cvs requeridos en cada función
-    genCSVCO2_BaU ( studycase, '02-OUTPUTS_BaU.csv','9-CO2_BaU.csv' )
-    genCSVCO2_NBS ( studycase, '02-OUTPUTS_NBS.csv','10-CO2_NBS.csv' )
- 
+
 # 1-4 Genera el archivo csv de costos para NBS-BAU para Intake-PTAP
 def genCSVCost( studycase, function_id,types,stage, csv_in ):
     header =["Process","Cost_function"]
@@ -73,7 +72,6 @@ def genCSVCost( studycase, function_id,types,stage, csv_in ):
 
     pathcsv= path.join( ruta, "salidas", "roi", "INPUTS", csv_in )
     generateCsv( header, results1tot, pathcsv )
-
 
 # 5 Genera el archivo csv de NBS_Cost
 def genCSVNBS_Cost( studycase, function_id, csv_in ):
@@ -179,16 +177,20 @@ def genCSVTime( studycase, function_id, csv_in ):
     pathcsv= path.join( ruta, "salidas", "roi", "INPUTS", csv_in )
     generateCsv( header, results, pathcsv )
 
-# 9 Genera el archivo csv de CO2 BAU
-def genCSVCO2_BaU( studycase, csv_in, csv_out ):
-    pathcsv_in= path.join( ruta, "salidas", "disaggregation", "Out", csv_in )
+# 9 - 10 Genera el archivo csv de CO2 BAU y NBS
+def genCSVCO2( studycase, csv_in, csv_out, date, user_id):
+    path_principal = path.join( ruta, 'salidas', f'{user_id}_{studycase}_{date}' )
+    contenido = os.listdir( path_principal )
+    df_carbon=[]
+    for direc in contenido:
+        path_intake = path.join( path_principal, direc, 'out', '07-DISAGGREGATION', csv_in )
+        df = pd.read_csv(path_intake)
+        df = df['WC (Ton)']
+        df.name = f'{direc}_WC_(Ton)'
+        df_carbon.append(df)
+    time_array = np.array(list(range(df.size)))
+    df_time = pd.DataFrame(time_array, columns = ['Time'])
+    df_carbon.insert(0,df_time)
+    df_fin = pd.concat(df_carbon, axis=1)
     pathcsv_out= path.join( ruta, "salidas", "roi", "INPUTS", csv_out )
-    df = pd.read_csv(pathcsv_in)
-    df.to_csv(pathcsv_out, index=False)
-
-# 10 Genera el archivo csv de CO2 NBS
-def genCSVCO2_NBS( studycase, csv_in, csv_out ):
-    pathcsv_in= path.join( ruta, "salidas", "disaggregation", "Out", csv_in )
-    pathcsv_out= path.join( ruta, "salidas", "roi", "INPUTS", csv_out )
-    df = pd.read_csv(pathcsv_in)
-    df.to_csv(pathcsv_out, index=False)
+    df_fin.to_csv(pathcsv_out, index=False)
