@@ -431,15 +431,19 @@ def disaggregation2(user_id, study_cases_id):
 	return preproc.processDissagregation(user_id, study_cases_id)
 
 @app.get("/roiExecution")
-def roiExecution(user_id, study_cases_id, date):
-	
-	path_data = path.join( base_path, "salidas", "roi" )
+def roiExecution(user_id, study_cases_id):
+	today = datetime.date.today()
+	usr_folder = "%s_%s_%s-%s-%s" % (user_id, study_cases_id, today.year, today.month, today.day)
+	OUT_BASE_DIR = "salidas"
+	ROI = 'ROI'
+	path_data = path.join(base_path, OUT_BASE_DIR, usr_folder)
+	path_data_roi = path.join(path_data,ROI)
 	dict_result = dict()
 	dict_result['status'] = True
     # try:
-	ExchangeROI( study_cases_id )
-	DataCSVRoi( user_id, study_cases_id, date )
-	ROI_Analisys( path_data )
+	ExchangeROI(study_cases_id)
+	DataCSVRoi(user_id, study_cases_id, today, path_data)
+	ROI_Analisys(path_data_roi)
 	# except Exception as e:
 	# 	dictResult['estado'] = False
 	# 	dictResult['error'] = e.args
