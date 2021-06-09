@@ -7,25 +7,22 @@ from config import config
 from connect import connect
 from getDataWB import getDataDB,generateCsv
 
-ruta = environ["PATH_FILES"]
-
 # Generación de los csv pertinentes para el algoritmo de dissagregation
-def DataCSVDis(catchment,studycase):
-    genCSVInvest(catchment,studycase, '__wp_dissagregation_invest','01-INPUTS_InVEST.csv')
+def DataCSVDis(path_data_in, catchment,studycase):
+    genCSVInvest(path_data_in, catchment,studycase, '__wp_dissagregation_invest','01-INPUTS_InVEST.csv')
     genCSVNBS(studycase, '__wp_dissagregation_nbs_first', '__wp_dissagregation_nbs_second','01-INPUTS_NBS.csv')
     genCSVTime(studycase, '__wp_dissagregation_time','01-INPUTS_Time.csv')
 
 # genera el archivo Invest 
 # header = cabecera del archivo
 # results = datos que se llaman de la base de datos mediante una función
-def genCSVInvest(catchment,studycase, function_id, csv_in):
+def genCSVInvest(path_data_in, catchment,studycase, function_id, csv_in):
     header=["Scenario-InVEST","AWY (m3)","Wsed (Ton)","WN (Kg)","WP (kg)","BF (m3)","WC (Ton)"]
     results = getDataDBInVEST( catchment, studycase, function_id )
-    pathcsv= path.join( ruta, "salidas", "disaggregation", "INPUTS", csv_in )
-    generateCsv( header, results, pathcsv )
+    generateCsv( header, results, path_data_in)
 
 # genera el archivo csv de NBS
-def genCSVNBS(studycase, function_id1, function_id2, csv_in):
+def genCSVNBS(path_data_in, studycase, function_id1, function_id2, csv_in):
     header=["NBS-Name",	"Time-Max-Benefit",	"Benefit-t0"]
     results1 = getDataDB( studycase, function_id1 )
     results2 = getDataDB( studycase, function_id2 )
@@ -49,15 +46,13 @@ def genCSVNBS(studycase, function_id1, function_id2, csv_in):
     for i in range(int(tot)):
         header.append('A-'+str(i+1)+' (ha)')
         
-    pathcsv= path.join( ruta, "salidas", "disaggregation", "INPUTS", csv_in )
-    generateCsv( header, results1tot, pathcsv )
+    generateCsv( header, results1tot, path_data_in)
 
 # genera el archivo csv de Time
-def genCSVTime(studycase, function_id, csv_in):
+def genCSVTime(path_data_in, studycase, function_id, csv_in):
     header=["Time"]
     results = getDataDB( studycase, function_id )
-    pathcsv= path.join( ruta, "salidas", "disaggregation", "INPUTS", csv_in )
-    generateCsv( header, results, pathcsv )
+    generateCsv( header, results, path_data_in)
 
 # función para hacer el llamado de base de datos para el csv de invest
 def getDataDBInVEST( catchment, studycase,  funcion_db ):
