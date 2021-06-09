@@ -10,8 +10,8 @@ from getDataWB import getDataDB,generateCsv
 # Generación de los csv pertinentes para el algoritmo de dissagregation
 def DataCSVDis(path_data_in, catchment,studycase):
     genCSVInvest(path_data_in, catchment,studycase, '__wp_dissagregation_invest','01-INPUTS_InVEST.csv')
-    genCSVNBS(studycase, '__wp_dissagregation_nbs_first', '__wp_dissagregation_nbs_second','01-INPUTS_NBS.csv')
-    genCSVTime(studycase, '__wp_dissagregation_time','01-INPUTS_Time.csv')
+    genCSVNBS(path_data_in, studycase, '__wp_dissagregation_nbs_first', '__wp_dissagregation_nbs_second','01-INPUTS_NBS.csv')
+    genCSVTime(path_data_in, studycase, '__wp_dissagregation_time','01-INPUTS_Time.csv')
 
 # genera el archivo Invest 
 # header = cabecera del archivo

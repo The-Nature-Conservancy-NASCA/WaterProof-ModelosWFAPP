@@ -410,7 +410,7 @@ async def disaggregation( id_usuario, basin, case, catchment):
 	dict_result = dict()
 	dict_result['status'] = True
     # try:
-	DataCSVDis( catchment, case)
+	DataCSVDis(path_data_in, catchment, case)
 	Desaggregation_BaU_NBS(path_data_in, path_data_out)
 	# except Exception as e:
 	# 	dictResult['status'] = False
