@@ -7,12 +7,10 @@ from config import config
 from connect import connect
 from getDataWB import getDataDB,generateCsv
 
-
-
 ruta = environ["PATH_FILES"]
 
 # Generación de los csv pertinentes para el algoritmo de dissagregation
-def DataCSVDis(type,catchment,studycase):
+def DataCSVDis(catchment,studycase):
     genCSVInvest(catchment,studycase, '__wp_dissagregation_invest','01-INPUTS_InVEST.csv')
     genCSVNBS(studycase, '__wp_dissagregation_nbs_first', '__wp_dissagregation_nbs_second','01-INPUTS_NBS.csv')
     genCSVTime(studycase, '__wp_dissagregation_time','01-INPUTS_Time.csv')
