@@ -145,7 +145,7 @@ def createFolder(user, id_case, id_catchment ,date):
 		os.mkdir(out_folder_wi)
 	
 	for ptap in ptap_ids:
-		ptap_folder = "PTAP_%s" & (ptap)
+		ptap_folder = "PTAP_%s" % (ptap)
 		out_folder_ptap = path.join(out_folder, ptap_folder)
 		isdir = path.isdir(out_folder_ptap)
 		if(not isdir):
