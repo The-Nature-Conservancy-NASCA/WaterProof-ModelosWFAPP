@@ -87,8 +87,8 @@ dirOutputsPTAP = {
 
 ruta = os.environ["PATH_FILES"]
 
-def readCsv(csvIn):
-    pathFile = os.path.join(ruta,'salidas','wb_test','OUTPUTS',csvIn)
+def readCsv(csvIn, path_data_wb_out):
+    pathFile = os.path.join(path_data_wb_out,csvIn)
     resultList = []
     with open(pathFile) as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -108,11 +108,11 @@ def generateCsv(header,values, file):
         writer = csv.writer(file)
         writer.writerows(row_list)
 
-def mergeData():
+def mergeData(path_data_wb_out):
     order = []
     for key in dirOutputs:
         if key != 'results':
-            csv_result = readCsv(dirOutputs[key]['file'])
+            csv_result = readCsv(dirOutputs[key]['file'],path_data_wb_out)
             if len(csv_result) > 0:
                 nums = csv_result[0]
                 row = []
@@ -123,7 +123,7 @@ def mergeData():
 
                 order.append(row)
         else:
-            csv_result = readCsv(dirOutputs['results'])[0]
+            csv_result = readCsv(dirOutputs['results'], path_data_wb_out)[0]
             row = []
             row.append('type')
             row.append('year')
@@ -133,7 +133,7 @@ def mergeData():
             order.append(row)
 
 
-    sumFilePath = os.path.join(ruta,'salidas','wb_test','OUTPUTS','sumWB.csv')
+    sumFilePath = os.path.join(path_data_wb_out,'sumWB.csv')
 
     generateCsv(order[0],order[1:],sumFilePath)
 
@@ -148,8 +148,8 @@ def updateParameter(element, parameter, value):
 	cursor.close()
 	conn.close()
 
-def readSum(csvIn):
-    data = readCsv(csvIn)
+def readSum(csvIn, path_data_wb_out):
+    data = readCsv(csvIn, path_data_wb_out)
     line = 0
     headers = []
     for row in data:

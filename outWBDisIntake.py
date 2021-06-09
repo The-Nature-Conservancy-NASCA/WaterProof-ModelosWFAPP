@@ -9,9 +9,9 @@ from pandas.core.common import flatten
 ruta = os.environ["PATH_FILES"]
 # ruta = 'D:/Descargas/Trabajo/Workspace/tnc/modelos'
 
-def SaveInDB( function_db, ptap_id, user_id, study_case_id, scenario ):
+def SaveInDB( function_db, ptap_id, user_id, study_case_id, scenario, path_data_wb_out):
     # Ruta de acceso a los archivos
-    anotherroute= os.path.join(ruta,'salidas','wb_test','OUTPUTS')
+    anotherroute= path_data_wb_out # os.path.join(ruta,'salidas','wb_test','OUTPUTS')
     # archivos de salida en csv a Matriz
     headers = pd.read_csv(anotherroute+'/Results_Order.csv',nrows=0).columns
     cn = pd.read_csv(anotherroute+'/CN_Results.csv', names=headers)
