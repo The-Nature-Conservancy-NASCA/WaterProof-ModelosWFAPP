@@ -321,10 +321,10 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	# try:
 	DataInBAUPTAP(ptap_id, path_data_wb_in, path_data_ds_out)
 	execWB(path_data_wb_in, path_data_wb_out)
-	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'BAU')
+	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'BAU', path_data_wb_out)
 	DataInNBSPTAP(ptap_id, path_data_wb_in)
 	execWB(path_data_wb_in, path_data_wb_out)
-	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS')
+	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS', path_data_wb_out)
 	dictResult = dict()
 	dictResult['status'] = True
 	dictResult['result'] = {"result":'Transacción exitosa'}
@@ -343,8 +343,8 @@ async def calculateWB(id_intake):
 	try:
 		DataInWB(id_intake, path_data_wb_in)
 		execWB(path_data_wb_in, path_data_wb_out)
-		outFile = mergeData()
-		readSum(outFile)
+		outFile = mergeData(path_data_wb_out)
+		readSum(outFile, path_data_wb_out)
 		dictResult = dict()
 		dictResult['status'] = True
 		dictResult['result'] = {"result":'Transacción exitosa'}
