@@ -134,6 +134,10 @@ def createFolder(user, id_case, id_catchment ,date):
 			"08-WATER_BALANCE",
 		]
 	}
+
+	IN = 'in'
+	OUT = 'out'
+	ROI = 'ROI'
 	
 	isdir = path.isdir(out_folder)
 	if(not isdir):
@@ -144,16 +148,24 @@ def createFolder(user, id_case, id_catchment ,date):
 	if(not isdir):
 		os.mkdir(out_folder_wi)
 	
+	# create directories for ptaps
 	for ptap in ptap_ids:
 		ptap_folder = "PTAP_%s" % (ptap)
 		out_folder_ptap = path.join(out_folder, ptap_folder)
 		isdir = path.isdir(out_folder_ptap)
 		if(not isdir):
 			os.mkdir(out_folder_ptap)
-			os.mkdir(path.join(out_folder_ptap,'in'))
-			os.mkdir(path.join(out_folder_ptap,'out'))
-			os.mkdir(path.join(out_folder_ptap,'in','08-WATER_BALANCE'))
-			os.mkdir(path.join(out_folder_ptap,'out','08-WATER_BALANCE'))
+			os.mkdir(path.join(out_folder_ptap, IN))
+			os.mkdir(path.join(out_folder_ptap, OUT))
+			os.mkdir(path.join(out_folder_ptap, IN, '08-WATER_BALANCE'))
+			os.mkdir(path.join(out_folder_ptap, OUT, '08-WATER_BALANCE'))
+
+	# create directory for ROI
+	out_folder_roi = path.join(out_folder, ROI)
+	if(not path.isdir(out_folder_roi)):
+		os.mkdir(out_folder_roi)
+		os.mkdir(path.join(out_folder_roi, IN))
+		os.mkdir(path.join(out_folder_roi, OUT))
 
 	for key in folders:
 		pathNew = os.path.join(out_folder_wi,key)

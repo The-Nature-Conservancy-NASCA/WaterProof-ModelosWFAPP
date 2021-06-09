@@ -53,7 +53,7 @@ def getDataDBPTAP( id, funcion_db, types, scenario ):
 
     return listResult
 
-def generateCsv( header, values, file ):
+def generateCsv(header, values, file):
     row_list = []
     row_list.append(header)
 
