@@ -395,10 +395,18 @@ async def cobTrans(pathCobs,pathLULC):
 
 @app.get("/disaggregation")
 async def disaggregation( id_usuario, basin, case, catchment):
-
-	path_data_in = path.join( base_path, "salidas", "disaggregation", "INPUTS" )
-	path_data_out = path.join( base_path, "salidas", "disaggregation", "Out" )
-
+	print ("disaggregation")
+	DISAGGREGATION_DIR = "07-DISAGGREGATION"
+	OUT_BASE_DIR = "salidas"
+	wi_folder = "WI_%s" % (catchment)
+	date = datetime.date.today()
+	usr_folder = "%s_%s_%s-%s-%s" % (id_usuario,case, date.year, date.month, date.day)
+	# /home/skaphe/Documentos/tnc/salidas/1000_120_2021-05-10/WI_44/in/07-DISAGGREGATION
+	path_data_in = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "in", DISAGGREGATION_DIR)
+	print("path_data_in : %s" % path_data_in)
+	# /home/skaphe/Documentos/tnc/salidas/1000_120_2021-05-10/WI_44/out/07-DISAGGREGATION
+	path_data_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", DISAGGREGATION_DIR )
+	print("path_data_out : %s" % path_data_out)
 	dict_result = dict()
 	dict_result['status'] = True
     # try:
