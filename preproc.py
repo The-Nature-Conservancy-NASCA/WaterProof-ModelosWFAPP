@@ -716,7 +716,7 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 				result = -99999
 
 			cursor = conn.cursor()
-			cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id, intake_ptap_id])
+			cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_ptap_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id)
 			conn.commit()
 			cursor.close()
 	
