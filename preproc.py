@@ -697,11 +697,18 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 			# for v in args:
 			# 	global_vars[v] = 1
 			result = -99999
+			result_factor = 1
 			try:
+				print ("Before compile")
+				print ("expression: %s" % expression )
 				code = compile(expression, "<string>", "eval")
+				print ("After compile")
 				result = eval(code,vars,ALLOWED_NAMES)	
+				print ("After Eval")
 				result_factor = result * factor
+				print ("result factor: %s" % result_factor)
 			except:
+				print ("ERROR!!!")
 				result = -99999
 
 			cursor = conn.cursor()
