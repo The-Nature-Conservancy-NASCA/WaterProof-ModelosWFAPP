@@ -668,6 +668,9 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 	for row in rows:
 		vars = dict()
 		graphid = str(row[17])
+		type_desc = str(row[18])
+		function_id = row[19]
+		intake_ptap_id = row[20]
 		year = row[0]
 		element = row[1]
 		money = row[2]
@@ -685,6 +688,7 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 		vars[WNRet + graphid] = row[13]
 		vars[WPRet + graphid] = row[14]
 		vars[WSedRet + graphid] = row[15]
+
 		expression = row[16]
 				
 		if (not expression is None and expression.strip() != ''):
@@ -712,7 +716,7 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 				result = -99999
 
 			cursor = conn.cursor()
-			cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_id, element, year, result_factor, money, study_case_id, user_id])
+			cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id, intake_ptap_id])
 			conn.commit()
 			cursor.close()
 	
