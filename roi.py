@@ -49,7 +49,7 @@ def DataCSVRoi(user_id, studycase, date, path_data):
 # 1-4 Genera el archivo csv de costos para NBS-BAU para Intake-PTAP
 
 def genCSVCost(studycase, function_id, types, stage, csv_in, path_data):
-    header = ["Process", "Cost_function"]
+    header = ["Process", "Cost_Function"]
     result = getDataDBCost(studycase, function_id, types, stage)
 
     # encontrar los id
