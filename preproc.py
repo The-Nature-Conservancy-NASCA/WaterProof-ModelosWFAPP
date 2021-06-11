@@ -708,9 +708,7 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 			try:
 				print ("expression: %s" % expression )
 				code = compile(expression, "<string>", "eval")
-				print ("After compile")				
 				result = eval(code,vars,ALLOWED_NAMES)	
-				print ("After Eval")
 				result_factor = result * factor
 				print ("result factor: %s" % result_factor)
 			except:
