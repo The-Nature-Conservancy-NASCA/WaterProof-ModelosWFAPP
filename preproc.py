@@ -665,19 +665,9 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 	WPRet = 'WPRet'
 	expression = ''
 	
+	vars = dict()
 	for row in rows:
-		vars = dict()
 		graphid = str(row[17])
-		type_desc = str(row[18])
-		function_id = row[19]
-		intake_ptap_id = row[20]
-		year = row[0]
-		element = row[1]
-		money = row[2]
-		factor = float(row[3])
-		stage = row[4]		
-		awy = row[5]
-		
 		vars[Q + graphid] = row[6] 
 		vars[CN + graphid] = row[7]
 		vars[CP + graphid] = row[8]
@@ -689,6 +679,17 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 		vars[WPRet + graphid] = row[14]
 		vars[WSedRet + graphid] = row[15]
 
+	for row in rows:		
+		type_desc = str(row[18])
+		function_id = row[19]
+		intake_ptap_id = row[20]
+		year = row[0]
+		element = row[1]
+		money = row[2]
+		factor = float(row[3])
+		stage = row[4]		
+		awy = row[5]
+		
 		expression = row[16]
 				
 		if (not expression is None and expression.strip() != ''):
