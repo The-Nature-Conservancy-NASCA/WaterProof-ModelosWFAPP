@@ -690,8 +690,7 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 		money = row[2]
 		factor = float(row[3])
 		stage = row[4]		
-		awy = row[5]
-		
+		awy = row[5]		
 		expression = row[16]
 				
 		if (not expression is None and expression.strip() != ''):
@@ -727,7 +726,7 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 """ (i.e: min: E2, E3) """
 def remove_no_vars(vars):
 
-	special_values = ['min', 'E2', 'E3']
+	special_values = ['min', 'E2', 'E3', 'if', 'else', 'E']
 	# if (settings.WATERPROOF_SPECIAL_VALUES):
 	#	special_values = settings.WATERPROOF_SPECIAL_VALUES
 	for v in special_values:
