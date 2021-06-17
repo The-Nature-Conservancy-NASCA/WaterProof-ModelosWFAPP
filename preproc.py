@@ -681,7 +681,7 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 	cursor.close()
 	internalCostFunctionExecute(conn, rows, study_case_id, user_id)
 
-	stage = 'NBS'
+	stage = 'BAU'
 	type_element = 'PTAP'
 	print (stage, type_element)
 	cursor = conn.cursor()
