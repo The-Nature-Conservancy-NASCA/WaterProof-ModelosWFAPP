@@ -664,7 +664,9 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 	print ("study_case_id: %s" % study_case_id)
 	stage = 'BAU'
 	type_element = 'intake'
+	
 	print (stage, type_element)
+	cursor = conn.cursor()
 	cursor.callproc('__wp_get_function_cost_study_cases',[study_case_id, stage, type_element])
 	rows = cursor.fetchall()
 	cursor.close()
@@ -673,6 +675,7 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 	stage = 'NBS'
 	type_element = 'intake'
 	print (stage, type_element)
+	cursor = conn.cursor()
 	cursor.callproc('__wp_get_function_cost_study_cases',[study_case_id, stage, type_element])
 	rows = cursor.fetchall()
 	cursor.close()
@@ -681,6 +684,7 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 	stage = 'NBS'
 	type_element = 'PTAP'
 	print (stage, type_element)
+	cursor = conn.cursor()
 	cursor.callproc('__wp_get_function_cost_study_cases',[study_case_id, stage, type_element])
 	rows = cursor.fetchall()
 	cursor.close()
@@ -689,6 +693,7 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 	stage = 'NBS'
 	type_element = 'PTAP'
 	print (stage, type_element)
+	cursor = conn.cursor()
 	cursor.callproc('__wp_get_function_cost_study_cases',[study_case_id, stage, type_element])
 	rows = cursor.fetchall()
 	cursor.close()
