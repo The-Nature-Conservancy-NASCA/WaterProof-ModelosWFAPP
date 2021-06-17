@@ -44,6 +44,17 @@ logger.setLevel(logging.INFO)
 
 base_path = environ["PATH_FILES"]
 
+Q = 'Q'
+CN = 'CN'
+CP = 'CP'
+CSed = 'CSed'
+WN = 'WN'
+WP = 'WP' 
+WSed = 'WSed'
+WSedRet = 'WSedRet'
+WNRet = 'WNRet'
+WPRet = 'WPRet'
+
 # Exportar cuenca delimitada a shp
 def exportToShp(catchment, path):
 	params = config(section='postgresql_alfa')
@@ -647,80 +658,122 @@ def insertInvestResult(year, type, awy, wn_kg, wp_kg, wsed_ton, bf_m3, wc_ton,in
 
 ''' Calculate Cost function '''
 def costFunctionExecute(intake_id, study_case_id, user_id):
-
+	print ("costFunctionExecute")
 	conn = connect('postgresql_alfa')
 	cursor = conn.cursor()
-	cursor.callproc('__wp_get_function_cost_study_cases',[study_case_id])
+	print ("study_case_id: %s" % study_case_id)
+	stage = 'BAU'
+	type_element = 'intake'
+	print (stage, type_element)
+	cursor.callproc('__wp_get_function_cost_study_cases',[study_case_id, stage, type_element])
 	rows = cursor.fetchall()
 	cursor.close()
-	Q = 'Q'
-	CN = 'CN'
-	CP = 'CP'
-	CSed = 'CSed'
-	WN = 'WN'
-	WP = 'WP' 
-	WSed = 'WSed'
-	WSedRet = 'WSedRet'
-	WNRet = 'WNRet'
-	WPRet = 'WPRet'
+	internalCostFunctionExecute(conn, rows, study_case_id, user_id)
+
+	stage = 'NBS'
+	type_element = 'intake'
+	print (stage, type_element)
+	cursor.callproc('__wp_get_function_cost_study_cases',[study_case_id, stage, type_element])
+	rows = cursor.fetchall()
+	cursor.close()
+	internalCostFunctionExecute(conn, rows, study_case_id, user_id)
+
+	stage = 'NBS'
+	type_element = 'PTAP'
+	print (stage, type_element)
+	cursor.callproc('__wp_get_function_cost_study_cases',[study_case_id, stage, type_element])
+	rows = cursor.fetchall()
+	cursor.close()
+	internalCostFunctionExecute(conn, rows, study_case_id, user_id)
+
+	stage = 'NBS'
+	type_element = 'PTAP'
+	print (stage, type_element)
+	cursor.callproc('__wp_get_function_cost_study_cases',[study_case_id, stage, type_element])
+	rows = cursor.fetchall()
+	cursor.close()
+	internalCostFunctionExecute(conn, rows, study_case_id, user_id)
+
+	conn.close()
+	
+	return True
+
+
+def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
+	print("internalCostFunctionExecute")
+	
 	expression = ''
 	
 	vars = dict()
+	years = []
+	# save years
 	for row in rows:
-		graphid = str(row[17])
-		vars[Q + graphid] = row[6] 
-		vars[CN + graphid] = row[7]
-		vars[CP + graphid] = row[8]
-		vars[CSed + graphid] = row[9]
-		vars[WN + graphid] = row[10]
-		vars[WP + graphid] = row[11]
-		vars[WSed + graphid] = row[12]
-		vars[WNRet + graphid] = row[13]
-		vars[WPRet + graphid] = row[14]
-		vars[WSedRet + graphid] = row[15]
-	
-	print ("vars: %s", vars)
+		if not row[0] in years:
+			years.append = row[0]
 
-	for row in rows:		
-		type_desc = str(row[18])
-		function_id = row[19]
-		intake_ptap_id = row[20]
-		year = row[0]
-		element = row[1]
-		money = row[2]
-		factor = float(row[3])
-		stage = row[4]		
-		awy = row[5]		
-		expression = row[16]
+	for y in years:	
+		print ("Iterating Year : %s" % y)
+		for row in rows:
+			year = row[0]
+			if y == year:
+				graphid = str(row[17])
+				vars[Q + graphid] = row[6] 
+				vars[CN + graphid] = row[7]
+				vars[CP + graphid] = row[8]
+				vars[CSed + graphid] = row[9]
+				vars[WN + graphid] = row[10]
+				vars[WP + graphid] = row[11]
+				vars[WSed + graphid] = row[12]
+				vars[WNRet + graphid] = row[13]
+				vars[WPRet + graphid] = row[14]
+				vars[WSedRet + graphid] = row[15]
+	
+				print ("YEAR: %s, vars: %s" % (y, vars))
+		
+		for row in rows:
+			year = row[0]
+			if y == year:
+				type_desc = str(row[18])
+				function_id = row[19]
+				intake_ptap_id = row[20]			
+				element = row[1]
+				money = row[2]
+				factor = float(row[3])
+				stage = row[4]		
+				awy = row[5]		
+				expression = row[16]
+						
+				if (not expression is None and expression.strip() != ''):
+					args = re.findall(r'[a-zA-Z_]\w*', expression)
+					ALLOWED_NAMES = {
+						k: v for k, v in math.__dict__.items() if not k.startswith("__")
+					}
+					args = remove_no_vars(args)
+					# global_vars = dict()
+					# for v in args:
+					# 	global_vars[v] = 1
+					result = -99999
+					result_factor = 1
+					try:
+						print ("expression: %s" % expression )
+						code = compile(expression, "<string>", "eval")
+						result = eval(code,vars,ALLOWED_NAMES)	
+						result_factor = result * factor
+						print ("result factor: %s" % result_factor)
+					except:
+						print ("ERROR!!!")
+						result = -99999
+
+					cursor = conn.cursor()
+					cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_ptap_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id])
+					conn.commit()
+					cursor.close()
 				
-		if (not expression is None and expression.strip() != ''):
-			args = re.findall(r'[a-zA-Z_]\w*', expression)
-			ALLOWED_NAMES = {
-				k: v for k, v in math.__dict__.items() if not k.startswith("__")
-			}
-			args = remove_no_vars(args)
-			# global_vars = dict()
-			# for v in args:
-			# 	global_vars[v] = 1
-			result = -99999
-			result_factor = 1
-			try:
-				print ("expression: %s" % expression )
-				code = compile(expression, "<string>", "eval")
-				result = eval(code,vars,ALLOWED_NAMES)	
-				result_factor = result * factor
-				print ("result factor: %s" % result_factor)
-			except:
-				print ("ERROR!!!")
-				result = -99999
+				
 
-			cursor = conn.cursor()
-			cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_ptap_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id])
-			conn.commit()
-			cursor.close()
-	
-	conn.close()
 	return True
+
+
 
 """ Remove special functions o math expressions"""
 """ (i.e: min: E2, E3) """
