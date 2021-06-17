@@ -760,6 +760,9 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 					# 	global_vars[v] = 1
 					result = -99999
 					result_factor = 1
+
+					print ("stage: %s :: type: %s :: element: %s :: factor : %s" % (stage, type_desc, element, factor))
+
 					try:
 						print ("expression: %s" % expression )
 						code = compile(expression, "<string>", "eval")
