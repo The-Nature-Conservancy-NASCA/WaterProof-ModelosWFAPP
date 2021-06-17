@@ -710,15 +710,15 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 	expression = ''
 	
 	
+	years = []
 	# save years
 	for row in rows:
 		if not row[0] in years:
 			years.append(row[0])
 
-	for y in years:
-		vars = dict()
-		years = []
+	for y in years:	
 		print ("Iterating Year : %s" % y)
+		vars = dict()
 		for row in rows:
 			year = row[0]
 			if y == year:
