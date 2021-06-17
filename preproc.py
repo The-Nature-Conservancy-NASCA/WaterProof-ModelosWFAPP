@@ -709,7 +709,7 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 	# save years
 	for row in rows:
 		if not row[0] in years:
-			years.append = row[0]
+			years.append(row[0])
 
 	for y in years:	
 		print ("Iterating Year : %s" % y)
