@@ -1,4 +1,3 @@
-from api import path_wb
 from dbfread import DBF
 import os
 import aqueduct
