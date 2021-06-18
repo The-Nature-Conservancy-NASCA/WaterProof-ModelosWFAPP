@@ -715,6 +715,8 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 		if not row[0] in years:
 			years.append(row[0])
 
+	print ("years:")
+	print (years)
 	for y in years:	
 		print ("Iterating Year : %s" % y)
 		vars = dict()
@@ -738,6 +740,7 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 		for row in rows:
 			print ("row:")
 			print (row)
+			print ("length :: %s" % len(row))
 			year = row[0]
 			if y == year:
 				type_desc = str(row[18])
