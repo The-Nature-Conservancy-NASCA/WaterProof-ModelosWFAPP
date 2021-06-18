@@ -738,6 +738,7 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 				print ("YEAR: %s, vars: %s" % (y, vars))
 		
 		for row in rows:
+			print ("row: %s" % row)
 			year = row[0]
 			if y == year:
 				type_desc = str(row[18])
