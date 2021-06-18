@@ -156,10 +156,17 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 
 	sum_carbon = -999 # TODO :: Validate if can be negative as disable value
 	sum_carbon_val = -999
+	sum_carbon_nbs = dict()
 	if (carbon):
-		print ("Calculate carbon sum")
+		print ("Calculate carbon sum")		
 		sum_carbon = preproc.calculateCarbonSum(catchmentShp,path,label, model_dir, year_dir)
 		sum_carbon_val = sum_carbon[0]['sum']
+		if type == constants.INVEST_TYPE_NBS:
+			for y in range(1,year+1):
+				sum_carbon = preproc.calculateCarbonSum(catchmentShp,path,label, model_dir, y)
+				sum_carbon_val = sum_carbon[0]['sum']
+				sum_carbon_nbs[y] = sum_carbon_val
+
 	if(type == constants.INVEST_TYPE_QUALITY or type == constants.INVEST_TYPE_BAU or 
 		type == constants.INVEST_TYPE_CURRENT or type == constants.INVEST_TYPE_NBS):
 		execute = preproc.verifyExec(path, model_dir)
@@ -188,7 +195,7 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 							"phosporus":p
 						}
 					})					
-					preproc.insertInvestResult(y,type,q,nW,pW,sW,bf,sum_carbon_val,c, case, id_usuario)
+					preproc.insertInvestResult(y,type,q,nW,pW,sW,bf,sum_carbon_nbs[y],c, case, id_usuario)
 		else:
 			for c in catch:
 				s,n,p,q,sW,nW,pW,bf = preproc.calcConc(execute,path,label,cont, model_dir, year_dir)
