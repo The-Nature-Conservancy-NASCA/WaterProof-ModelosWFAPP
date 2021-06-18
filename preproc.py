@@ -773,7 +773,14 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 
 							try:						
 								code = compile(expression, "<string>", "eval")
-								result = eval(code,vars,ALLOWED_NAMES)	
+								print ("ALLOWED_NAMES")
+								print (ALLOWED_NAMES)
+								print ("vars")
+								print (vars)
+								
+								result = eval(code,vars,ALLOWED_NAMES)
+								print ("result from eval:")	
+								print (result)
 								result_factor = result * factor
 								print ("result factor: %s" % result_factor)
 							except:
