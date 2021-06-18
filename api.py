@@ -168,7 +168,7 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 		
 		if type == constants.INVEST_TYPE_NBS:
 			for y in range(1,year+1):
-				year_dir = 'YEAR_' + str(year)
+				year_dir = 'YEAR_' + str(y)
 
 				for c in catch:
 					s,n,p,q,sW,nW,pW,bf = preproc.calcConc(execute,path,label,cont, model_dir, year_dir)												
