@@ -749,23 +749,23 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 				stage = row[4]		
 				awy = row[5]		
 				expression = row[16]
-						
+
+				print ("stage: %s :: type: %s :: element: %s :: factor : %s" % (stage, type_desc, element, factor))	
 				if (not expression is None and expression.strip() != ''):
+
+					print ("expression: %s" % expression )
+
 					args = re.findall(r'[a-zA-Z_]\w*', expression)
 					ALLOWED_NAMES = {
 						k: v for k, v in math.__dict__.items() if not k.startswith("__")
 					}
 					args = remove_no_vars(args)
-					# global_vars = dict()
-					# for v in args:
-					# 	global_vars[v] = 1
+					
 					result = -99999
 					result_factor = 1
 
-					print ("stage: %s :: type: %s :: element: %s :: factor : %s" % (stage, type_desc, element, factor))
-
 					try:
-						print ("expression: %s" % expression )
+						
 						code = compile(expression, "<string>", "eval")
 						result = eval(code,vars,ALLOWED_NAMES)	
 						result_factor = result * factor
