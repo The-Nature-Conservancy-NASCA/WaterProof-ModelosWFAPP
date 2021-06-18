@@ -715,8 +715,6 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 		if not row[0] in years:
 			years.append(row[0])
 
-	print ("years:")
-	print (years)
 	for y in years:	
 		print ("Iterating Year : %s" % y)
 		vars = dict()
@@ -734,13 +732,8 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 				vars[WNRet + graphid] = row[13]
 				vars[WPRet + graphid] = row[14]
 				vars[WSedRet + graphid] = row[15]
-	
-				print ("YEAR: %s, vars: %s" % (y, vars))
 		
-		for row in rows:
-			print ("row:")
-			print (row)
-			print ("length :: %s" % len(row))
+		for row in rows:			
 			if (len(row) > 19):
 				year = row[0]
 				if y == year:
@@ -764,19 +757,13 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 							ALLOWED_NAMES = {
 								k: v for k, v in math.__dict__.items() if not k.startswith("__")
 							}
-							print ("args : %s " % args)
 							args = remove_no_vars(args)
-							print ("args : %s " % args)
-
+							
 							# result = -99999.0
 							result_factor = 1.0
 
 							try:						
 								code = compile(expression, "<string>", "eval")
-								print ("ALLOWED_NAMES")
-								print (ALLOWED_NAMES)
-								print ("vars")
-								print (vars)
 								
 								result = eval(code,vars,ALLOWED_NAMES)
 								print ("result from eval:")	
