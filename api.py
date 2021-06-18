@@ -158,14 +158,16 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	sum_carbon_val = -999
 	sum_carbon_nbs = dict()
 	if (carbon):
-		print ("Calculate carbon sum")		
-		sum_carbon = preproc.calculateCarbonSum(catchmentShp,path,label, model_dir, year_dir)
-		sum_carbon_val = sum_carbon[0]['sum']
+		print ("Calculate carbon sum")
 		if type == constants.INVEST_TYPE_NBS:
 			for y in range(1,year+1):
-				sum_carbon = preproc.calculateCarbonSum(catchmentShp,path,label, model_dir, y)
+				y_dir = 'YEAR_' + str(y)
+				sum_carbon = preproc.calculateCarbonSum(catchmentShp,path,label, model_dir, y_dir)
 				sum_carbon_val = sum_carbon[0]['sum']
 				sum_carbon_nbs[y] = sum_carbon_val
+		else:
+			sum_carbon = preproc.calculateCarbonSum(catchmentShp,path,label, model_dir, year_dir)
+			sum_carbon_val = sum_carbon[0]['sum']
 
 	if(type == constants.INVEST_TYPE_QUALITY or type == constants.INVEST_TYPE_BAU or 
 		type == constants.INVEST_TYPE_CURRENT or type == constants.INVEST_TYPE_NBS):
