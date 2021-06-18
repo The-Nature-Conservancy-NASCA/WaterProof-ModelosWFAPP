@@ -750,33 +750,33 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 				expression = row[16]
 
 				print ("stage: %s :: type: %s :: element: %s :: factor : %s" % (stage, type_desc, element, factor))	
-				if (not expression is None and expression.strip() != ''):
+				if (not expression is None):
+					if expression.strip() != '':
+						print ("expression: %s" % expression )
+						args = re.findall(r'[a-zA-Z_]\w*', expression)
+						ALLOWED_NAMES = {
+							k: v for k, v in math.__dict__.items() if not k.startswith("__")
+						}
+						print ("args : %s " % args)
+						args = remove_no_vars(args)
+						print ("args : %s " % args)
 
-					print ("expression: %s" % expression )
-					args = re.findall(r'[a-zA-Z_]\w*', expression)
-					ALLOWED_NAMES = {
-						k: v for k, v in math.__dict__.items() if not k.startswith("__")
-					}
-					print ("args : %s " % args)
-					args = remove_no_vars(args)
-					print ("args : %s " % args)
+						result = -99999.0
+						result_factor = 1.0
 
-					result = -99999.0
-					result_factor = 1.0
+						try:						
+							code = compile(expression, "<string>", "eval")
+							result = eval(code,vars,ALLOWED_NAMES)	
+							result_factor = result * factor
+							print ("result factor: %s" % result_factor)
+						except:
+							print ("ERROR!!!")
+							result = -99999
 
-					try:						
-						code = compile(expression, "<string>", "eval")
-						result = eval(code,vars,ALLOWED_NAMES)	
-						result_factor = result * factor
-						print ("result factor: %s" % result_factor)
-					except:
-						print ("ERROR!!!")
-						result = -99999
-
-					cursor = conn.cursor()
-					cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_ptap_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id])
-					conn.commit()
-					cursor.close()
+						cursor = conn.cursor()
+						cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_ptap_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id])
+						conn.commit()
+						cursor.close()
 				
 				
 
