@@ -18,21 +18,21 @@ path = "/home/skaphe/Documentos/tnc/modelos/Workspace_BasinDelineation/tmp/1_202
 def calcConcentrations(path,label,cont,sub_dir,year_dir):
 	#sub_dir = '01-INVEST_QUALITY'
 	print ("calcConcentrations :: path: %s, label: %s, cont: %s ,sub_dir: %s ,year_dir: %s" % (path,label,cont,sub_dir,year_dir))
-	path_file = path,sub_dir,'AWY',year_dir,'output','watershed_results_wyield_%s.dbf' % str(label)
+	path_file = os.path.join(path,sub_dir,'AWY',year_dir,'output','watershed_results_wyield_%s.dbf' % str(label))
 	print (path_file)
-	awy_file = os.path.join(path_file)
+	awy_file = path_file
 	
-	path_file = path,sub_dir,'SDR',year_dir,'watershed_results_sdr_%s.dbf' % str(label)
+	path_file = os.path.join(path,sub_dir,'SDR',year_dir,'watershed_results_sdr_%s.dbf' % str(label))
 	print (path_file)
-	sdr_file = os.path.join(path_file)	
+	sdr_file = path_file
 	
-	path_file = path,sub_dir,'NDR',year_dir,'watershed_results_ndr_%s.dbf' % str(label)
+	path_file = os.path.join(path,sub_dir,'NDR',year_dir,'watershed_results_ndr_%s.dbf' % str(label))
 	print (path_file)
-	ndr_file = os.path.join(path_file)
+	ndr_file = path_file
 	
-	path_file = path,sub_dir,'SWY',year_dir,'aggregated_results_swy_%s.dbf' % str(label)
+	path_file = os.path.join(path,sub_dir,'SWY',year_dir,'aggregated_results_swy_%s.dbf' % str(label))
 	print (path_file)
-	swy_file = os.path.join(path_file)
+	swy_file = path_file
 
 	swy_file_shp = swy_file.replace(".dbf",".shp")
 	area = 0.0
