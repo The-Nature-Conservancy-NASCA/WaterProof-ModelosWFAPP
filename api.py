@@ -183,7 +183,7 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 					s,n,p,q,sW,nW,pW,bf = preproc.calcConc(execute,path,label,cont, model_dir, year_dir)												
 					dictResult['result'].append({
 						"catchment": c,
-						"carbon" : sum_carbon,	
+						"carbon" : sum_carbon_nbs[y],	
 						"awy": q,
 						"year" : y,
 						"w": {
