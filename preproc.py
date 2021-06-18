@@ -708,9 +708,6 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 	print("internalCostFunctionExecute")
 	
-	expression = ''
-	
-	
 	years = []
 	# save years
 	for row in rows:
