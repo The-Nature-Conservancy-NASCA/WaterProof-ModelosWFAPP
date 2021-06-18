@@ -38,6 +38,7 @@ import json
 import re
 import math
 import constants
+from decimal import *
 
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
 logger.setLevel(logging.INFO)
@@ -744,10 +745,12 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 				intake_ptap_id = row[20]			
 				element = row[1]
 				money = row[2]
-				factor = float(row[3])
+				factor = row[3]
 				stage = row[4]		
 				awy = row[5]		
 				expression = row[16]
+				if (factor is None):
+					factor = 1.0
 
 				print ("stage: %s :: type: %s :: element: %s :: factor : %s" % (stage, type_desc, element, factor))	
 				if (not expression is None):
