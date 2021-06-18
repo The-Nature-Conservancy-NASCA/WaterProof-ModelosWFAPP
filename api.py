@@ -23,8 +23,9 @@ from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
 from reclassify import reclassifyFilesInFolder
 from dissagregation import DataCSVDis
-from roi import DataCSVRoi
-from exchangeRateROI import ExchangeROI
+from ROIFunctions.roiOut import SaveRoiDB
+from ROIFunctions.roiIn import DataCSVRoi
+from ROIFunctions.exchangeRateROI import ExchangeROI
 import pandas as pd
 import requests
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
@@ -68,7 +69,7 @@ async def root():
 	print("Hello world  with print")
 	return {"message":"Hello World :: %s" % {__name__}}
 
- 
+
 @app.get("/snapPoint")
 async def snap(x,y):
 	dictResult = dict()
@@ -444,6 +445,7 @@ def roiExecution(user_id, study_cases_id):
 	ExchangeROI(study_cases_id)
 	DataCSVRoi(user_id, study_cases_id, today, path_data)
 	ROI_Analisys(path_data_roi)
+	SaveRoiDB(path_data_roi,study_cases_id)
 	# except Exception as e:
 	# 	dictResult['estado'] = False
 	# 	dictResult['error'] = e.args
