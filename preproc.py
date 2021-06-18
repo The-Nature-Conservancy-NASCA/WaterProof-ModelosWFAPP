@@ -768,7 +768,7 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 							args = remove_no_vars(args)
 							print ("args : %s " % args)
 
-							result = -99999.0
+							# result = -99999.0
 							result_factor = 1.0
 
 							try:						
@@ -787,10 +787,14 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 								print ("ERROR!!!")
 								result = -99999
 
-							cursor = conn.cursor()
-							cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_ptap_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id])
-							conn.commit()
-							cursor.close()
+							try:
+								cursor = conn.cursor()
+								cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_ptap_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id])
+								conn.commit()
+								cursor.close()							
+							except:
+								print("Error saving data using __wp_get_aggregate_result_function_cost ")
+							
 				
 				
 
