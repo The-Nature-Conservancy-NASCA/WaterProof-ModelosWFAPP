@@ -754,18 +754,18 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 				if (not expression is None and expression.strip() != ''):
 
 					print ("expression: %s" % expression )
-
 					args = re.findall(r'[a-zA-Z_]\w*', expression)
 					ALLOWED_NAMES = {
 						k: v for k, v in math.__dict__.items() if not k.startswith("__")
 					}
+					print ("args : %s " % args)
 					args = remove_no_vars(args)
-					
-					result = -99999
-					result_factor = 1
+					print ("args : %s " % args)
 
-					try:
-						
+					result = -99999.0
+					result_factor = 1.0
+
+					try:						
 						code = compile(expression, "<string>", "eval")
 						result = eval(code,vars,ALLOWED_NAMES)	
 						result_factor = result * factor
