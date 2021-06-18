@@ -333,7 +333,7 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 	out_folder = parametersList[0][9]
 	out_folder_quality = parametersList[0][10]
 	print("processParameters :: outFolder :: {%s}" % {out_folder})
-	print("processParameters :: out_folder_quality :: {%s}" % {out_folder_quality})	
+	# print("processParameters :: out_folder_quality :: {%s}" % {out_folder_quality})	
 	
 	erosivity_path_cv = ''
 	eto_path_cv = ''
@@ -372,13 +372,13 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 				for p in paths_climate_value:
 					path = p[2]
 					if (PRECIPITATION in path):
-						print("Using Climate Value PATH for: %s" % PRECIPITATION)
+						# print("Using Climate Value PATH for: %s" % PRECIPITATION)
 						precipitation_path_cv = path
 					elif (EVAPOTRANSPIRATION in path):
 						eto_path_cv = path
-						print("Using Climate Value PATH for: %s" % EVAPOTRANSPIRATION)
+						# print("Using Climate Value PATH for: %s" % EVAPOTRANSPIRATION)
 					elif (RAINFALL_EROSIVITY in path):
-						print("Using Climate Value PATH for: %s" % RAINFALL_EROSIVITY)
+						# print("Using Climate Value PATH for: %s" % RAINFALL_EROSIVITY)
 						erosivity_path_cv = path	
 				
 	isdir = os.path.isdir(out_path)
@@ -490,7 +490,7 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 
 def executeFunction(basin,model,type,catchments,id_usuario, year, id_case):
 	logger.info("execFunction :: start")
-	print(":: execFunction :: start")
+	# print(":: execFunction :: start")
 	date = datetime.date.today()
 	id_catchment = catchments[0]
 	path = createFolder(id_usuario, id_case, id_catchment ,date)
@@ -500,8 +500,9 @@ def executeFunction(basin,model,type,catchments,id_usuario, year, id_case):
 	
 	parameters,pathF,label = processParameters(list,basin,shp_catchment_path,path,type,model,id_usuario, year, id_case, id_catchment)
 	json_parameters = json.dumps(parameters, indent=2)
-	print("writing file %s/parameters_.json" % (path))
-	txt_file = open(os.path.join(path,"parameters_" + model + "_" + type + ".json"), "w")
+	param_path_file =  os.path.join(path,"parameters_" + model + "_" + type + "_" + str(year) + ".json")
+	print(":: executeFunction :: writing file ::  %s " % (param_path_file))
+	txt_file = open(param_path_file, "w")
 	txt_file.write(json_parameters)
 	txt_file.close()
 	# print(json.dumps(parameters, indent=2))
