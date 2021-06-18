@@ -741,48 +741,49 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 			print ("row:")
 			print (row)
 			print ("length :: %s" % len(row))
-			year = row[0]
-			if y == year:
-				type_desc = str(row[18])
-				function_id = row[19]
-				intake_ptap_id = row[20]			
-				element = row[1]
-				money = row[2]
-				factor = row[3]
-				stage = row[4]		
-				awy = row[5]		
-				expression = row[16]
-				if (factor is None):
-					factor = 1.0
+			if (len(row) > 19):
+				year = row[0]
+				if y == year:
+					type_desc = str(row[18])
+					function_id = row[19]
+					intake_ptap_id = row[20]			
+					element = row[1]
+					money = row[2]
+					factor = row[3]
+					stage = row[4]		
+					awy = row[5]		
+					expression = row[16]
+					if (factor is None):
+						factor = 1.0
 
-				print ("stage: %s :: type: %s :: element: %s :: factor : %s" % (stage, type_desc, element, factor))	
-				if (not expression is None):
-					if expression.strip() != '':
-						print ("expression: %s" % expression )
-						args = re.findall(r'[a-zA-Z_]\w*', expression)
-						ALLOWED_NAMES = {
-							k: v for k, v in math.__dict__.items() if not k.startswith("__")
-						}
-						print ("args : %s " % args)
-						args = remove_no_vars(args)
-						print ("args : %s " % args)
+					print ("stage: %s :: type: %s :: element: %s :: factor : %s" % (stage, type_desc, element, factor))	
+					if (not expression is None):
+						if expression.strip() != '':
+							print ("expression: %s" % expression )
+							args = re.findall(r'[a-zA-Z_]\w*', expression)
+							ALLOWED_NAMES = {
+								k: v for k, v in math.__dict__.items() if not k.startswith("__")
+							}
+							print ("args : %s " % args)
+							args = remove_no_vars(args)
+							print ("args : %s " % args)
 
-						result = -99999.0
-						result_factor = 1.0
+							result = -99999.0
+							result_factor = 1.0
 
-						try:						
-							code = compile(expression, "<string>", "eval")
-							result = eval(code,vars,ALLOWED_NAMES)	
-							result_factor = result * factor
-							print ("result factor: %s" % result_factor)
-						except:
-							print ("ERROR!!!")
-							result = -99999
+							try:						
+								code = compile(expression, "<string>", "eval")
+								result = eval(code,vars,ALLOWED_NAMES)	
+								result_factor = result * factor
+								print ("result factor: %s" % result_factor)
+							except:
+								print ("ERROR!!!")
+								result = -99999
 
-						cursor = conn.cursor()
-						cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_ptap_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id])
-						conn.commit()
-						cursor.close()
+							cursor = conn.cursor()
+							cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_ptap_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id])
+							conn.commit()
+							cursor.close()
 				
 				
 
