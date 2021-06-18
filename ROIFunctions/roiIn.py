@@ -1,17 +1,15 @@
-import sys
-import csv
 import os
 import numpy as np
 import pandas as pd
-from getDataWB import getDataDB, generateCsv
+from datetime import date
+from ROIFunctions.common_functions import insertParameter,getDataDB,generateCsv
 from os import environ, path
-sys.path.append('config')
 from connect import connect
-from config import config
+import constants
 
 ruta = environ["PATH_FILES"]
 ROI = 'ROI' 
-IN = 'in'
+IN = 'INPUTS'
 OUT = 'out'
 # Consulta a Base de datos para los archivos 1-4
 

@@ -1,12 +1,7 @@
-import sys, csv
 import numpy as np
 import pandas as pd
-from os import environ,path
-sys.path.append('config')
-from config import config
-from connect import connect
 from datetime import date
-from getDataWB import getDataDB
+from ROIFunctions.common_functions import insertParameter,getDataDB
 
 '''
 type_or_id: En este campo van los nombres de los costos o en el caso de la sbn, el id de la sbn
@@ -109,15 +104,9 @@ def ExchangeROI(studyCase_id):
     final = pd.DataFrame(data=np.array([type_or_id,cost,res_last,currency_db]))
     for label,series in final.items():
         val = series.values
+        args = [
+            val[0], val[1],val[2], val[3], studyCase_id, date_exec
+        ]
         # Insertar los resultados en la DB
-        insertParameter( '__wp_roi_tc_insert', val[0], val[1],val[2], val[3], studyCase_id, date_exec )
+        insertParameter( '__wp_roi_tc_insert', args )
 
-
-def insertParameter( function_db, type_or_id, cost, value, currency, studycase, date_execution):
-	listResult = []
-	conn = connect('postgresql_alfa')
-	cursor = conn.cursor()
-	cursor.callproc( function_db ,[ type_or_id, cost, value, currency, studycase, date_execution])
-	conn.commit()
-	cursor.close()
-	conn.close()
