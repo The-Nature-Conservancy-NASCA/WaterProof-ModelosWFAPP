@@ -18,7 +18,7 @@ from natcap.invest.ndr import ndr
 from natcap.invest import carbon
 from zonalStatistics import calculateRainfallDayMonth,calculateStatistic
 from zonalStatistics import saveCsv
-from calculateConcentrations import calcConcentrations as cntr
+import calcConcentrations
 from createBioParamCsv import generateCsv, getDefaultBiophysicParams, getUserBiophysicParams
 sys.path.append('config')
 from config import config
@@ -284,7 +284,7 @@ def verifyExec(path, sub_dir):
 def calcConc(execute,path,label,cont, sub_dir, year_dir):
 	pathWs = os.path.join(path,"out")
 	if(execute):
-		s,n,p,q,sW,nW,pW,bf = cntr(pathWs,label,cont, sub_dir, year_dir)
+		s,n,p,q,sW,nW,pW,bf = calcConcentrations.calculateConcentrations(pathWs,label,cont, sub_dir, year_dir)
 	else:
 		s,n,p,q,sW,nW,pW,bf = [-1,-1,-1,-1,-1,-1,-1,-1]
 	
