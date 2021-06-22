@@ -38,7 +38,7 @@ def ExchangeROI(studyCase_id):
     # multiplicación dato carbón
         for res_carbon in carbon:
             res_carbon=list(res_carbon)
-            if(res_carbon[0]==res_rate[1]):
+            if(res_carbon[0]==res_rate[0]):
                 res_first.append(res_carbon[1])
                 currency_db.append(res_rate[0])
                 type_or_id.append('Carbon')
@@ -46,7 +46,7 @@ def ExchangeROI(studyCase_id):
     # multiplicación dato financial  
         for res_finan in financial:
             res_finan=list( res_finan )
-            if(res_finan[0]==res_rate[1]):
+            if(res_finan[0]==res_rate[0]):
                 res_finan.pop(0)
                 for sad in res_finan:
                     res_first.append( sad )
