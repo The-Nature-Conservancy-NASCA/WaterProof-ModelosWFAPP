@@ -25,8 +25,8 @@ def genCSVInvest(path_data_in, catchment,studycase, function_id, csv_in):
 # genera el archivo csv de NBS
 def genCSVNBS(path_data_in, studycase, function_id1, function_id2, csv_in, catchment):
     header=["NBS-Name",	"Time-Max-Benefit",	"Benefit-t0"]
-    results1 = getDataDBFilterByCatchment( studycase, function_id1, catchment )
-    results2 = getDataDB( studycase, function_id2 )
+    results1 = getDataDB( studycase, function_id1)
+    results2 = getDataDBFilterByCatchment( studycase, function_id2, catchment)
 
     # Se ordenan los resultados obtenidos en la DB
     # para poder generar la estructura solicitada en el csv
