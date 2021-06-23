@@ -5,7 +5,7 @@ from os import environ,path
 sys.path.append('config')
 from config import config
 from connect import connect
-from getDataWB import getDataDB,generateCsv
+from getDataWB import getDataDB, generateCsv, getDataDBFilterByCatchment
 
 # Generación de los csv pertinentes para el algoritmo de dissagregation
 def DataCSVDis(path_data_in, catchment,studycase):
@@ -23,9 +23,9 @@ def genCSVInvest(path_data_in, catchment,studycase, function_id, csv_in):
     generateCsv( header, results, pathcsv)
 
 # genera el archivo csv de NBS
-def genCSVNBS(path_data_in, studycase, function_id1, function_id2, csv_in):
+def genCSVNBS(path_data_in, studycase, function_id1, function_id2, csv_in, catchment):
     header=["NBS-Name",	"Time-Max-Benefit",	"Benefit-t0"]
-    results1 = getDataDB( studycase, function_id1 )
+    results1 = getDataDBFilterByCatchment( studycase, function_id1, catchment )
     results2 = getDataDB( studycase, function_id2 )
 
     # Se ordenan los resultados obtenidos en la DB
