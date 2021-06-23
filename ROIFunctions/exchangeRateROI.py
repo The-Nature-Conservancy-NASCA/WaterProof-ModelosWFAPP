@@ -110,3 +110,4 @@ def ExchangeROI(studyCase_id):
         ]
         # Insertar los resultados en la DB
         insertParameter( '__wp_roi_tc_insert', args )
+        
