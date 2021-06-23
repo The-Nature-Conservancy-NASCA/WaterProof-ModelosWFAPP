@@ -8,7 +8,7 @@ import constants
 ruta = environ["PATH_FILES"]
 
 def SaveRoiDB( path_data, studycase ):
-    anotherroute = path.join( path_data,constants.OUT_ROI_DIR )
+    anotherroute = path.join( path_data, constants.OUT_ROI_DIR )
     cost.Cost_roi( anotherroute, studycase, constants.IMPLEMENTATION_ROI_DB, 'Implementation', '1' )
     cost.Cost_roi( anotherroute, studycase, constants.MAINTENANCE_ROI_DB, 'Maintenance', '2' )
     cost.Cost_roi( anotherroute, studycase, constants.OPPORTUNITY_ROI_DB, 'Opportunity', '3' )

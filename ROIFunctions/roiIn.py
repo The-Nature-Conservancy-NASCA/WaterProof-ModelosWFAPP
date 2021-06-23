@@ -81,8 +81,8 @@ def genCSVCost(studycase, function_id, types, stage, csv_in, path_data):
 
 def genCSVNBS_Cost(studycase, function_id, csv_in, path_data):
     header = ["Parameters"]
-    param = ["Implementation (USD/ha)", "Maintenance (USD/ha)",
-             "Opportunity (USD/ha)", "Maintenance Time (yr)"]
+    param = ["Implementation (currency/ha)", "Maintenance (currency/ha)",
+             "Opportunity (currency/ha)", "Maintenance Time (yr)"]
     cost_nbs = ["unit_implementation_cost",
                 "unit_maintenance_cost", "unit_oportunity_cost"]
     results = getDataDB(studycase, function_id)
