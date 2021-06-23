@@ -40,7 +40,7 @@ def DataCSVRoi(user_id, studycase, date, path_data):
     genCSVCost(studycase, '__wp_roi_cost', 'PTAP','NBS', '3_CostFunction_NBS_PTAP.csv', path_data)
     genCSVCost(studycase, '__wp_roi_cost', 'PTAP','BAU', '4_CostFunction_BaU_PTAP.csv', path_data)
     genCSVNBS_Cost(studycase, '__wp_roi_nbs_cost', '5_NBS_Cost.csv', path_data)
-    genCSVPort_NBS(studycase, '__wp_dissagregation_nbs_first','__wp_dissagregation_nbs_second', '6_Porfolio_NBS.csv', path_data)
+    genCSVPort_NBS(studycase, '__wp_dissagregation_nbs_first','__wp_roi_nbs_porfolio', '6_Porfolio_NBS.csv', path_data)
     genCSVFin_Par(studycase, '__wp_roi_financial_parameters_first','__wp_roi_financial_parameters_second', '7_Financial_Parmeters.csv', path_data)
     genCSVTime(studycase, '__wp_roi_time', '8_Time.csv', path_data)
 
