@@ -9,7 +9,7 @@ import constants
 
 ruta = environ["PATH_FILES"]
 ROI = 'ROI' 
-IN = 'INPUTS'
+IN = 'in'
 OUT = 'out'
 # Consulta a Base de datos para los archivos 1-4
 
