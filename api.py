@@ -474,7 +474,7 @@ def validate_and_create_dir(dir_to_validate):
 	if(not os.path.isdir(dir_to_validate)):
 		os.mkdir(dir_to_validate)
 
-
+''' Execute Cost Function'''
 @app.get("/costFunctionExecute")
 def costFunctionExecute(user_id, intake_id, study_case_id):
 	
