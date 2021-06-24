@@ -440,6 +440,14 @@ def disaggregation2(user_id, study_cases_id):
 
 	return preproc.processDissagregation(user_id, study_cases_id)
 
+@app.get("/exchangeRate")
+def exchangeRoi(study_case_id):
+	try:
+		ExchangeROI(study_case_id)
+	except Exception as e:
+		return "Error"
+	return "Run successful"
+
 @app.get("/roiExecution")
 def roiExecution(user_id, study_cases_id):
 	today = datetime.date.today()
