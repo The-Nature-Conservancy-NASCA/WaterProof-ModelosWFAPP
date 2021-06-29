@@ -100,8 +100,7 @@ def getpath(basin,constantName):
 	cursor.close()
 	return result
 
-def cutAqueduct(usuario,fecha):
-    path = os.path.join(ruta,'salidas',usuario + '_' + fecha)
+def cutAqueduct(path):
     path_catchment = os.path.join(path,'in','catchment','catchment.shp')
     path_out = os.path.join(path,'in','06-AQUEDUCT')
     path_out_f = os.path.join(path,'in')
