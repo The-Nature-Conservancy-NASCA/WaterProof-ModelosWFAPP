@@ -389,6 +389,8 @@ async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 	dictResult['status'] = True
 	year = preproc.analysisPeriodFromStudyCase(study_case_id)
 	region = preproc.getRegionFromId(basin)
+
+	print ("year: %s :: region: %s" % (year, region))
 	try:
 		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region)
 		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')

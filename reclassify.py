@@ -137,6 +137,7 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
                 lulc_path_complete = os.path.join(pathOut,filename.replace(TIF_EXT, FUTURE_COMPLETE_TIF_SUFFIX))
                 print ("lulc_path_complete : %s" % (lulc_path_complete))
                 command = "gdal_merge.py -o %s -of gtiff %s %s" % (lulc_path_complete, lulc_path_region, path_file)
+                print (command)
                 # print(os.popen(command).read())
             paths.append(path_file)
 
