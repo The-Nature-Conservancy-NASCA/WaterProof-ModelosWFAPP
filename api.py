@@ -389,7 +389,7 @@ async def cobTrans(pathCobs,pathLULC):
 	dictResult['status'] = True
 	try:
 		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'')
-		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS).replace('.tif','_FUTURE.tif')
+		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
 		if (os.path.isfile(path_future_lulc)):
 			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc)
 		dictResult['result'] = {"result":'successful execution'}
