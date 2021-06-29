@@ -111,7 +111,7 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
     print ("lulc_path : %s", lulc_path)
     print ("is_future %s", is_future)
     print ("future_lulc_path %s", future_lulc_path)
-    print ("year: %s", year)
+    print ("year: %s" % year)
     print ("region: %s" % region)
 
     pathOut = os.path.join(path,"translated_cob")
