@@ -257,17 +257,19 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	return dictResult
 
 @app.get("/aqueduct")
-async def calculateAqueduct(id_usuario,fecha):
+async def calculateAqueduct(path):
+	# path = 1000_142_2021-6-25/WI_222
+	# base_path =  /home/skaphe/Documentos/tnc/modelos/salidas
+	full_path =  os.path.join(base_path, path)
 	dictResult = dict()
 	dictResult['status'] = False
 	try:
-		list = cutAqueduct(id_usuario,fecha)
+		list = cutAqueduct(full_path)
 		print(list)
 		dictResult = dict()
 		dictResult['status'] = True
 		dictResult['result'] = list
 	except Exception as e:
-		dictResult['status'] = False
 		dictResult['error'] = e.args
 	return dictResult
 
