@@ -37,8 +37,8 @@ RUN chmod +x api.py
 
 
 # CMD ["python", "startup.py"]
-# CMD ["gunicorn", "-t", "600",  "--log-file", "-", "--bind", "0.0.0.0:8000", "--workers", "3", "-k", "uvicorn.workers.UvicornWorker", "api:app"]
-CMD ["gunicorn", "-t", "600",  "--log-level", "info", "--bind", "0.0.0.0:8000", "-k", "uvicorn.workers.UvicornWorker", "api:app"]
+# CMD ["gunicorn", "-t", "600",  "--log-file", "info", "--bind", "0.0.0.0:8000", "--workers", "3", "-k", "uvicorn.workers.UvicornWorker", "api:app"]
+CMD ["gunicorn", "-t", "600", "--bind", "0.0.0.0:8000", "-k", "uvicorn.workers.UvicornWorker", "api:app"]
 
 #EXPOSE 8000
 
