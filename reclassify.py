@@ -107,12 +107,12 @@ def reclassify(pathFile,outPath,filename,lulc_path,json, is_future, future_lulc_
 
 def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, region):
     print ("reclassifyFilesInFolder")
-    print ("path : %s" % path)
-    print ("lulc_path : %s" % lulc_path)
-    print ("is_future %s" % is_future)
-    print ("future_lulc_path %s" % future_lulc_path)
-    print ("year: %s" % year)
-    print ("region: %s" % region)
+    print ("path : %s" % (path))
+    print ("lulc_path : %s" % (lulc_path))
+    print ("is_future %s" % (is_future))
+    print ("future_lulc_path %s" % (future_lulc_path))
+    print ("year: %s" % (year))
+    print ("region: %s" % (region))
 
     pathOut = os.path.join(path,"translated_cob")
     json = readJsonActivities(path)
@@ -133,11 +133,11 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
             path_file = reclassify(os.path.join(path,filename),pathOut,out_filename,lulc_path,json, is_future, future_lulc_path)
             if (is_future):
                 lulc_path_region = '%s/%s/%s/YEAR_%s/LULC_%s.tif' % (base_path, constants.IN_BASE_DIR ,constants.LANDCOVER_DIR,year,region)
-                print ("lulc_path_region : %s" % lulc_path_region)
+                print ("lulc_path_region : %s" % (lulc_path_region))
                 lulc_path_complete = os.path.join(pathOut,filename.replace(TIF_EXT, FUTURE_COMPLETE_TIF_SUFFIX))
-                print ("lulc_path_complete : %s" % lulc_path_complete)
+                print ("lulc_path_complete : %s" % (lulc_path_complete))
                 command = "gdal_merge.py -o %s -of gtiff %s %s" % (lulc_path_complete, lulc_path_region, path_file)
-                print(os.popen(command).read())
+                # print(os.popen(command).read())
             paths.append(path_file)
 
     return paths
