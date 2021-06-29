@@ -21,4 +21,5 @@ CARBON_ROI_DB = 'CARBONO'
 
 
 OUT_BASE_DIR = "salidas"
+IN_BASE_DIR = "entradas"
 
