@@ -383,15 +383,17 @@ async def calculateWBPTAP(id_ptap):
 	return dictResult
 
 @app.get("/cobTrans")
-async def cobTrans(pathCobs,pathLULC):
+async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 	print ("cobTrans :: start")
 	dictResult = dict()
 	dictResult['status'] = True
+	year = preproc.analysisPeriodFromStudyCase(study_case_id)
+	region = preproc.getRegionFromId(basin)
 	try:
-		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'')
+		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region)
 		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
 		if (os.path.isfile(path_future_lulc)):
-			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc)
+			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc, year, region)
 		dictResult['result'] = {"result":'successful execution'}
 		dictResult['paths'] = paths
 		dictResult['paths_future'] = paths_future
