@@ -17,8 +17,8 @@ def Sens_roi( anotherroute, studycase ):
         currency[0], 
         sensivity['Total'].values[0],
         sensivity['TD_Min'].values[0],
-        sensivity['TD_Mean'].values[0],
         sensivity['TD_Max'].values[0],
+        sensivity['TD_Mean'].values[0],
         studycase,
         date
     ]

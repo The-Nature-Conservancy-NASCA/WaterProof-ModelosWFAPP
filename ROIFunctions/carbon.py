@@ -9,11 +9,11 @@ def Carb_roi( anotherroute, studycase ):
     carb_two = pd.read_csv(anotherroute+f'/8.2_Carbons_Saves.csv')
     carb_tre = pd.read_csv(anotherroute+f'/8.3_Carbons_Saves.csv')
 
-    serie_time   = carb_zer.index.values
+    serie_time   = carb_zer.index
     value        = carb_zer['Carbons'].values
     vpn_min_carb = carb_one['Carbons'].values
-    vpm_max_carb = carb_two['Carbons'].values
-    vpn_med_carb = carb_tre['Carbons'].values
+    vpn_med_carb = carb_two['Carbons'].values
+    vpm_max_carb = carb_tre['Carbons'].values
 
     today = datetime.date.today()
     date = f'{today.year}-{today.month}-{today.day}'
@@ -26,5 +26,5 @@ def Carb_roi( anotherroute, studycase ):
 
     for label,series in final.items():
         val = series.values
-        args=[ currency[0], int(val[0]), val[1], int(-1), studycase, date, 'CARBONO', val[2], val[3], val[4] ]
+        args=[ currency[0], int(val[0])+1, val[1], int(-1), studycase, date, 'CARBONO', val[2], val[3], val[4] ]
         insertParameter( '__wp_roi_insert_save', args )
