@@ -21,7 +21,21 @@ def getDataDB( id, funcion_db ):
     conn.close()
     if (listResult ==[]):
         raise Exception(f'Sin datos para el id: {id}')
+    return listResult
 
+def getDataDBFilterByCatchment( id, funcion_db, catchment ):
+    result = ''
+    listResult = []
+    conn = connect('postgresql_alfa')
+    cursor = conn.cursor()
+    cursor.callproc(funcion_db,[id,catchment])
+    result = cursor.fetchall()
+    for row in result:
+        listResult.append(row)
+    cursor.close()
+    conn.close()
+    if (listResult ==[]):
+        raise Exception(f'Sin datos para el id: {id}')
     return listResult
 
 def updateDataDB( id, funcion_db ):

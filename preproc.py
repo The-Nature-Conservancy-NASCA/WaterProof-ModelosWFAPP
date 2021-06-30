@@ -744,10 +744,15 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 					money = row[2]
 					factor = row[3]
 					stage = row[4]		
-					awy = row[5]		
+					awy = row[5]
+					ratio_change = row[21]
+
 					expression = row[16]
 					if (factor is None):
 						factor = 1.0
+
+					if (ratio_change is None):
+						ratio_change = 1.0
 
 					print ("stage: %s :: type: %s :: element: %s :: factor : %s" % (stage, type_desc, element, factor))	
 					if (not expression is None):
@@ -768,8 +773,9 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 								result = eval(code,vars,ALLOWED_NAMES)
 								print ("result from eval:")	
 								print (result)
-								result_factor = result * factor
-								print ("result factor: %s" % result_factor)
+								result_factor = (result * factor)/ratio_change
+								print ("result factor= (result*factor)/ratio_change :  (%s*%s)/%s = %s" % (result, factor, ratio_change, result_factor))
+								
 							except:
 								print ("ERROR!!!")
 								result = -99999
@@ -782,9 +788,6 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 							except:
 								print("Error saving data using __wp_get_aggregate_result_function_cost ")
 							
-				
-				
-
 	return True
 
 

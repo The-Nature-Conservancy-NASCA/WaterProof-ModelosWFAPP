@@ -5,12 +5,12 @@ from os import environ,path
 sys.path.append('config')
 from config import config
 from connect import connect
-from getDataWB import getDataDB,generateCsv
+from getDataWB import getDataDB, generateCsv, getDataDBFilterByCatchment
 
 # Generación de los csv pertinentes para el algoritmo de dissagregation
 def DataCSVDis(path_data_in, catchment,studycase):
     genCSVInvest(path_data_in, catchment,studycase, '__wp_dissagregation_invest','01-INPUTS_InVEST.csv')
-    genCSVNBS(path_data_in, studycase, '__wp_dissagregation_nbs_first', '__wp_dissagregation_nbs_second','01-INPUTS_NBS.csv')
+    genCSVNBS(path_data_in, studycase, '__wp_dissagregation_nbs_first', '__wp_dissagregation_nbs_second','01-INPUTS_NBS.csv',catchment)
     genCSVTime(path_data_in, studycase, '__wp_dissagregation_time','01-INPUTS_Time.csv')
 
 # genera el archivo Invest 
@@ -23,10 +23,10 @@ def genCSVInvest(path_data_in, catchment,studycase, function_id, csv_in):
     generateCsv( header, results, pathcsv)
 
 # genera el archivo csv de NBS
-def genCSVNBS(path_data_in, studycase, function_id1, function_id2, csv_in):
+def genCSVNBS(path_data_in, studycase, function_id1, function_id2, csv_in, catchment):
     header=["NBS-Name",	"Time-Max-Benefit",	"Benefit-t0"]
-    results1 = getDataDB( studycase, function_id1 )
-    results2 = getDataDB( studycase, function_id2 )
+    results1 = getDataDB( studycase, function_id1)
+    results2 = getDataDBFilterByCatchment( studycase, function_id2, catchment)
 
     # Se ordenan los resultados obtenidos en la DB
     # para poder generar la estructura solicitada en el csv

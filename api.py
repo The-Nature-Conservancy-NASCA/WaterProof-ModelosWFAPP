@@ -257,17 +257,19 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	return dictResult
 
 @app.get("/aqueduct")
-async def calculateAqueduct(id_usuario,fecha):
+async def calculateAqueduct(path):
+	# path = 1000_142_2021-6-25/WI_222
+	# base_path =  /home/skaphe/Documentos/tnc/modelos/salidas
+	full_path =  os.path.join(base_path, path)
 	dictResult = dict()
 	dictResult['status'] = False
 	try:
-		list = cutAqueduct(id_usuario,fecha)
+		list = cutAqueduct(full_path)
 		print(list)
 		dictResult = dict()
 		dictResult['status'] = True
 		dictResult['result'] = list
 	except Exception as e:
-		dictResult['status'] = False
 		dictResult['error'] = e.args
 	return dictResult
 
@@ -440,6 +442,14 @@ def disaggregation2(user_id, study_cases_id):
 
 	return preproc.processDissagregation(user_id, study_cases_id)
 
+@app.get("/exchangeRate")
+def exchangeRoi(study_case_id):
+	try:
+		ExchangeROI(study_case_id)
+	except Exception as e:
+		return "Error"
+	return "Run successful"
+
 @app.get("/roiExecution")
 def roiExecution(user_id, study_cases_id):
 	today = datetime.date.today()
@@ -451,7 +461,7 @@ def roiExecution(user_id, study_cases_id):
 	dict_result = dict()
 	dict_result['status'] = True
     # try:
-	ExchangeROI(study_cases_id)
+	#ExchangeROI(study_cases_id)
 	DataCSVRoi(user_id, study_cases_id, today, path_data)
 	ROI_Analisys(path_data_roi)
 	SaveRoiDB(path_data_roi,study_cases_id)
@@ -474,7 +484,7 @@ def validate_and_create_dir(dir_to_validate):
 	if(not os.path.isdir(dir_to_validate)):
 		os.mkdir(dir_to_validate)
 
-
+''' Execute Cost Function'''
 @app.get("/costFunctionExecute")
 def costFunctionExecute(user_id, intake_id, study_case_id):
 	
