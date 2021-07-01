@@ -1,4 +1,5 @@
 from os import environ, path
+import shutil,os
 import ROIFunctions.cost as cost
 import ROIFunctions.saves as save
 import ROIFunctions.sensivity as sens
@@ -18,3 +19,6 @@ def SaveRoiDB( path_data, studycase ):
     save.Save_roi( anotherroute, studycase, constants.PTAP_ROI_DB, 'PTAP', '7' )
     carb.Carb_roi( anotherroute, studycase )
     sens.Sens_roi( anotherroute, studycase )
+
+def CreateZip(path):
+    shutil.make_archive(path,'zip',path)
