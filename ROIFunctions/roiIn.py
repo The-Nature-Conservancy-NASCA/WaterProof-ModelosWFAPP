@@ -33,8 +33,6 @@ def getDataDBCost(studycase, funcion_db, types, stage):
 # Generación de los csv pertinentes para el algoritmo de ROI
 
 def DataCSVRoi(user_id, studycase, date, path_data):
-    genCSVCO2(studycase, '02-OUTPUTS_BaU.csv', '9-CO2_BaU.csv', date, user_id, path_data)
-    genCSVCO2(studycase, '02-OUTPUTS_NBS.csv', '10-CO2_NBS.csv', date, user_id, path_data)
     genCSVCost(studycase, '__wp_roi_cost', 'intake','NBS', '1_CostFunction_NBS_Cap.csv', path_data)
     genCSVCost(studycase, '__wp_roi_cost', 'intake','BAU', '2_CostFunction_BaU_Cap.csv', path_data)
     genCSVCost(studycase, '__wp_roi_cost', 'PTAP','NBS', '3_CostFunction_NBS_PTAP.csv', path_data)
@@ -43,6 +41,8 @@ def DataCSVRoi(user_id, studycase, date, path_data):
     genCSVPort_NBS(studycase, '__wp_dissagregation_nbs_first','__wp_roi_nbs_porfolio', '6_Porfolio_NBS.csv', path_data)
     genCSVFin_Par(studycase, '__wp_roi_financial_parameters_first','__wp_roi_financial_parameters_second', '7_Financial_Parmeters.csv', path_data)
     genCSVTime(studycase, '__wp_roi_time', '8_Time.csv', path_data)
+    genCSVCO2(studycase, '02-OUTPUTS_BaU.csv', '9-CO2_BaU.csv', date, user_id, path_data)
+    genCSVCO2(studycase, '02-OUTPUTS_NBS.csv', '10-CO2_NBS.csv', date, user_id, path_data)
 
 # 1-4 Genera el archivo csv de costos para NBS-BAU para Intake-PTAP
 
@@ -50,10 +50,10 @@ def genCSVCost(studycase, function_id, types, stage, csv_in, path_data):
     header = ["Process", "Cost_Function"]
     result = getDataDBCost(studycase, function_id, types, stage)
 
-    # encontrar los id
+    # encontrar los id de las funciones ya que no se repiten
     elements_id = []
     for res in result:
-        elements_id.append(res[0])
+        elements_id.append(res[3])
     elements_id = list(set(elements_id))
 
     results1tot = []
@@ -61,15 +61,17 @@ def genCSVCost(studycase, function_id, types, stage, csv_in, path_data):
     for cab in elements_id:
         cost_function = []
         opt = []
+        id_elem = []
         for res in result:
             res = list(res)
-            if(cab == res[0]):
-                opt.append(res[2])
+            if(cab == res[3]):
                 header1.append(res[1])
+                id_elem.append(res[0])
                 cost_function.append(res[3])
+                opt.append(res[2])
         cost_function = list(set(cost_function))
         opt.insert(0, cost_function[0])
-        opt.insert(0, cab)
+        opt.insert(0, id_elem[0])
         results1tot.append(opt)
     header1 = list(set(header1))
     header += header1

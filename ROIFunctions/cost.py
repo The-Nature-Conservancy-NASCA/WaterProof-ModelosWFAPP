@@ -20,8 +20,8 @@ def Cost_roi( anotherroute, studycase, type_in, ejecution, idx ):
         cost_id.append(cost_zer[col].name)
         value.append(cost_zer[col])
         vpn_min_cost.append(cost_one[col])
-        vpm_max_cost.append(cost_two[col])
-        vpn_med_cost.append(cost_tre[col])
+        vpn_med_cost.append(cost_two[col])
+        vpm_max_cost.append(cost_tre[col])
 
     # Delete row time from the matrix
     cost_id.pop(0)
