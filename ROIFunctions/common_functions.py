@@ -36,3 +36,15 @@ def generateCsv(header, values, file):
     with open(file,"w",newline='') as file:
         writer = csv.writer(file)
         writer.writerows(row_list)
+
+def path_wb(id_intake,user_id,study_case_id, preffix):
+	DISAGGREGATION_DIR = "07-DISAGGREGATION"
+	WATER_BALANCE_DIR = "08-WATER_BALANCE"
+	OUT_BASE_DIR = "salidas"
+	wi_folder = "%s_%s" % (preffix, id_intake)
+	date = datetime.date.today()
+	usr_folder = "%s_%s_%s-%s-%s" % (user_id,study_case_id, date.year, date.month, date.day)
+	path_data_wb_in = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "in", WATER_BALANCE_DIR)
+	path_data_wb_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", WATER_BALANCE_DIR)
+	path_data_ds_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", DISAGGREGATION_DIR)
+	return path_data_wb_in, path_data_wb_out, path_data_ds_out
