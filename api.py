@@ -519,7 +519,7 @@ def indicators( user_id, study_case_id ):
 	dict_result['status'] = 'Todo bonito'
     # try:
 	IndicatorsIn(path_data)
-	# Indicators_BaU_NBS(path_data_ind)
+	Indicators_BaU_NBS(path_data_ind)
 	IndicatorsSaveDB(path_data,user_id,study_case_id,today)
 	# except Exception as e:
 	# 	dictResult['estado'] = False
