@@ -26,10 +26,12 @@ from dissagregation import DataCSVDis
 from ROIFunctions.roiOut import SaveRoiDB, CreateZip
 from ROIFunctions.roiIn import DataCSVRoi
 from ROIFunctions.exchangeRateROI import ExchangeROI
+from IndicatorsFunctions.insert import IndicatorsIn,IndicatorsSaveDB
 import pandas as pd
 import requests
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 from ROI_WaterFunds.ROI import ROI_Analisys
+from Indicators_WaterFunds.Indicators_WaterFunds import Indicators_BaU_NBS
 import logging
 import ptvsd
 import constants
@@ -510,18 +512,16 @@ def indicators( user_id, study_case_id ):
 	today = datetime.date.today()
 	usr_folder = "%s_%s_%s-%s-%s" % (user_id, study_case_id, today.year, today.month, today.day)
 	OUT_BASE_DIR = "salidas"
-	ROI = 'INDICATORS'
+	INDICATORS = 'INDICATORS'
 	path_data = path.join(base_path, OUT_BASE_DIR, usr_folder)
-	path_data_roi = path.join(path_data,ROI)
+	path_data_ind = path.join(path_data,INDICATORS)
 	dict_result = dict()
-	dict_result['status'] = True
+	dict_result['status'] = 'Todo bonito'
     # try:
-	# ExchangeROI(study_cases_id)
-	DataCSVRoi(user_id, study_case_id, today, path_data)
-	ROI_Analisys(path_data_roi) #la función que se llamap
-	SaveRoiDB(path_data_roi,study_case_id)
-	CreateZip(path_data)
+	IndicatorsIn(path_data)
+	# Indicators_BaU_NBS(path_data_ind)
+	IndicatorsSaveDB(path_data,user_id,study_case_id,today)
 	# except Exception as e:
 	# 	dictResult['estado'] = False
 	# 	dictResult['error'] = e.args
-	return 'holi'
+	return dict_result
