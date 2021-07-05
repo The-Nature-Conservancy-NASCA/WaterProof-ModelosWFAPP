@@ -60,5 +60,5 @@ def Indicators_BaU_NBS(PathProject):
 
 
 # Tester
-PathProject = r'C:\Users\TNC\Box\01-TNC\28-Project-WaterFund_App\02-Productos-Intermedios\Indicators-WaterFunds\Project'
-Indicators_BaU_NBS(PathProject)
+# PathProject = r'C:\Users\TNC\Box\01-TNC\28-Project-WaterFund_App\02-Productos-Intermedios\Indicators-WaterFunds\Project'
+# Indicators_BaU_NBS(PathProject)
