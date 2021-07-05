@@ -503,3 +503,25 @@ def path_wb(id_intake,user_id,study_case_id, preffix):
 	path_data_wb_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", WATER_BALANCE_DIR)
 	path_data_ds_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", DISAGGREGATION_DIR)
 	return path_data_wb_in, path_data_wb_out, path_data_ds_out
+
+
+@app.get("/indicators")
+def indicators( user_id, study_case_id ):
+	today = datetime.date.today()
+	usr_folder = "%s_%s_%s-%s-%s" % (user_id, study_case_id, today.year, today.month, today.day)
+	OUT_BASE_DIR = "salidas"
+	ROI = 'INDICATORS'
+	path_data = path.join(base_path, OUT_BASE_DIR, usr_folder)
+	path_data_roi = path.join(path_data,ROI)
+	dict_result = dict()
+	dict_result['status'] = True
+    # try:
+	# ExchangeROI(study_cases_id)
+	DataCSVRoi(user_id, study_case_id, today, path_data)
+	ROI_Analisys(path_data_roi) #la función que se llamap
+	SaveRoiDB(path_data_roi,study_case_id)
+	CreateZip(path_data)
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
+	return 'holi'
