@@ -26,10 +26,13 @@ from dissagregation import DataCSVDis
 from ROIFunctions.roiOut import SaveRoiDB, CreateZip
 from ROIFunctions.roiIn import DataCSVRoi
 from ROIFunctions.exchangeRateROI import ExchangeROI
+from ROIFunctions.common_functions import path_wb
+from IndicatorsFunctions.Indicators_IN_and_OUT import IndicatorsIn,IndicatorsSaveDB
 import pandas as pd
 import requests
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 from ROI_WaterFunds.ROI import ROI_Analisys
+from Indicators_WaterFunds.Indicators_WaterFunds import Indicators_BaU_NBS
 import logging
 import ptvsd
 import constants
@@ -307,10 +310,10 @@ async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 	path_data_wb_in, path_data_wb_out, path_data_ds_out = path_wb(id_intake,user_id,study_case_id, 'WI')
 
 	# try:
-	DataInBAU(id_intake,path_data_wb_in,path_data_ds_out)
+	DataInBAU(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
 	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_db, id_intake, user_id, study_case_id, "BAU", path_data_wb_out)
-	DataInNBS(id_intake,path_data_wb_in,path_data_ds_out)
+	DataInNBS(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
 	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_db, id_intake, user_id, study_case_id, "NBS", path_data_wb_out)
 	dictResult = dict()
@@ -486,14 +489,21 @@ def costFunctionExecute(user_id, intake_id, study_case_id):
 	preproc.costFunctionExecute(intake_id, study_case_id, user_id)
 	return True
 
-def path_wb(id_intake,user_id,study_case_id, preffix):
-	DISAGGREGATION_DIR = "07-DISAGGREGATION"
-	WATER_BALANCE_DIR = "08-WATER_BALANCE"
+@app.get("/indicators")
+def indicators( user_id, study_case_id ):
+	today = datetime.date.today()
+	usr_folder = "%s_%s_%s-%s-%s" % (user_id, study_case_id, today.year, today.month, today.day)
 	OUT_BASE_DIR = "salidas"
-	wi_folder = "%s_%s" % (preffix, id_intake)
-	date = datetime.date.today()
-	usr_folder = "%s_%s_%s-%s-%s" % (user_id,study_case_id, date.year, date.month, date.day)
-	path_data_wb_in = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "in", WATER_BALANCE_DIR)
-	path_data_wb_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", WATER_BALANCE_DIR)
-	path_data_ds_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", DISAGGREGATION_DIR)
-	return path_data_wb_in, path_data_wb_out, path_data_ds_out
+	INDICATORS = 'INDICATORS'
+	path_data = path.join(base_path, OUT_BASE_DIR, usr_folder)
+	path_data_ind = path.join(path_data,INDICATORS)
+	dict_result = dict()
+	dict_result['status'] = 'Todo bonito'
+    # try:
+	IndicatorsIn(path_data)
+	Indicators_BaU_NBS(path_data_ind)
+	IndicatorsSaveDB(path_data,user_id,study_case_id,today)
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
+	return dict_result

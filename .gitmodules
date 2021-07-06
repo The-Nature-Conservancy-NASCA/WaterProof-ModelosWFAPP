@@ -4,3 +4,6 @@
 [submodule "ROI_WaterFunds"]
 	path = ROI_WaterFunds
 	url = https://github.com/The-Nature-Conservancy-NASCA/ROI_WaterFunds.git
+[submodule "Indicators_WaterFunds"]
+	path = Indicators_WaterFunds
+	url = https://github.com/The-Nature-Conservancy-NASCA/Indicators-WaterFunds.git
