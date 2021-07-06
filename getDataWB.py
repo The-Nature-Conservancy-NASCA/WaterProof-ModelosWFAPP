@@ -148,14 +148,13 @@ def generateCsvDataDisPTAP(ptap_id, function_db,csv_in, type, scenario, path_dat
         listResults.append(app)
     generateCsv(listHeader,listResults, pathF)
 
-def generateCsvQ(id, funcion_db, csv_in, path_data_wb_in):
-    results = getDataDB(id, funcion_db)
+def generateCsvQ(id,study_case_id, funcion_db, csv_in, path_data_wb_in):
+    results = getDataDBFilterByCatchment(id, funcion_db,study_case_id)
     listElements = []
     listData = []
     element = None
     pathF = path.join(path_data_wb_in,csv_in)
     for r in results:
-
         listData.append([r[1]-1,r[2]])
         # Se adiciona el 1 porque la extración de agua
         # se realiza desde el segundo elemento del flujo

@@ -310,10 +310,10 @@ async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 	path_data_wb_in, path_data_wb_out, path_data_ds_out = path_wb(id_intake,user_id,study_case_id, 'WI')
 
 	# try:
-	DataInBAU(id_intake,path_data_wb_in,path_data_ds_out)
+	DataInBAU(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
 	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_db, id_intake, user_id, study_case_id, "BAU", path_data_wb_out)
-	DataInNBS(id_intake,path_data_wb_in,path_data_ds_out)
+	DataInNBS(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
 	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_db, id_intake, user_id, study_case_id, "NBS", path_data_wb_out)
 	dictResult = dict()

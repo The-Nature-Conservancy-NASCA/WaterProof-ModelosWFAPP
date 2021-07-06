@@ -22,7 +22,7 @@ def DataInWBPTAP(id_ptap, path_data_wb_in):
     generateCsvQ(id_ptap, '__wpgetqbyptap', "3_Water_Extraction.csv", path_data_wb_in)
 
 # Genera los csv para la ejecución de WB en Intakes de dissagregation para el escenario BAU
-def DataInBAU(id_intake, path_data_wb_in, path_data_ds_out):
+def DataInBAU(id_intake, path_data_wb_in, path_data_ds_out,study_case_id):
     OUT_BAU_CSV = '02-OUTPUTS_BaU.csv'
     generateCsvTopology(id_intake, '__wpgettopologybycatchment', path_data_wb_in)
     generateCsvPerc(id_intake, '__wpgetpercentagesbycatchment', "1_WI_Elements_Param.csv", path_data_wb_in)
@@ -30,10 +30,10 @@ def DataInBAU(id_intake, path_data_wb_in, path_data_ds_out):
     generateCsvDataDis(id_intake, '__wpgetsedbycatchment', "2_WI_WSedInputs.csv", 2, OUT_BAU_CSV, path_data_wb_in, path_data_ds_out)
     generateCsvDataDis(id_intake, '__wpgetnbycatchment', "2_WI_WNInputs.csv", 3, OUT_BAU_CSV, path_data_wb_in, path_data_ds_out)
     generateCsvDataDis(id_intake, '__wpgetpbycatchment', "2_WI_WPInputs.csv", 4, OUT_BAU_CSV, path_data_wb_in, path_data_ds_out)
-    generateCsvQ(id_intake, '__wpgetqbycatchmentdis', "3_Water_Extraction.csv",path_data_wb_in)
+    generateCsvQ(id_intake,study_case_id, '__wpgetqbycatchmentdis', "3_Water_Extraction.csv",path_data_wb_in)
 
 # Genera los csv para la ejecución de WB en Intakes de dissagregation para el escenario NBS
-def DataInNBS(id_intake, path_data_wb_in, path_data_ds_out):
+def DataInNBS(id_intake, path_data_wb_in, path_data_ds_out,study_case_id):
     OUT_NBS_CSV = '02-OUTPUTS_NBS.csv'
     generateCsvTopology(id_intake, '__wpgettopologybycatchment', path_data_wb_in)
     generateCsvPerc(id_intake, '__wpgetpercentagesbycatchment', "1_WI_Elements_Param.csv", path_data_wb_in)
@@ -41,7 +41,7 @@ def DataInNBS(id_intake, path_data_wb_in, path_data_ds_out):
     generateCsvDataDis(id_intake, '__wpgetsedbycatchment', "2_WI_WSedInputs.csv", 2, OUT_NBS_CSV, path_data_wb_in, path_data_ds_out)
     generateCsvDataDis(id_intake, '__wpgetnbycatchment', "2_WI_WNInputs.csv", 3, OUT_NBS_CSV, path_data_wb_in, path_data_ds_out)
     generateCsvDataDis(id_intake, '__wpgetpbycatchment', "2_WI_WPInputs.csv", 4, OUT_NBS_CSV, path_data_wb_in, path_data_ds_out)
-    generateCsvQ(id_intake, '__wpgetqbycatchmentdis', "3_Water_Extraction.csv", path_data_wb_in)
+    generateCsvQ(id_intake,study_case_id, '__wpgetqbycatchmentdis', "3_Water_Extraction.csv", path_data_wb_in)
     
 # Genera los csv para la ejecución de WB en PTAP de dissagregation para el escenario BAU
 def DataInBAUPTAP(id_ptap, path_data_wb_in, path_data_ds_out):
