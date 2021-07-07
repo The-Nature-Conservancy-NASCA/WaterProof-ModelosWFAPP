@@ -14,14 +14,19 @@ INDICATORS = 'INDICATORS'
 def IndicatorsIn(path_data):
     # try:
     dirs = os.listdir(path_data)
-    for idx,dir in enumerate(dirs):
+    dirs.sort()
+    dirs2=[]
+    for dir in dirs:
         if 'WI' in dir:
+            dirs2.append(dir)
+
+    for idx,dir in enumerate(dirs2):
             id_intake = re.findall(r"([0-9]+)$", dir)
             dir_in = int(id_intake[0])
             BaU = pd.read_csv(path.join( path_data, dir, OUT_DIR,DISAGGREGATION_DIR, '02-OUTPUTS_BaU.csv'))
             NBS = pd.read_csv(path.join( path_data, dir, OUT_DIR,DISAGGREGATION_DIR, '02-OUTPUTS_NBS.csv'))
-            path_BaU = path.join(path_data, INDICATORS, str(idx-1)+'-INPUTS_BaU.csv')
-            path_NBS = path.join(path_data, INDICATORS, str(idx-1)+'-INPUTS_NBS.csv')
+            path_BaU = path.join(path_data, INDICATORS, str(idx+1)+'-INPUTS_BaU.csv')
+            path_NBS = path.join(path_data, INDICATORS, str(idx+1)+'-INPUTS_NBS.csv')
             generateCsv(list(BaU.columns), BaU.values.tolist(), path_BaU)
             generateCsv(list(NBS.columns), NBS.values.tolist(), path_NBS)
     # except Exception as e:
@@ -40,7 +45,7 @@ def IndicatorsSaveDB(path_data,user_id,study_case_id,date):
     # List Basin
     ListBasin        = glob.glob(os.path.join(path_data,INDICATORS, '*OUTPUTS*'))
     n = int(len(ListBasin)/2)
-    for k in range(n-2):
+    for k in range(n-1):
         time_serie   = pd.read_csv(os.path.join(path_data,INDICATORS, str(k+1) + '-OUTPUTS_Indicators_TimeSeries.csv'))
         max_indica   = pd.read_csv(os.path.join(path_data,INDICATORS, str(k+1) + '-OUTPUTS_Max_Indicators.csv'))
 
