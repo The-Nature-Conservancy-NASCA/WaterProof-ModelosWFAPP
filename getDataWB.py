@@ -50,10 +50,10 @@ def updateDataDB( id, funcion_db ):
     
     return True
 
-def getDataDBPTAP( id, funcion_db, types, scenario ):
+def getDataDBPTAP( id, funcion_db, types, scenario, studycase_id ):
     result = ''
     listResult = []
-    args = ( id, types, scenario )
+    args = ( id, types, scenario, studycase_id )
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
     cursor.callproc(funcion_db,args)
@@ -126,12 +126,12 @@ def generateCsvDataDis(ptap_id, function_db,csv_in, pos, csv_dis, path_data_wb_i
         listResults.append(app)
     generateCsv(listHeader,listResults, pathF)
 
-def generateCsvDataDisPTAP(ptap_id, function_db,csv_in, type, scenario, path_data_wb_in):
+def generateCsvDataDisPTAP(ptap_id,studycase_id, function_db,csv_in, type, scenario, path_data_wb_in):
     listHeader = []
     listResults = []
     listResultsDB = []
     result = getDataDB(ptap_id, function_db)
-    reader = getDataDBPTAP(ptap_id, '__wp_ptap_get_data_intakes', type, scenario)
+    reader = getDataDBPTAP(ptap_id, '__wp_ptap_get_data_intakes', type, scenario, studycase_id)
     result.sort()
     idriver = result.pop(0)
     # se adiciona el elemento 0 al inicio

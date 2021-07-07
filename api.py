@@ -334,10 +334,10 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	path_data_wb_in, path_data_wb_out, path_data_ds_out = path_wb(ptap_id,user_id,study_case_id, 'PTAP')
 
 	# try:
-	DataInBAUPTAP(ptap_id, path_data_wb_in, path_data_ds_out)
+	DataInBAUPTAP(ptap_id,study_case_id, path_data_wb_in, path_data_ds_out)
 	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'BAU', path_data_wb_out)
-	DataInNBSPTAP(ptap_id, path_data_wb_in)
+	DataInNBSPTAP(ptap_id,study_case_id, path_data_wb_in)
 	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS', path_data_wb_out)
 	dictResult = dict()

@@ -44,22 +44,22 @@ def DataInNBS(id_intake, path_data_wb_in, path_data_ds_out,study_case_id):
     generateCsvQ(id_intake,study_case_id, '__wpgetqbycatchmentdis', "3_Water_Extraction.csv", path_data_wb_in)
     
 # Genera los csv para la ejecución de WB en PTAP de dissagregation para el escenario BAU
-def DataInBAUPTAP(id_ptap, path_data_wb_in, path_data_ds_out):
+def DataInBAUPTAP(id_ptap,studycase_id, path_data_wb_in, path_data_ds_out):
     generateCsvTopology( id_ptap, '__wpgettopologybyptap', path_data_wb_in)
     generateCsvPerc( id_ptap, '__wpgetpercentagesbyptap', "1_WI_Elements_Param.csv", path_data_wb_in )
-    generateCsvDataDisPTAP( id_ptap, '__wpgetawybyptap', "2_WI_AWYInputs.csv", 'awy', 'BAU', path_data_wb_in)
-    generateCsvDataDisPTAP( id_ptap, '__wpgetsedbyptap', "2_WI_WSedInputs.csv", 'wsed_ton', 'BAU', path_data_wb_in)
-    generateCsvDataDisPTAP( id_ptap, '__wpgetnbyptap', "2_WI_WNInputs.csv", 'wn_kg', 'BAU', path_data_wb_in)
-    generateCsvDataDisPTAP( id_ptap, '__wpgetpbyptap', "2_WI_WPInputs.csv", 'wp_kg', 'BAU', path_data_wb_in)
+    generateCsvDataDisPTAP( id_ptap,studycase_id, '__wpgetawybyptap', "2_WI_AWYInputs.csv", 'awy', 'BAU', path_data_wb_in)
+    generateCsvDataDisPTAP( id_ptap,studycase_id, '__wpgetsedbyptap', "2_WI_WSedInputs.csv", 'wsed_ton', 'BAU', path_data_wb_in)
+    generateCsvDataDisPTAP( id_ptap,studycase_id, '__wpgetnbyptap', "2_WI_WNInputs.csv", 'wn_kg', 'BAU', path_data_wb_in)
+    generateCsvDataDisPTAP( id_ptap,studycase_id, '__wpgetpbyptap', "2_WI_WPInputs.csv", 'wp_kg', 'BAU', path_data_wb_in)
     generateCsvQDisPTAP( "3_Water_Extraction.csv", path_data_wb_in)
 
 # Genera los csv para la ejecución de WB en PTAP de dissagregation para el escenario NBS
-def DataInNBSPTAP(id_ptap, path_data_wb_in):
+def DataInNBSPTAP(id_ptap,study_case_id, path_data_wb_in):
     generateCsvTopology( id_ptap, '__wpgettopologybyptap', path_data_wb_in)
     generateCsvPerc( id_ptap, '__wpgetpercentagesbyptap', "1_WI_Elements_Param.csv", path_data_wb_in)
-    generateCsvDataDisPTAP( id_ptap, '__wpgetawybyptap', "2_WI_AWYInputs.csv", 'awy', 'NBS', path_data_wb_in)
-    generateCsvDataDisPTAP( id_ptap, '__wpgetsedbyptap', "2_WI_WSedInputs.csv", 'wsed_ton', 'NBS', path_data_wb_in)
-    generateCsvDataDisPTAP( id_ptap, '__wpgetnbyptap', "2_WI_WNInputs.csv", 'wn_kg', 'NBS', path_data_wb_in)
-    generateCsvDataDisPTAP( id_ptap, '__wpgetpbyptap', "2_WI_WPInputs.csv", 'wp_kg', 'NBS', path_data_wb_in)
+    generateCsvDataDisPTAP( id_ptap,study_case_id, '__wpgetawybyptap', "2_WI_AWYInputs.csv", 'awy', 'NBS', path_data_wb_in)
+    generateCsvDataDisPTAP( id_ptap,study_case_id, '__wpgetsedbyptap', "2_WI_WSedInputs.csv", 'wsed_ton', 'NBS', path_data_wb_in)
+    generateCsvDataDisPTAP( id_ptap,study_case_id, '__wpgetnbyptap', "2_WI_WNInputs.csv", 'wn_kg', 'NBS', path_data_wb_in)
+    generateCsvDataDisPTAP( id_ptap,study_case_id, '__wpgetpbyptap', "2_WI_WPInputs.csv", 'wp_kg', 'NBS', path_data_wb_in)
     generateCsvQDisPTAP( "3_Water_Extraction.csv", path_data_wb_in)
 
