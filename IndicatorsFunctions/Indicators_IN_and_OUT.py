@@ -38,7 +38,7 @@ def IndicatorsSaveDB(path_data,user_id,study_case_id,date):
             ids.append(int(id_intake[0]))
 
     # List Basin
-    ListBasin        = glob.glob(os.path.join(path_data, '*OUTPUTS*'))
+    ListBasin        = glob.glob(os.path.join(path_data,INDICATORS, '*OUTPUTS*'))
     n = int(len(ListBasin)/2)
     for k in range(n-2):
         time_serie   = pd.read_csv(os.path.join(path_data,INDICATORS, str(k+1) + '-OUTPUTS_Indicators_TimeSeries.csv'))
@@ -61,14 +61,14 @@ def IndicatorsSaveDB(path_data,user_id,study_case_id,date):
             insertParameter('__wp_indicators_insert',args_in)
 
 
-    time = pd.read_csv(path.join( path_data, 'OUTPUTS-Indicators_TimeSeries_Total.csv'))
-    NBS = pd.read_csv(path.join( path_data, 'OUTPUTS-Max_Indicators_Total.csv'))
+    time = pd.read_csv(path.join( path_data, INDICATORS, 'OUTPUTS-Indicators_TimeSeries_Total.csv'))
+    NBS = pd.read_csv(path.join( path_data, INDICATORS, 'OUTPUTS-Max_Indicators_Total.csv'))
 
     time_in      = time['Time'].values.tolist()
     awy_in       = time['AWY (m3)'].values.tolist()
     wn_in        = time['WN (Kg)'].values.tolist()
     wp_in        = time['WP (kg)'].values.tolist()
-    wsed_in      = time['WSED (Ton)'].values.tolist()
+    wsed_in      = time['Wsed (Ton)'].values.tolist()
     bf_in        = time['BF (m3)'].values.tolist()
     wc_in        = time['WC (Ton)'].values.tolist()
 
