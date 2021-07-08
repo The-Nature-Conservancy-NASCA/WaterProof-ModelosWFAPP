@@ -150,7 +150,6 @@ def createFolder(user, id_case, id_catchment ,date):
 	IN = 'in'
 	OUT = 'out'
 	ROI = 'ROI'
-	
 	isdir = path.isdir(out_folder)
 	if(not isdir):
 		os.mkdir(out_folder)
@@ -159,6 +158,12 @@ def createFolder(user, id_case, id_catchment ,date):
 	isdir = path.isdir(out_folder_wi)
 	if(not isdir):
 		os.mkdir(out_folder_wi)
+		
+	indicators_folder='INDICATORS'
+	out_folder_indicators = path.join(out_folder, indicators_folder)
+	isdir = path.isdir(out_folder_indicators)
+	if(not isdir):
+		os.mkdir(out_folder_indicators)
 	
 	# create directories for ptaps
 	for ptap in ptap_ids:
