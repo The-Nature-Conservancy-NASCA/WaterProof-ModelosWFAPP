@@ -150,7 +150,6 @@ def createFolder(user, id_case, id_catchment ,date):
 	IN = 'in'
 	OUT = 'out'
 	ROI = 'ROI'
-	
 	isdir = path.isdir(out_folder)
 	if(not isdir):
 		os.mkdir(out_folder)
@@ -159,6 +158,12 @@ def createFolder(user, id_case, id_catchment ,date):
 	isdir = path.isdir(out_folder_wi)
 	if(not isdir):
 		os.mkdir(out_folder_wi)
+		
+	indicators_folder='INDICATORS'
+	out_folder_indicators = path.join(out_folder, indicators_folder)
+	isdir = path.isdir(out_folder_indicators)
+	if(not isdir):
+		os.mkdir(out_folder_indicators)
 	
 	# create directories for ptaps
 	for ptap in ptap_ids:
@@ -411,7 +416,7 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 		if ((name == 'lulc_path' or name == 'lulc_raster_path') and type == constants.INVEST_TYPE_NBS):
 			# /home/skaphe/Documentos/tnc/modelos/salidas/1000-70-1-2021-5-25/WI_86
 			path_coverages = 'out/04-RIOS/1_investment_portfolio_adviser_workspace/activity_portfolios/continuous_activity_portfolios/translated_cob/'
-			raster_coverage_name = 'activity_portfolio_continuous_year_%s.tif' % year
+			raster_coverage_name = 'activity_portfolio_continuous_year_%s_FUTURE_COMPLETE.tif' % year
 			value = os.path.join(pathF, path_coverages,raster_coverage_name)
 
 		if(value == 'False'):

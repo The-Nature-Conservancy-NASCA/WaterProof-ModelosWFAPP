@@ -106,7 +106,7 @@ def ExchangeROI(studyCase_id):
     for label,series in final.items():
         val = series.values
         args = [
-            val[0], val[1],val[2], val[3], studyCase_id, date_exec
+            val[0], val[1],float(val[2]), val[3], studyCase_id, date_exec
         ]
         # Insertar los resultados en la DB
         insertParameter( '__wp_roi_tc_insert', args )

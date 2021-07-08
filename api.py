@@ -334,10 +334,10 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	path_data_wb_in, path_data_wb_out, path_data_ds_out = path_wb(ptap_id,user_id,study_case_id, 'PTAP')
 
 	# try:
-	DataInBAUPTAP(ptap_id, path_data_wb_in, path_data_ds_out)
+	DataInBAUPTAP(ptap_id,study_case_id, path_data_wb_in, path_data_ds_out)
 	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'BAU', path_data_wb_out)
-	DataInNBSPTAP(ptap_id, path_data_wb_in)
+	DataInNBSPTAP(ptap_id,study_case_id, path_data_wb_in)
 	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS', path_data_wb_out)
 	dictResult = dict()
@@ -388,24 +388,19 @@ async def calculateWBPTAP(id_ptap):
 	return dictResult
 
 @app.get("/cobTrans")
-async def cobTrans(pathCobs,pathLULC):
+async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 	print ("cobTrans :: start")
 	dictResult = dict()
 	dictResult['status'] = True
+	year = preproc.analysisPeriodFromStudyCase(study_case_id)
+	region = preproc.getRegionFromId(basin)
+	region_name = region[4]
+	print ("year: %s :: region: %s" % (year, region_name))
 	try:
-		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'')
-		path_future_lulc = pathLULC.replace('04-RIOS','02-PREPROC_RIOS').replace('.tif','_FUTURE.tif')
+		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name)
+		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
 		if (os.path.isfile(path_future_lulc)):
-			# driver = gdal.GetDriverByName('GTiff')
-			# file_lulc = gdal.Open(pathLULC)
-			# band_lulc = file_lulc.GetRasterBand(1)
-			# file_lulc_future = gdal.Open(path_future_lulc)
-			# band_lulc_future = file_lulc_future.GetRasterBand(1)
-			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc)
-			# if (band_lulc.XSize != band_lulc_future.XSize or band_lulc.YSize != band_lulc_future.YSize):
-			# 	raster_lulc = rasterio.open(pathLULC)
-			# 	raster_lulc_future = rasterio.open(path_future_lulc)
-
+			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc, year, region_name)
 		dictResult['result'] = {"result":'successful execution'}
 		dictResult['paths'] = paths
 		dictResult['paths_future'] = paths_future
@@ -419,16 +414,15 @@ async def cobTrans(pathCobs,pathLULC):
 @app.get("/disaggregation")
 async def disaggregation( id_usuario, basin, case, catchment):
 	print ("disaggregation")
-	DISAGGREGATION_DIR = "07-DISAGGREGATION"
-	OUT_BASE_DIR = "salidas"
+	
 	wi_folder = "WI_%s" % (catchment)
 	date = datetime.date.today()
 	usr_folder = "%s_%s_%s-%s-%s" % (id_usuario,case, date.year, date.month, date.day)
 	# /home/skaphe/Documentos/tnc/salidas/1000_120_2021-05-10/WI_44/in/07-DISAGGREGATION
-	path_data_in = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "in", DISAGGREGATION_DIR)
+	path_data_in = path.join(base_path, constants.OUT_BASE_DIR, usr_folder, wi_folder, "in", constants.DISAGGREGATION_DIR)
 	print("path_data_in : %s" % path_data_in)
 	# /home/skaphe/Documentos/tnc/salidas/1000_120_2021-05-10/WI_44/out/07-DISAGGREGATION
-	path_data_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", DISAGGREGATION_DIR)
+	path_data_out = path.join(base_path, constants.OUT_BASE_DIR, usr_folder, wi_folder, "out", constants.DISAGGREGATION_DIR)
 	print("path_data_out : %s" % path_data_out)
 	dict_result = dict()
 	dict_result['status'] = True
