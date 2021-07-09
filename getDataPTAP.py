@@ -2,7 +2,7 @@ import sys,csv,os
 sys.path.append('config')
 from config import config
 from connect import connect
-from getDataWB import getDataDB
+from ROIFunctions.common_functions import getDataDB,generateCsv
 
 ruta = os.environ["PATH_FILES"]
 
@@ -38,18 +38,6 @@ def allData(list_csinfras):
 
     return result
 
-def generateCsv(header,values, file):
-    print("generateCsv")
-    row_list = []
-    row_list.append(header)
-
-    for item in values:
-        row_list.append(item)
-	
-    with open(file,"w",newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(row_list)
-        
 # def generateAWYCsv(list_cs):
 #     results = getTopologyData(catchment_id)
 #     # print(results)
@@ -74,7 +62,7 @@ def generateAll(list_cs):
     p = []
     p_item = []
     p_item.append("1")
-    norm = getDataDB(list_cs[0],"__wp_ptap_normquality")
+    norm = getDataDB([list_cs[0]],"__wp_ptap_normquality")
     for d in data:
         h.append("Csinfra-" + str(d[0][0]))
         awy_item.append(d[0][7])

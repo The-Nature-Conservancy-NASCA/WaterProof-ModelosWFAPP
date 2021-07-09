@@ -41,7 +41,7 @@ def Save_roi( anotherroute, studycase, type_in, ejecution, idx ):
     vpn_med_save_out = np.array(vpn_med_save).flatten()
     serie_time_out = np.array(serie_time).flatten()
     value_out = np.array(value).flatten()
-    currency = getDataDB(studycase,'__wp_roi_tc_exchange_rate')
+    currency = getDataDB([studycase],'__wp_roi_tc_exchange_rate')
     currency= list(currency[0])
 
     # Generate dataframe with all data to insert

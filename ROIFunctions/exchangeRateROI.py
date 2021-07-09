@@ -12,11 +12,11 @@ studycase_id : en este campo va el id del caso de estudio
 Date_execution: Fecha de ejecución
 '''
 def ExchangeROI(studyCase_id):
-    carbon = getDataDB(studyCase_id,'__wp_roi_tc_carbon')
-    financial = getDataDB(studyCase_id,'__wp_roi_tc_financial_param')
-    nbs = getDataDB(studyCase_id,'__wp_roi_tc_cost_nbs')
-    rate = getDataDB(studyCase_id,'__wp_roi_tc_exchange_rate')
-    fmultglo = getDataDB(studyCase_id,'__wp_roi_tc_global_multi_factor')
+    carbon = getDataDB([studyCase_id],'__wp_roi_tc_carbon')
+    financial = getDataDB([studyCase_id],'__wp_roi_tc_financial_param')
+    nbs = getDataDB([studyCase_id],'__wp_roi_tc_cost_nbs')
+    rate = getDataDB([studyCase_id],'__wp_roi_tc_exchange_rate')
+    fmultglo = getDataDB([studyCase_id],'__wp_roi_tc_global_multi_factor')
     type_or_id =[]
     cost =["Carbon Cost (USD/TonCO2)",
             "Program Director (Cost/yr)",

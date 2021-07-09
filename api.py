@@ -13,7 +13,7 @@ import preproc
 import datetime
 from aqueduct import cutAqueduct
 from ptapSelection import getRandomLetter as grl
-from getDataWB import getDataDB, updateDataDB
+from getDataWB import updateDataDB
 from getDataInWB import DataInWB, DataInWBPTAP, DataInBAU, DataInNBS, DataInBAUPTAP, DataInNBSPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP

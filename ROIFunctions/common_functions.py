@@ -1,5 +1,8 @@
-import csv
+import csv,datetime
+from os import path,environ
 from connect import connect
+base_path = environ["PATH_FILES"]
+
 
 def insertParameter( function_db, args ):
     listResult = []
@@ -10,12 +13,12 @@ def insertParameter( function_db, args ):
     cursor.close()
     conn.close()
 
-def getDataDB( id, funcion_db ):
+def getDataDB( args, funcion_db ):
     result = ''
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc(funcion_db,[id])
+    cursor.callproc(funcion_db,args)
     result = cursor.fetchall()
     for row in result:
         listResult.append(row)
@@ -36,6 +39,16 @@ def generateCsv(header, values, file):
     with open(file,"w",newline='') as file:
         writer = csv.writer(file)
         writer.writerows(row_list)
+
+def updateDataDB( id, funcion_db ):
+    listResult = []
+    conn = connect('postgresql_alfa')
+    cursor = conn.cursor()
+    cursor.callproc(funcion_db,[id])
+    conn.commit()
+    cursor.close()
+    conn.close()
+    return True
 
 def path_wb(id_intake,user_id,study_case_id, preffix):
 	DISAGGREGATION_DIR = "07-DISAGGREGATION"

@@ -5,7 +5,7 @@ from os import environ,path
 sys.path.append('config')
 from config import config
 from connect import connect
-from getDataWB import getDataDB, generateCsv, getDataDBFilterByCatchment
+from ROIFunctions.common_functions import getDataDB,generateCsv
 
 # Generación de los csv pertinentes para el algoritmo de dissagregation
 def DataCSVDis(path_data_in, catchment,studycase):
@@ -18,15 +18,15 @@ def DataCSVDis(path_data_in, catchment,studycase):
 # results = datos que se llaman de la base de datos mediante una función
 def genCSVInvest(path_data_in, catchment,studycase, function_id, csv_in):
     header=["Scenario-InVEST","AWY (m3)","Wsed (Ton)","WN (Kg)","WP (kg)","BF (m3)","WC (Ton)"]
-    results = getDataDBInVEST( catchment, studycase, function_id )
+    results = getDataDB( [catchment, studycase], function_id )
     pathcsv = path.join( path_data_in, csv_in)
     generateCsv( header, results, pathcsv)
 
 # genera el archivo csv de NBS
 def genCSVNBS(path_data_in, studycase, function_id1, function_id2, csv_in, catchment):
     header=["NBS-Name",	"Time-Max-Benefit",	"Benefit-t0"]
-    results1 = getDataDB( studycase, function_id1)
-    results2 = getDataDBFilterByCatchment( studycase, function_id2, catchment)
+    results1 = getDataDB( [studycase], function_id1)
+    results2 = getDataDB( [studycase, catchment], function_id2)
 
     # Se ordenan los resultados obtenidos en la DB
     # para poder generar la estructura solicitada en el csv
@@ -52,23 +52,7 @@ def genCSVNBS(path_data_in, studycase, function_id1, function_id2, csv_in, catch
 # genera el archivo csv de Time
 def genCSVTime(path_data_in, studycase, function_id, csv_in):
     header=["Time"]
-    results = getDataDB( studycase, function_id)
+    results = getDataDB( [studycase], function_id)
     pathcsv = path.join( path_data_in, csv_in)
     generateCsv( header, results, pathcsv)
 
-# función para hacer el llamado de base de datos para el csv de invest
-def getDataDBInVEST( catchment, studycase,  funcion_db ):
-    result = ''
-    listResult = []
-    conn = connect('postgresql_alfa')
-    cursor = conn.cursor()
-    cursor.callproc(funcion_db,[catchment,studycase])
-    result = cursor.fetchall()
-    for row in result:
-        listResult.append(row)
-    cursor.close()
-    conn.close()
-    if (listResult ==[]):
-        raise Exception(f'Sin datos para el id: {id}')
-
-    return listResult

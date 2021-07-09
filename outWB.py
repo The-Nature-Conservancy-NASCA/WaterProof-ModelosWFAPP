@@ -2,6 +2,7 @@ import csv,os,sys
 sys.path.append('config')
 from config import config
 from connect import connect
+from ROIFunctions.common_functions import generateCsv
 
 dirOutputs = {
     'results': 'Results_Order.csv',
@@ -97,16 +98,6 @@ def readCsv(csvIn, path_data_wb_out):
 
     return resultList
 
-def generateCsv(header,values, file):
-    row_list = []
-    row_list.append(header)
-
-    for item in values:
-        row_list.append(item)
-	
-    with open(file,"w",newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(row_list)
 
 def mergeData(path_data_wb_out):
     order = []

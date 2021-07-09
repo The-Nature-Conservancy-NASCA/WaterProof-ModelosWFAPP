@@ -2,7 +2,7 @@ import os,glob,re
 import numpy as np
 import pandas as pd
 from datetime import date
-from ROIFunctions.common_functions import insertParameter,getDataDB,generateCsv
+from ROIFunctions.common_functions import insertParameter,generateCsv
 from os import environ, path
 from connect import connect
 import constants
