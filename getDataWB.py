@@ -89,8 +89,8 @@ def generateCsvDataDisPTAP(ptap_id,studycase_id, function_db,csv_in, type, scena
         listResults.append(app)
     generateCsv(listHeader,listResults, pathF)
 
-def generateCsvQ(id,study_case_id, funcion_db, csv_in, path_data_wb_in):
-    results = getDataDB([id,study_case_id], funcion_db)
+def generateCsvQ(args_id, funcion_db, csv_in, path_data_wb_in):
+    results = getDataDB(args_id, funcion_db)
     listElements = []
     listData = []
     element = None
