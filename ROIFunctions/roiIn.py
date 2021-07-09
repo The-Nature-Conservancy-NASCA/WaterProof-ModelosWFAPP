@@ -99,13 +99,17 @@ def genCSVNBS_Cost(studycase, function_id, csv_in, path_data):
             res = list(res)
             if(cab == res[2]):
                 opt.append(res[3])
-                time.append(res[1])
                 headers.append(res[0])
-        times += list(set(time))
         results1tot.append(opt)
-    results1tot.append(times)
 
     headers = list(set(headers))
+    for hed in headers:
+        for tim in results:
+            if (hed == tim[0]):
+                time.append(tim[1])
+        times += list(set(time))
+    results1tot.append(times)
+
     headers = sorted(headers)
     header += headers
     for idx, rest in enumerate(results1tot):
