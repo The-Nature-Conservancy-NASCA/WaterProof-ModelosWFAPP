@@ -40,11 +40,11 @@ def generateCsv(header, values, file):
         writer = csv.writer(file)
         writer.writerows(row_list)
 
-def updateDataDB( id, funcion_db ):
+def updateDataDB( args, funcion_db ):
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
-    cursor.callproc(funcion_db,[id])
+    cursor.callproc(funcion_db,args)
     conn.commit()
     cursor.close()
     conn.close()
