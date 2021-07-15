@@ -459,10 +459,10 @@ def roiExecution(user_id, study_cases_id):
 	dict_result['status'] = True
     # try:
 	# ExchangeROI(study_cases_id)
-	#DataCSVRoi(user_id, study_cases_id, today, path_data)
-	#ROI_Analisys(path_data_roi)
-	#SaveRoiDB(path_data_roi,study_cases_id)
-	CreateZip(path_data, study_cases_id)
+	DataCSVRoi(user_id, study_cases_id, today, path_data)
+	ROI_Analisys(path_data_roi)
+	SaveRoiDB(path_data_roi,study_cases_id)
+	CreateZip(path_data, study_cases_id) 
 	# except Exception as e:
 	# 	dictResult['estado'] = False
 	# 	dictResult['error'] = e.args
