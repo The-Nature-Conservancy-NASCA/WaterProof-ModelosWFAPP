@@ -24,9 +24,6 @@ def getDataDB( args, funcion_db ):
         listResult.append(row)
     cursor.close()
     conn.close()
-    if (listResult ==[]):
-        raise Exception(f'Sin datos para el id: {id}')
-
     return listResult
 
 def generateCsv(header, values, file):
