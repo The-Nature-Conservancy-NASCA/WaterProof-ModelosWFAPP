@@ -11,7 +11,7 @@ from os import environ,path
 import shutil
 import preproc
 import datetime
-from aqueduct import cutAqueduct
+from aqueduct import cutAqueduct,insertResults
 from ptapSelection import getRandomLetter as grl
 from getDataWB import updateDataDB
 from getDataInWB import DataInWB, DataInWBPTAP, DataInBAU, DataInNBS, DataInBAUPTAP, DataInNBSPTAP
@@ -269,6 +269,7 @@ async def calculateAqueduct(path):
 	try:
 		list = cutAqueduct(full_path)
 		print(list)
+		insertResults(list)
 		dictResult = dict()
 		dictResult['status'] = True
 		dictResult['result'] = list
