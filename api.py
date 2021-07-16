@@ -259,7 +259,7 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	return dictResult
 
 @app.get("/aqueduct")
-async def calculateAqueduct(path):
+async def calculateAqueduct(path,id_intake):
 	# path = 1000_142_2021-6-25/WI_222
 	# base_path =  /home/skaphe/Documentos/tnc/modelos/salidas
 	full_path =  os.path.join(base_path, path)
@@ -268,7 +268,7 @@ async def calculateAqueduct(path):
 	try:
 		list = cutAqueduct(full_path)
 		print(list)
-		insertResults(list)
+		insertResults(list,id_intake)
 		dictResult = dict()
 		dictResult['status'] = True
 		dictResult['result'] = list
