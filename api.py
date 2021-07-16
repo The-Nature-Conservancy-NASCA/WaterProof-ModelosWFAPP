@@ -13,7 +13,6 @@ import preproc
 import datetime
 from aqueduct import cutAqueduct,insertResults
 from ptapSelection import getRandomLetter as grl
-from getDataWB import updateDataDB
 from getDataInWB import DataInWB, DataInWBPTAP, DataInBAU, DataInNBS, DataInBAUPTAP, DataInNBSPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP
@@ -26,7 +25,7 @@ from dissagregation import DataCSVDis
 from ROIFunctions.roiOut import SaveRoiDB, CreateZip
 from ROIFunctions.roiIn import DataCSVRoi
 from ROIFunctions.exchangeRateROI import ExchangeROI
-from ROIFunctions.common_functions import path_wb
+from ROIFunctions.common_functions import path_wb,updateDataDB
 from IndicatorsFunctions.Indicators_IN_and_OUT import IndicatorsIn,IndicatorsSaveDB
 import pandas as pd
 import requests
