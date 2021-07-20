@@ -26,6 +26,19 @@ def getDataDB( args, funcion_db ):
     conn.close()
     return listResult
 
+def selectDataDB( query ):
+    result = ''
+    listResult = []
+    conn = connect('postgresql_alfa')
+    cursor = conn.cursor()
+    cursor.execute(query)
+    result = cursor.fetchall()
+    for row in result:
+        listResult.append(row)
+    cursor.close()
+    conn.close()
+    return listResult
+
 def generateCsv(header, values, file):
     row_list = []
     row_list.append(header)

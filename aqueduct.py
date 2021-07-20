@@ -1,7 +1,7 @@
 import os, ogr, sys, osr
 import geopandas as gpd
 sys.path.append('config')
-from ROIFunctions.common_functions import insertParameter
+from ROIFunctions.common_functions import insertParameter,selectDataDB
 from connect import connect
 
 ruta = os.environ["PATH_FILES"]
@@ -274,6 +274,11 @@ def calculateIndex(shp,idx, areaT):
     return roundResultado, lvl
 
 def insertResults(result,id_intake):
+
+    count = selectDataDB('Select count(*) from public.waterproof_reports_aqueduct where intake_id = '+id_intake)
+    if(count[0] == 0):
+        return
+
     # Future 10 Years
     future10 = result['future10']
     for key in future10:
