@@ -276,7 +276,7 @@ def calculateIndex(shp,idx, areaT):
 def insertResults(result,id_intake):
 
     count = selectDataDB('Select count(*) from public.waterproof_reports_aqueduct where intake_id = '+id_intake)
-    if( count == 0 ):
+    if( count[0] == 0 ):
         # Future 10 Years
         future10 = result['future10']
         for key in future10:
