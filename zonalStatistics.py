@@ -4,7 +4,7 @@ import csv
 
 def calculateStatistic(types,raster,catchment):
 	print ("calculateStatistic")
-	stats = zonal_stats(catchment,raster,stats=types)
+	stats = zonal_stats(catchment,raster,stats=types,all_touched=True)
 	return stats
  
 def calculateRainfallDayMonth(folder,catchment,label):
