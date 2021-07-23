@@ -5,6 +5,7 @@ import ROIFunctions.saves as save
 import ROIFunctions.sensivity as sens
 import ROIFunctions.carbon as carb
 import constants
+from ROIFunctions.common_functions import updateDataDB
 
 ruta = environ["PATH_FILES"]
 
@@ -20,5 +21,8 @@ def SaveRoiDB( path_data, studycase ):
     carb.Carb_roi( anotherroute, studycase )
     sens.Sens_roi( anotherroute, studycase )
 
-def CreateZip(path):
+def CreateZip(path, studyCase_id):
     shutil.make_archive(path,'zip',path)
+    link= ("http://dev.skaphe.com:81/salidas/"+ path + ".zip")
+    args = [studyCase_id,link]
+    updateDataDB(args,'__wpupdate_download_zip')

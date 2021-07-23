@@ -2,7 +2,7 @@ import os
 import numpy as np
 import pandas as pd
 from datetime import date
-from ROIFunctions.common_functions import insertParameter,getDataDB,generateCsv
+from ROIFunctions.common_functions import getDataDB,generateCsv
 from os import environ, path
 from connect import connect
 import constants
@@ -11,25 +11,6 @@ ruta = environ["PATH_FILES"]
 ROI = 'ROI' 
 IN = 'in'
 OUT = 'out'
-# Consulta a Base de datos para los archivos 1-4
-
-def getDataDBCost(studycase, funcion_db, types, stage):
-    result = ''
-    listResult = []
-    conn = connect('postgresql_alfa')
-    cursor = conn.cursor()
-    args = [studycase, types, stage]
-    cursor.callproc(funcion_db, args)
-    result = cursor.fetchall()
-    for row in result:
-        listResult.append(list(row))
-    cursor.close()
-    conn.close()
-    if (listResult == []):
-        raise Exception(f'Sin datos para el id: {studycase}')
-
-    return listResult
-
 # Generación de los csv pertinentes para el algoritmo de ROI
 
 def DataCSVRoi(user_id, studycase, date, path_data):
@@ -48,7 +29,7 @@ def DataCSVRoi(user_id, studycase, date, path_data):
 
 def genCSVCost(studycase, function_id, types, stage, csv_in, path_data):
     header = ["Process", "Cost_Function"]
-    result = getDataDBCost(studycase, function_id, types, stage)
+    result = getDataDB([studycase, types, stage], function_id)
 
     # encontrar los id de las funciones ya que no se repiten
     elements_id = []
@@ -87,7 +68,7 @@ def genCSVNBS_Cost(studycase, function_id, csv_in, path_data):
              "Opportunity (currency/ha)", "Maintenance Time (yr)"]
     cost_nbs = ["unit_implementation_cost",
                 "unit_maintenance_cost", "unit_oportunity_cost"]
-    results = getDataDB(studycase, function_id)
+    results = getDataDB([studycase], function_id)
 
     results1tot = []
     time = []
@@ -99,13 +80,17 @@ def genCSVNBS_Cost(studycase, function_id, csv_in, path_data):
             res = list(res)
             if(cab == res[2]):
                 opt.append(res[3])
-                time.append(res[1])
                 headers.append(res[0])
-        times += list(set(time))
         results1tot.append(opt)
-    results1tot.append(times)
 
     headers = list(set(headers))
+    for hed in headers:
+        for tim in results:
+            if (hed == tim[0]):
+                time.append(tim[1])
+        times += list(set(time))
+    results1tot.append(times)
+
     headers = sorted(headers)
     header += headers
     for idx, rest in enumerate(results1tot):
@@ -118,8 +103,8 @@ def genCSVNBS_Cost(studycase, function_id, csv_in, path_data):
 
 def genCSVPort_NBS(studycase, function_id1, function_id2, csv_in, path_data):
     header = ["Time"]
-    results1 = getDataDB(studycase, function_id1)
-    results2 = getDataDB(studycase, function_id2)
+    results1 = getDataDB([studycase], function_id1)
+    results2 = getDataDB([studycase], function_id2)
 
     # Se ordenan los resultados obtenidos en la DB
     # para poder generar la estructura solicitada en el csv
@@ -157,8 +142,8 @@ def genCSVFin_Par(studycase, function_id1, function_id2, csv_in, path_data):
             ["Discount rate (%)"],
             ["Sensitivity Analysis - Minimum Discount Rate (%)"],
             ["Sensitivity Analysis - Maximum Discount Rate (%)"]]
-    result1 = getDataDB(studycase, function_id1)
-    result2 = getDataDB(studycase, function_id2)
+    result1 = getDataDB([studycase], function_id1)
+    result2 = getDataDB([studycase], function_id2)
 
     result2 = list(result2[0])
     results1tot = []
@@ -182,7 +167,7 @@ def genCSVFin_Par(studycase, function_id1, function_id2, csv_in, path_data):
 
 def genCSVTime(studycase, function_id, csv_in, path_data):
     header = ["Time_ROI", "Time_Implementation_NBS"]
-    results = getDataDB(studycase, function_id)
+    results = getDataDB([studycase], function_id)
     pathcsv = path.join(path_data, ROI, IN, csv_in)
     generateCsv(header, results, pathcsv)
 

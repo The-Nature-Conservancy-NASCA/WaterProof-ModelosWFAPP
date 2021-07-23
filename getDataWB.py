@@ -4,42 +4,12 @@ from os import environ,path
 sys.path.append('config')
 from config import config
 from connect import connect
-
+from ROIFunctions.common_functions import getDataDB,generateCsv,updateDataDB
 ruta = environ["PATH_FILES"]
 
 
-def getDataDB( id, funcion_db ):
-    result = ''
-    listResult = []
-    conn = connect('postgresql_alfa')
-    cursor = conn.cursor()
-    cursor.callproc(funcion_db,[id])
-    result = cursor.fetchall()
-    for row in result:
-        listResult.append(row)
-    cursor.close()
-    conn.close()
-    if (listResult ==[]):
-        raise Exception(f'Sin datos para el id: {id}')
-    return listResult
-
-def getDataDBFilterByCatchment( id, funcion_db, catchment ):
-    result = ''
-    listResult = []
-    conn = connect('postgresql_alfa')
-    cursor = conn.cursor()
-    cursor.callproc(funcion_db,[id,catchment])
-    result = cursor.fetchall()
-    for row in result:
-        listResult.append(row)
-    cursor.close()
-    conn.close()
-    if (listResult ==[]):
-        raise Exception(f'Sin datos para el id: {id}')
-    return listResult
 
 def updateDataDB( id, funcion_db ):
-    
     listResult = []
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
@@ -47,50 +17,21 @@ def updateDataDB( id, funcion_db ):
     conn.commit()
     cursor.close()
     conn.close()
-    
     return True
 
-def getDataDBPTAP( id, funcion_db, types, scenario ):
-    result = ''
-    listResult = []
-    args = ( id, types, scenario )
-    conn = connect('postgresql_alfa')
-    cursor = conn.cursor()
-    cursor.callproc(funcion_db,args)
-    result = cursor.fetchall()
-    for row in result:
-        listResult.append(row)
-    cursor.close()
-    conn.close()
-    if (listResult ==[]):
-        raise Exception(f'Sin datos para el id: {id}')
-
-    return listResult
-
-def generateCsv(header, values, file):
-    row_list = []
-    row_list.append(header)
-
-    for item in values:
-        row_list.append(item)
-	
-    with open(file,"w",newline='') as file:
-        writer = csv.writer(file)
-        writer.writerows(row_list)
-
 def generateCsvTopology(id, function_db, path_data_wb_in):
-    results = getDataDB(id,function_db)
+    results = getDataDB([id],function_db)
     csv_in = "0_WI_Topology.csv"
     pathF = path.join(path_data_wb_in, csv_in)
     generateCsv(["From_Element","To_Element"],results, pathF)
 
 def generateCsvPerc(id, function_db, csv_in, path_data_wb_in):
-    results = getDataDB( id, function_db )
+    results = getDataDB( [id], function_db )
     pathF = path.join(path_data_wb_in, csv_in)
     generateCsv(["From_Element","PWater","RetSed","RetN","RetP"],results, pathF)
 
 def generateCsvData(id, funcion_db, csv_in, path_data_in):
-    results = getDataDB( id, funcion_db )
+    results = getDataDB( [id], funcion_db )
     listElements = []
     listData = []
     listElements.append(0)
@@ -107,7 +48,7 @@ def generateCsvDataDis(ptap_id, function_db,csv_in, pos, csv_dis, path_data_wb_i
     listHeader = []
     listResults = []
     listResultsDB = []
-    result = getDataDB(ptap_id, function_db)
+    result = getDataDB([ptap_id], function_db)
     result.sort()
     idriver = result.pop(0)
     # se adiciona el elemento 0 al inicio
@@ -126,12 +67,12 @@ def generateCsvDataDis(ptap_id, function_db,csv_in, pos, csv_dis, path_data_wb_i
         listResults.append(app)
     generateCsv(listHeader,listResults, pathF)
 
-def generateCsvDataDisPTAP(ptap_id, function_db,csv_in, type, scenario, path_data_wb_in):
+def generateCsvDataDisPTAP(ptap_id,studycase_id, function_db,csv_in, type, scenario, path_data_wb_in):
     listHeader = []
     listResults = []
     listResultsDB = []
-    result = getDataDB(ptap_id, function_db)
-    reader = getDataDBPTAP(ptap_id, '__wp_ptap_get_data_intakes', type, scenario)
+    result = getDataDB([ptap_id], function_db)
+    reader = getDataDB([ptap_id, type, scenario, studycase_id], '__wp_ptap_get_data_intakes')
     result.sort()
     idriver = result.pop(0)
     # se adiciona el elemento 0 al inicio
@@ -148,14 +89,13 @@ def generateCsvDataDisPTAP(ptap_id, function_db,csv_in, type, scenario, path_dat
         listResults.append(app)
     generateCsv(listHeader,listResults, pathF)
 
-def generateCsvQ(id, funcion_db, csv_in, path_data_wb_in):
-    results = getDataDB(id, funcion_db)
+def generateCsvQ(args_id, funcion_db, csv_in, path_data_wb_in):
+    results = getDataDB(args_id, funcion_db)
     listElements = []
     listData = []
     element = None
     pathF = path.join(path_data_wb_in,csv_in)
     for r in results:
-
         listData.append([r[1]-1,r[2]])
         # Se adiciona el 1 porque la extración de agua
         # se realiza desde el segundo elemento del flujo

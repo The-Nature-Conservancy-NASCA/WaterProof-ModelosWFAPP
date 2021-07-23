@@ -1,6 +1,7 @@
 import os, ogr, sys, osr
 import geopandas as gpd
 sys.path.append('config')
+from ROIFunctions.common_functions import insertParameter,selectDataDB
 from connect import connect
 
 ruta = os.environ["PATH_FILES"]
@@ -272,7 +273,34 @@ def calculateIndex(shp,idx, areaT):
 
     return roundResultado, lvl
 
+def insertResults(result,id_intake):
 
+    count = selectDataDB('Select count(*) from public.waterproof_reports_aqueduct where intake_id = '+id_intake)
+    if( count[0] == 0 ):
+        # Future 10 Years
+        future10 = result['future10']
+        for key in future10:
+            args=[id_intake,'Future 10 Years',str('F_10_'+key.upper()),future10[key]['value']]
+            insertParameter('__wp_aqueduct_insert',args)
+
+        # Future 20 years
+        future20 = result['future20']
+        for key in future20:
+            args=[id_intake,'Future 20 Years',f'F_20_{key.upper()}',future20[key]['value']]
+            insertParameter('__wp_aqueduct_insert',args)
+
+        # HISTORIC
+        historic = result['historic']
+        for key in historic:
+            if('bws' in key or 'bwd' in key or 'iav' in key or 'sev' in key or 'gtd' in key or 'rfr' in key or 'cfr' in key):
+                args=[id_intake,'Physical Risk associated with Amount of Water','H_'+key.upper(),historic[key]['value']]
+                insertParameter('__wp_aqueduct_insert',args)
+            if('ucw' in key or 'cep' in key or 'udw' in key or 'usa' in key or 'rri' in key):
+                args=[id_intake,'Physical Risk quantity',f'H_{key.upper()}',historic[key]['value']]
+                insertParameter('__wp_aqueduct_insert',args)
+            if('drr' in key ):
+                args=[id_intake,'Regulatory and reputational',f'H_{key.upper()}',historic[key]['value']]
+                insertParameter('__wp_aqueduct_insert',args)
 
 
 

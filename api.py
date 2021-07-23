@@ -11,9 +11,8 @@ from os import environ,path
 import shutil
 import preproc
 import datetime
-from aqueduct import cutAqueduct
+from aqueduct import cutAqueduct,insertResults
 from ptapSelection import getRandomLetter as grl
-from getDataWB import getDataDB, updateDataDB
 from getDataInWB import DataInWB, DataInWBPTAP, DataInBAU, DataInNBS, DataInBAUPTAP, DataInNBSPTAP
 from WI_Balance import execWB
 from outWB import mergeData, readSum, mergeDataPTAP, readSumPTAP
@@ -26,10 +25,13 @@ from dissagregation import DataCSVDis
 from ROIFunctions.roiOut import SaveRoiDB, CreateZip
 from ROIFunctions.roiIn import DataCSVRoi
 from ROIFunctions.exchangeRateROI import ExchangeROI
+from ROIFunctions.common_functions import path_wb,updateDataDB
+from IndicatorsFunctions.Indicators_IN_and_OUT import IndicatorsIn,IndicatorsSaveDB
 import pandas as pd
 import requests
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 from ROI_WaterFunds.ROI import ROI_Analisys
+from Indicators_WaterFunds.Indicators_WaterFunds import Indicators_BaU_NBS
 import logging
 import ptvsd
 import constants
@@ -120,7 +122,7 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	dictResult = dict()
 	dictResult['status'] = False
 	catch = sorted(catchment,key=int)
-	updateDataDB( catch[0], "__wp_intake_emptycols" )
+	updateDataDB( [catch[0]], "__wp_intake_emptycols" )
 	year = "0"
 
 	type = type.upper()
@@ -257,7 +259,7 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	return dictResult
 
 @app.get("/aqueduct")
-async def calculateAqueduct(path):
+async def calculateAqueduct(path,id_intake):
 	# path = 1000_142_2021-6-25/WI_222
 	# base_path =  /home/skaphe/Documentos/tnc/modelos/salidas
 	full_path =  os.path.join(base_path, path)
@@ -266,6 +268,7 @@ async def calculateAqueduct(path):
 	try:
 		list = cutAqueduct(full_path)
 		print(list)
+		insertResults(list,id_intake)
 		dictResult = dict()
 		dictResult['status'] = True
 		dictResult['result'] = list
@@ -307,10 +310,10 @@ async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 	path_data_wb_in, path_data_wb_out, path_data_ds_out = path_wb(id_intake,user_id,study_case_id, 'WI')
 
 	# try:
-	DataInBAU(id_intake,path_data_wb_in,path_data_ds_out)
+	DataInBAU(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
 	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_db, id_intake, user_id, study_case_id, "BAU", path_data_wb_out)
-	DataInNBS(id_intake,path_data_wb_in,path_data_ds_out)
+	DataInNBS(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
 	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_db, id_intake, user_id, study_case_id, "NBS", path_data_wb_out)
 	dictResult = dict()
@@ -331,10 +334,10 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	path_data_wb_in, path_data_wb_out, path_data_ds_out = path_wb(ptap_id,user_id,study_case_id, 'PTAP')
 
 	# try:
-	DataInBAUPTAP(ptap_id, path_data_wb_in, path_data_ds_out)
+	DataInBAUPTAP(ptap_id,study_case_id, path_data_wb_in, path_data_ds_out)
 	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'BAU', path_data_wb_out)
-	DataInNBSPTAP(ptap_id, path_data_wb_in)
+	DataInNBSPTAP(ptap_id,study_case_id, path_data_wb_in)
 	execWB(path_data_wb_in, path_data_wb_out)
 	SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS', path_data_wb_out)
 	dictResult = dict()
@@ -459,7 +462,7 @@ def roiExecution(user_id, study_cases_id):
 	DataCSVRoi(user_id, study_cases_id, today, path_data)
 	ROI_Analisys(path_data_roi)
 	SaveRoiDB(path_data_roi,study_cases_id)
-	CreateZip(path_data)
+	CreateZip(path_data, study_cases_id) 
 	# except Exception as e:
 	# 	dictResult['estado'] = False
 	# 	dictResult['error'] = e.args
@@ -486,14 +489,21 @@ def costFunctionExecute(user_id, intake_id, study_case_id):
 	preproc.costFunctionExecute(intake_id, study_case_id, user_id)
 	return True
 
-def path_wb(id_intake,user_id,study_case_id, preffix):
-	DISAGGREGATION_DIR = "07-DISAGGREGATION"
-	WATER_BALANCE_DIR = "08-WATER_BALANCE"
+@app.get("/indicators")
+def indicators( user_id, study_case_id ):
+	today = datetime.date.today()
+	usr_folder = "%s_%s_%s-%s-%s" % (user_id, study_case_id, today.year, today.month, today.day)
 	OUT_BASE_DIR = "salidas"
-	wi_folder = "%s_%s" % (preffix, id_intake)
-	date = datetime.date.today()
-	usr_folder = "%s_%s_%s-%s-%s" % (user_id,study_case_id, date.year, date.month, date.day)
-	path_data_wb_in = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "in", WATER_BALANCE_DIR)
-	path_data_wb_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", WATER_BALANCE_DIR)
-	path_data_ds_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", DISAGGREGATION_DIR)
-	return path_data_wb_in, path_data_wb_out, path_data_ds_out
+	INDICATORS = 'INDICATORS'
+	path_data = path.join(base_path, OUT_BASE_DIR, usr_folder)
+	path_data_ind = path.join(path_data,INDICATORS)
+	dict_result = dict()
+	dict_result['status'] = 'Todo bonito'
+    # try:
+	IndicatorsIn(path_data)
+	Indicators_BaU_NBS(path_data_ind)
+	IndicatorsSaveDB(path_data,user_id,study_case_id,today)
+	# except Exception as e:
+	# 	dictResult['estado'] = False
+	# 	dictResult['error'] = e.args
+	return dict_result

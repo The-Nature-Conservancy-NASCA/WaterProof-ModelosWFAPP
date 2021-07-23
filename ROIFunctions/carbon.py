@@ -17,7 +17,7 @@ def Carb_roi( anotherroute, studycase ):
 
     today = datetime.date.today()
     date = f'{today.year}-{today.month}-{today.day}'
-    currency = getDataDB(studycase,'__wp_roi_tc_exchange_rate')
+    currency = getDataDB([studycase],'__wp_roi_tc_exchange_rate')
     currency= list(currency[0])
 
 
