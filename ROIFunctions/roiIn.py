@@ -31,31 +31,34 @@ def genCSVCost(studycase, function_id, types, stage, csv_in, path_data):
     header = ["Process", "Cost_Function"]
     result = getDataDB([studycase, types, stage], function_id)
 
-    # encontrar los id de las funciones ya que no se repiten
-    elements_id = []
-    for res in result:
-        elements_id.append(res[3])
-    elements_id = list(set(elements_id))
-
-    results1tot = []
-    header1 = []
-    for cab in elements_id:
-        cost_function = []
-        opt = []
-        id_elem = []
+    if(result != []):
+        # encontrar los id de las funciones ya que no se repiten
+        elements_id = []
         for res in result:
-            res = list(res)
-            if(cab == res[3]):
-                header1.append(res[1])
-                id_elem.append(res[0])
-                cost_function.append(res[3])
-                opt.append(res[2])
-        cost_function = list(set(cost_function))
-        opt.insert(0, cost_function[0])
-        opt.insert(0, id_elem[0])
-        results1tot.append(opt)
-    header1 = list(set(header1))
-    header += header1
+            elements_id.append(res[3])
+        elements_id = list(set(elements_id))
+
+        results1tot = []
+        header1 = []
+        for cab in elements_id:
+            cost_function = []
+            opt = []
+            id_elem = []
+            for res in result:
+                res = list(res)
+                if(cab == res[3]):
+                    header1.append(res[1])
+                    id_elem.append(res[0])
+                    cost_function.append(res[3])
+                    opt.append(res[2])
+            cost_function = list(set(cost_function))
+            opt.insert(0, cost_function[0])
+            opt.insert(0, id_elem[0])
+            results1tot.append(opt)
+        header1 = list(set(header1))
+        header += header1
+    else:
+        results1tot = [[0],[0]]
 
     pathcsv = path.join(path_data, ROI, IN, csv_in)
     generateCsv(header, results1tot, pathcsv)
@@ -176,17 +179,21 @@ def genCSVTime(studycase, function_id, csv_in, path_data):
 def genCSVCO2(studycase, csv_in, csv_out, date, user_id, path_data):
     # path_principal path.join(ruta, 'salidas', f'{user_id}_{studycase}_{date}')
     dirs = os.listdir(path_data)
+    flag=0
     df_carbon = []
     for dir in dirs:
         if 'WI' in dir:
+            flag=1
             path_intake = path.join(path_data, dir, OUT, '07-DISAGGREGATION', csv_in)
             df = pd.read_csv(path_intake)
             df = df['WC (Ton)']
             df.name = f'{dir}_WC_(Ton)'
             df_carbon.append(df)
-    time_array = np.array(list(range(df.size)))
-    df_time = pd.DataFrame(time_array, columns=['Time'])
-    df_carbon.insert(0, df_time)
-    df_fin = pd.concat(df_carbon, axis=1)
+    if flag==1:
+        time_array = np.array(list(range(df.size)))
+        df_time = pd.DataFrame(time_array, columns=['Time'])
+        df_carbon.insert(0, df_time)
+        df_carbon = pd.concat(df_carbon, axis=1)
+    
     pathcsv_out = path.join(path_data, ROI, IN, csv_out)
-    df_fin.to_csv(pathcsv_out, index=False)
+    df_carbon.to_csv(pathcsv_out, index=False)
