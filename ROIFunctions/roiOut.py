@@ -32,7 +32,7 @@ def CreateZip(path, studyCase_id, user_folder):
     print ("studyCase_id : %s" % studyCase_id)
     shutil.make_archive(path,'zip',path)
     print (path)
-    url = "%s%s"% (user_folder , ".zip")
+    url = "%s%s%s"% (constants.ZIP_CREATION_DIR , user_folder , ".zip")
     print ("url  : %s" % url )
 
     args = [int(studyCase_id),url ]
