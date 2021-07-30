@@ -30,7 +30,8 @@ def CreateZip(path, studyCase_id, user_folder):
     print (path)
     link= constants.ZIP_CREATION_DIR + user_folder + ".zip"
     print ("link : %s" % link)
-    args = [studyCase_id,link]
+
+    args = [int(studyCase_id),link]
     print ("before updateDataDB :: __wpupdate_download_zip")
     updateDataDB(args,'__wpupdate_download_zip')
     print ("after updateDataDB :: __wpupdate_download_zip")
