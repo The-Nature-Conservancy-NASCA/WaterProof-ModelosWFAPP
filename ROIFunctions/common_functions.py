@@ -52,7 +52,7 @@ def updateDataDB( args, funcion_db ):
     print ("args : ")
     print (args)
     print ("funcion_db : %s" % funcion_db)
-    listResult = []
+    
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
     cursor.callproc(funcion_db,args)
