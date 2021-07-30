@@ -36,10 +36,11 @@ def CreateZip(path, studyCase_id, user_folder):
     print ("url  : %s" % url )
 
     args = [int(studyCase_id),url ]
+    data = (url, int(studyCase_id),)
     print ("before connect ")
     conn = connect('postgresql_alfa')
-    cursor = conn.cursor()
-    cursor.callproc('__wpupdate_download_zip',args)
+    cursor = conn.cursor()    
+    cursor.execute('UPDATE waterproof_study_cases_studycases SET path_study_case_error_log = %s WHERE id = %s',data)
     conn.commit()
     cursor.close()
     conn.close()
