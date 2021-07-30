@@ -22,8 +22,15 @@ def SaveRoiDB( path_data, studycase ):
     sens.Sens_roi( anotherroute, studycase )
 
 def CreateZip(path, studyCase_id, user_folder):
+    print ("Creating zip file")
+    print ("path : %s" % path)
+    print ("user_folder : %s" % user_folder)
+    print ("studyCase_id : %s" % studyCase_id)
     shutil.make_archive(path,'zip',path)
     print (path)
-    link= (constants.ZIP_CREATION_DIR + user_folder + ".zip")
+    link= constants.ZIP_CREATION_DIR + user_folder + ".zip"
+    print ("link : %s" % link)
     args = [studyCase_id,link]
+    print ("before updateDataDB :: __wpupdate_download_zip")
     updateDataDB(args,'__wpupdate_download_zip')
+    print ("after updateDataDB :: __wpupdate_download_zip")
