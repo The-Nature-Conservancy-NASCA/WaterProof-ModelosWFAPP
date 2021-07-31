@@ -58,7 +58,7 @@ def genCSVCost(studycase, function_id, types, stage, csv_in, path_data):
         header1 = list(set(header1))
         header += header1
     else:
-        results1tot = [[0],[0]]
+        results1tot = [0,0]
 
     pathcsv = path.join(path_data, ROI, IN, csv_in)
     generateCsv(header, results1tot, pathcsv)
