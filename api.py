@@ -21,7 +21,7 @@ from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
 from reclassify import reclassifyFilesInFolder
-from dissagregation import DataCSVDis
+from dissagregation import DataCSVDis,DisaggregationOut
 from ROIFunctions.roiOut import SaveRoiDB, CreateZip
 from ROIFunctions.roiIn import DataCSVRoi
 from ROIFunctions.exchangeRateROI import ExchangeROI
@@ -429,6 +429,7 @@ async def disaggregation( id_usuario, basin, case, catchment):
     # try:
 	DataCSVDis(path_data_in, catchment, case)
 	Desaggregation_BaU_NBS(path_data_in, path_data_out)
+	DisaggregationOut(path_data_out,catchment,case)
 	# except Exception as e:
 	# 	dictResult['status'] = False
 	# 	dictResult['error'] = e.args

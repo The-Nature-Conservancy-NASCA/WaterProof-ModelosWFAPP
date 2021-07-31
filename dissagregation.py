@@ -1,11 +1,11 @@
-import sys, csv
+import sys, csv,os
 import numpy as np
 import pandas as pd
 from os import environ,path
 sys.path.append('config')
 from config import config
 from connect import connect
-from ROIFunctions.common_functions import getDataDB,generateCsv
+from ROIFunctions.common_functions import getDataDB,generateCsv,insertParameter
 
 # Generación de los csv pertinentes para el algoritmo de dissagregation
 def DataCSVDis(path_data_in, catchment,studycase):
@@ -55,4 +55,24 @@ def genCSVTime(path_data_in, studycase, function_id, csv_in):
     results = getDataDB( [studycase], function_id)
     pathcsv = path.join( path_data_in, csv_in)
     generateCsv( header, results, pathcsv)
+
+def DisaggregationOut(path_data_in,catchment,studycase):
+
+    bau_df = pd.read_csv(os.path.join(path_data_in,'02-OUTPUTS_BaU.csv'))
+    nbs_df = pd.read_csv(os.path.join(path_data_in,'02-OUTPUTS_NBS.csv'))
+    DisaggregationOutInsert(bau_df,'BAU',catchment,studycase)
+    DisaggregationOutInsert(nbs_df,'NBS',catchment,studycase)
+    
+def DisaggregationOutInsert(df,stage,catchment,studycase):
+    Time   = df['Time']
+    Awy    = df['AWY (m3)']
+    Wsed   = df['Wsed (Ton)']
+    Wn     = df['WN (Kg)']
+    Wp     = df['WP (kg)']
+    Bf     = df['BF (m3)']
+    Wc     = df['WC (Ton)']
+
+    for idx,item in enumerate(df):
+        args= [Time[idx],stage,catchment,studycase,Awy[idx], Wsed[idx], Wn[idx], Wp[idx], Bf[idx], Wc[idx]]
+        insertParameter('__wp_insert_disaggregation', args)
 
