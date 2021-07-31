@@ -64,15 +64,15 @@ def DisaggregationOut(path_data_in,catchment,studycase):
     DisaggregationOutInsert(nbs_df,'NBS',catchment,studycase)
     
 def DisaggregationOutInsert(df,stage,catchment,studycase):
-    Time   = df['Time']
-    Awy    = df['AWY (m3)']
-    Wsed   = df['Wsed (Ton)']
-    Wn     = df['WN (Kg)']
-    Wp     = df['WP (kg)']
-    Bf     = df['BF (m3)']
-    Wc     = df['WC (Ton)']
+    Time   = df['Time'].values
+    Awy    = df['AWY (m3)'].values
+    Wsed   = df['Wsed (Ton)'].values
+    Wn     = df['WN (Kg)'].values
+    Wp     = df['WP (kg)'].values
+    Bf     = df['BF (m3)'].values
+    Wc     = df['WC (Ton)'].values
 
     for idx,item in enumerate(df):
-        args= [Time[idx],stage,catchment,studycase,Awy[idx], Wsed[idx], Wn[idx], Wp[idx], Bf[idx], Wc[idx]]
+        args= [int(Time[idx]),stage,int(catchment),int(studycase),Awy[idx], Wsed[idx], Wn[idx], Wp[idx], Bf[idx], Wc[idx]]
         insertParameter('__wp_insert_disaggregation', args)
 
