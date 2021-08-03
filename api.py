@@ -122,7 +122,6 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	dictResult = dict()
 	dictResult['status'] = False
 	catch = sorted(catchment,key=int)
-	updateDataDB( [catch[0]], "__wp_intake_emptycols" )
 	year = "0"
 
 	type = type.upper()
@@ -174,6 +173,9 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 
 	if(type == constants.INVEST_TYPE_QUALITY or type == constants.INVEST_TYPE_BAU or 
 		type == constants.INVEST_TYPE_CURRENT or type == constants.INVEST_TYPE_NBS):
+		if(type == constants.INVEST_TYPE_QUALITY ):
+			updateDataDB( [catch[0]], "__wp_intake_emptycols" ) # sino es quality no entra
+
 		execute = preproc.verifyExec(path, model_dir)
 		cont = 0
 		dictResult['result'] = []
