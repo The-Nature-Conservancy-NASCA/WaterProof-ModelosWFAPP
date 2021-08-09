@@ -12,7 +12,7 @@ import constants
 #from ROIFunctions.common_functions import updateDataDB
 
 ruta = environ["PATH_FILES"]
-
+ZIP_CREATION_DIR = os.getenv('ZIP_CREATION_DIR', constants.ZIP_CREATION_DIR) 
 def SaveRoiDB( path_data, studycase ):
     anotherroute = path.join( path_data, constants.OUT_ROI_DIR )
     cost.Cost_roi( anotherroute, studycase, constants.IMPLEMENTATION_ROI_DB, 'Implementation', '1' )
@@ -32,7 +32,7 @@ def CreateZip(path, studyCase_id, user_folder):
     print ("studyCase_id : %s" % studyCase_id)
     shutil.make_archive(path,'zip',path)
     print (path)
-    url = "%s%s%s"% (constants.ZIP_CREATION_DIR , user_folder , ".zip")
+    url = "%s%s%s"% (ZIP_CREATION_DIR , user_folder , ".zip")
     print ("url  : %s" % url )
 
     args = [int(studyCase_id),url ]
