@@ -27,3 +27,4 @@ def CreateZip(path, studyCase_id, user_folder):
     link= (constants.ZIP_CREATION_DIR + user_folder + ".zip")
     args = [studyCase_id,link]
     updateDataDB(args,'__wpupdate_download_zip')
+    
