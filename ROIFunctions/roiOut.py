@@ -5,7 +5,7 @@ import ROIFunctions.saves as save
 import ROIFunctions.sensivity as sens
 import ROIFunctions.carbon as carb
 import constants 
-from ROIFunctions.common_functions import updateDataDB
+from ROIFunctions.common_functions import insertParameter
 
 ruta = environ["PATH_FILES"]
 
@@ -23,8 +23,6 @@ def SaveRoiDB( path_data, studycase ):
 
 def CreateZip(path, studyCase_id, user_folder):
     shutil.make_archive(path,'zip',path)
-    print (path)
     link= (constants.ZIP_CREATION_DIR + user_folder + ".zip")
     args = [studyCase_id,link]
-    updateDataDB(args,'__wpupdate_download_zip')
-    
+    insertParameter('__wpinsert_download_zip',args)
