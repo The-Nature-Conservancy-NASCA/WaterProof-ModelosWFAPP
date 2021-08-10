@@ -48,7 +48,11 @@ def generateCsv(header, values, file):
         writer.writerows(row_list)
 
 def updateDataDB( args, funcion_db ):
-    listResult = []
+    print( "updateDataDB :: start" )
+    print ("args : ")
+    print (args)
+    print ("funcion_db : %s" % funcion_db)
+    
     conn = connect('postgresql_alfa')
     cursor = conn.cursor()
     cursor.callproc(funcion_db,args)

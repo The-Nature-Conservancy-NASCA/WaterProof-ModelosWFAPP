@@ -1,4 +1,8 @@
+import sys
 from os import environ, path
+sys.path.append('config')
+from config import config
+from connect import connect
 import shutil,os
 import ROIFunctions.cost as cost
 import ROIFunctions.saves as save
@@ -8,7 +12,7 @@ import constants
 from ROIFunctions.common_functions import insertParameter
 
 ruta = environ["PATH_FILES"]
-
+ZIP_CREATION_DIR = os.getenv('ZIP_CREATION_DIR', constants.ZIP_CREATION_DIR) 
 def SaveRoiDB( path_data, studycase ):
     anotherroute = path.join( path_data, constants.OUT_ROI_DIR )
     cost.Cost_roi( anotherroute, studycase, constants.IMPLEMENTATION_ROI_DB, 'Implementation', '1' )
@@ -22,6 +26,10 @@ def SaveRoiDB( path_data, studycase ):
     sens.Sens_roi( anotherroute, studycase )
 
 def CreateZip(path, studyCase_id, user_folder):
+    print ("Creating zip file")
+    print ("path : %s" % path)
+    print ("user_folder : %s" % user_folder)
+    print ("studyCase_id : %s" % studyCase_id)
     shutil.make_archive(path,'zip',path)
     link= (constants.ZIP_CREATION_DIR + user_folder + ".zip")
     args = [studyCase_id,link]

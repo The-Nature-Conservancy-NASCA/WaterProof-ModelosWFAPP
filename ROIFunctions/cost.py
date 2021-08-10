@@ -43,7 +43,7 @@ def Cost_roi( anotherroute, studycase, type_in, ejecution, idx ):
     vpn_med_cost_out = np.array(vpn_med_cost).flatten()
     serie_time_out = np.array(serie_time_out).flatten()
     value_out = np.array(value).flatten()
-    currency = getDataDB([studycase],'__wp_roi_tc_exchange_rate')
+    currency = getDataDB([studycase],'__wp_roi_tc_exchange_rate_exception')
     currency= list(currency[0])
 
     # Generate dataframe with all data to insert
