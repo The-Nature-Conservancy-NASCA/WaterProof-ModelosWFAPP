@@ -9,7 +9,7 @@ import ROIFunctions.saves as save
 import ROIFunctions.sensivity as sens
 import ROIFunctions.carbon as carb
 import constants 
-#from ROIFunctions.common_functions import updateDataDB
+from ROIFunctions.common_functions import insertParameter
 
 ruta = environ["PATH_FILES"]
 ZIP_CREATION_DIR = os.getenv('ZIP_CREATION_DIR', constants.ZIP_CREATION_DIR) 
@@ -26,25 +26,7 @@ def SaveRoiDB( path_data, studycase ):
     sens.Sens_roi( anotherroute, studycase )
 
 def CreateZip(path, studyCase_id, user_folder):
-    print ("Creating zip file")
-    print ("path : %s" % path)
-    print ("user_folder : %s" % user_folder)
-    print ("studyCase_id : %s" % studyCase_id)
     shutil.make_archive(path,'zip',path)
-    print (path)
-    url = "%s%s%s"% (ZIP_CREATION_DIR , user_folder , ".zip")
-    print ("url  : %s" % url )
-
-    args = [int(studyCase_id),url ]
-    data = (url, int(studyCase_id),)
-    print ("before connect ")
-    conn = connect('postgresql_alfa')
-    cursor = conn.cursor()    
-    cursor.execute('UPDATE waterproof_study_cases_studycases SET path_study_case_error_log = %s WHERE id = %s',data)
-    conn.commit()
-    cursor.close()
-    conn.close()
-    
-    #updateDataDB(args,'__wpupdate_download_zip')
-    print ("after callproc")
-    return True
+    link= (constants.ZIP_CREATION_DIR + user_folder + ".zip")
+    args = [studyCase_id,link]
+    insertParameter('__wpinsert_download_zip',args)
