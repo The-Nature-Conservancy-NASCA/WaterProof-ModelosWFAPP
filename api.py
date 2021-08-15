@@ -65,14 +65,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+@app.get("/wf-models/")
 async def root():
 	logger.debug("Hello world")
 	print("Hello world  with print")
 	return {"message":"Hello World :: %s" % {__name__}}
 
 
-@app.get("/snapPoint")
+@app.get("/wf-models/snapPoint")
 async def snap(x,y):
 	dictResult = dict()
 	dictResult['status'] = False
@@ -94,7 +94,7 @@ async def snap(x,y):
 		dictResult['error'] = e.args
 	return dictResult
  
-@app.get("/delineateCatchment")
+@app.get("/wf-models/delineateCatchment")
 async def delineateCatchment(x,y):
 	dictResult = dict()
 	dictResult['status'] = False
@@ -116,7 +116,7 @@ async def delineateCatchment(x,y):
 
 # def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Query(None),catchment:List[int] = Query(None)):
 # 	execInv.delay(type,id_usuario,basin,models,catchment)
-@app.get("/execInvest")
+@app.get("/wf-models/execInvest")
 async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[str] = Query(None),catchment:List[int] = Query(None)):
 	print("execInvest start, Type: %s" % type)
 	dictResult = dict()
@@ -260,7 +260,7 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 	# 	dictResult['error'] = e.args
 	return dictResult
 
-@app.get("/aqueduct")
+@app.get("/wf-models/aqueduct")
 async def calculateAqueduct(path,id_intake):
 	# path = 1000_142_2021-6-25/WI_222
 	# base_path =  /home/skaphe/Documentos/tnc/modelos/salidas
@@ -278,7 +278,7 @@ async def calculateAqueduct(path,id_intake):
 		dictResult['error'] = e.args
 	return dictResult
 
-@app.post("/ptapSelection")
+@app.post("/wf-models/ptapSelection")
 async def ptapSelect(listcs:ListCS):
 	dictResult = dict()
 	dictResult['status'] = False
@@ -304,7 +304,7 @@ async def ptapSelect(listcs:ListCS):
 	return dictResult
 
 # WB intake primera ejecucion tomando los valores de disaggregation
-@app.get("/wbdisaggregationIntake")
+@app.get("/wf-models/wbdisaggregationIntake")
 async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 	function_db = "__wp_intake_insert_report"
 	dictResult = dict()
@@ -327,7 +327,7 @@ async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 	return dictResult
 
 # WB PTAP primera ejecucion tomando los valores de disaggregation
-@app.get("/wbdisaggregationPTAP")
+@app.get("/wf-models/wbdisaggregationPTAP")
 async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	function_bd = '__wp_ptap_insert_report'
 	dictResult = dict()
@@ -351,7 +351,7 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	return dictResult
 
 # water balance segunda ejecucion Intake
-@app.get("/wb")
+@app.get("/wf-models/wb")
 async def calculateWB(id_intake):
 	dictResult = dict()
 	dictResult['status'] = False
@@ -372,7 +372,7 @@ async def calculateWB(id_intake):
 	return dictResult
 
 # water balance segunda ejecucion PTAP
-@app.get("/wbPTAP")
+@app.get("/wf-models/wbPTAP")
 async def calculateWBPTAP(id_ptap):
 	dictResult = dict()
 	dictResult['status'] = False
@@ -389,7 +389,7 @@ async def calculateWBPTAP(id_ptap):
 	# 	dictResult['error'] = e.args
 	return dictResult
 
-@app.get("/cobTrans")
+@app.get("/wf-models/cobTrans")
 async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 	print ("cobTrans :: start")
 	dictResult = dict()
@@ -413,7 +413,7 @@ async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 	return dictResult
 
 
-@app.get("/disaggregation")
+@app.get("/wf-models/disaggregation")
 async def disaggregation( id_usuario, basin, case, catchment):
 	print ("disaggregation")
 	
@@ -437,12 +437,12 @@ async def disaggregation( id_usuario, basin, case, catchment):
 	# 	dictResult['error'] = e.args
 	return dict_result
 
-@app.get("/disaggregation2")
+@app.get("/wf-models/disaggregation2")
 def disaggregation2(user_id, study_cases_id):
 
 	return preproc.processDissagregation(user_id, study_cases_id)
 
-@app.get("/exchangeRate")
+@app.get("/wf-models/exchangeRate")
 def exchangeRoi(study_case_id):
 	try:
 		ExchangeROI(study_case_id)
@@ -450,7 +450,7 @@ def exchangeRoi(study_case_id):
 		return "Error"
 	return "Run successful"
 
-@app.get("/roiExecution")
+@app.get("/wf-models/roiExecution")
 def roiExecution(user_id, study_cases_id):
 	today = datetime.date.today()
 	usr_folder = "%s_%s_%s-%s-%s" % (user_id, study_cases_id, today.year, today.month, today.day)
@@ -472,7 +472,7 @@ def roiExecution(user_id, study_cases_id):
 	return dict_result
 	# return preproc.processRoi(user_id,study_cases_id)
 
-@app.get("/download")
+@app.get("/wf-models/download")
 def download(user_dir, topic , file):
 	PATH_FILES = os.environ["PATH_FILES"]
 	path = os.path.join(PATH_FILES,'salidas', user_dir)
@@ -486,13 +486,13 @@ def validate_and_create_dir(dir_to_validate):
 		os.mkdir(dir_to_validate)
 
 ''' Execute Cost Function'''
-@app.get("/costFunctionExecute")
+@app.get("/wf-models/costFunctionExecute")
 def costFunctionExecute(user_id, intake_id, study_case_id):
 	
 	preproc.costFunctionExecute(intake_id, study_case_id, user_id)
 	return True
 
-@app.get("/indicators")
+@app.get("/wf-models/indicators")
 def indicators( user_id, study_case_id ):
 	today = datetime.date.today()
 	usr_folder = "%s_%s_%s-%s-%s" % (user_id, study_case_id, today.year, today.month, today.day)
