@@ -128,7 +128,8 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
     FUTURE_TIF_SUFFIX = '_FUTURE.tif'
     FUTURE_COMPLETE_TIF_SUFFIX = '_FUTURE_COMPLETE.tif'
     lucodes = preproc.bio_params_by_condition(region,study_case_id)
-
+    print ("lucodes : %s" % lucodes)
+    
     for filename in os.listdir(path):
         if filename.endswith(TIF_EXT):
             out_filename = filename
