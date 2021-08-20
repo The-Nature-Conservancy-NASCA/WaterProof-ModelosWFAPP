@@ -811,7 +811,7 @@ def remove_no_vars(vars):
 def bio_params_by_condition(region, study_case_id):
 	print("bio_params_by_condition")
 	
-	path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
+	# path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
 	
 	conn = connect('postgresql_alfa')
 	cursor = conn.cursor()
@@ -823,4 +823,5 @@ def bio_params_by_condition(region, study_case_id):
 	values = []
 	for t in result:
 		values.append(t[0])
-	return values
+	print ("values :%s " % values)	
+	return values 
