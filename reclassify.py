@@ -82,8 +82,10 @@ def reclassify(pathFile,outPath,filename,lulc_path,json, is_future, future_lulc_
                     # print("X 0 " + str(x[0]))
                     if lista_lulc[i,j] == x[0]:
                         if (is_future):
+                            print ("Before generate subarray of lucodes")
                             sub_lucodes = lucodes[0:lucodes.index(x[2])+1]
                             if not lista_future_lulc[i,j] in sub_lucodes:
+                                print ("Value %s not in subarray" % lista_future_lulc[i,j])
                                 lista_future_lulc[i,j] = x[2]
                         else:    
                             lista_lulc[i,j] = x[2]
