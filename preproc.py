@@ -795,11 +795,9 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 							
 	return True
 
-
-
 """ Remove special functions o math expressions"""
 """ (i.e: min: E2, E3) """
-def remove_no_vars(vars):
+def remove_no_vars(vars):	
 
 	special_values = ['min', 'E2', 'E3', 'if', 'else', 'E']
 	# if (settings.WATERPROOF_SPECIAL_VALUES):
@@ -808,3 +806,21 @@ def remove_no_vars(vars):
 		while v in vars:
 			vars.remove(v)    
 	return vars
+
+
+def bio_params_by_condition(region, study_case_id):
+	print("bio_params_by_condition")
+	
+	path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
+	
+	conn = connect('postgresql_alfa')
+	cursor = conn.cursor()
+	cursor.callproc('__wp_get_biophysycal_by_condition',[study_case_id, region])
+	result = cursor.fetchall()
+	# fields : lucode, usle_c, usle_p
+	conn.commit()
+	cursor.close()	
+	values = []
+	for t in result:
+		values.append(t[0])
+	return values
