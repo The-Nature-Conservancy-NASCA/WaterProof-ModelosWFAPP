@@ -1,4 +1,4 @@
-import sys,os,json
+import sys,os,json,glob
 from osgeo import gdal
 from pathlib import Path
 sys.path.append('config')
@@ -11,8 +11,8 @@ import constants
 base_path = environ["PATH_FILES"]
 
 def readJsonActivities(path):
-    p = Path(path).parents[0]
-    pathJson = os.path.join(p,'activity_raster_id.json')
+    #p = Path(path).parents[0]
+    pathJson = os.path.join(path,'activity_raster_id.json')
     f = open(pathJson) 
     jsonFile = json.load(f)
     dictIds = {}
@@ -122,11 +122,16 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
 
     paths = []
     TIF_EXT = '.tif'
+    TIF_EXT_TOTAL = 'total.tif'
     FUTURE_TIF_SUFFIX = '_FUTURE.tif'
     FUTURE_COMPLETE_TIF_SUFFIX = '_FUTURE_COMPLETE.tif'
-    
+
+    lenitemspath = glob.glob(os.path.join(path, '*continuous_activity_portfolios*'))
+    if lenitemspath == 1:
+        path = os.path.join(path,'continuous_activity_portfolios')
+
     for filename in os.listdir(path):
-        if filename.endswith(TIF_EXT):
+        if (filename.endswith(TIF_EXT) or filename.endswith(TIF_EXT_TOTAL)):
             out_filename = filename
             if (is_future):
                 out_filename = filename.replace(TIF_EXT, FUTURE_TIF_SUFFIX)
