@@ -1,4 +1,4 @@
-import sys,os,json,glob
+import sys,os,json,glob,shutil
 from osgeo import gdal
 from pathlib import Path
 sys.path.append('config')
@@ -105,7 +105,7 @@ def reclassify(pathFile,outPath,filename,lulc_path,json, is_future, future_lulc_
     file2.FlushCache()
     return pathTranslated
 
-def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, region):
+def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, region,json):
     print ("reclassifyFilesInFolder")
     print ("path : %s" % (path))
     print ("lulc_path : %s" % (lulc_path))
@@ -113,45 +113,46 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
     print ("future_lulc_path %s" % (future_lulc_path))
     print ("year: %s" % (year))
     print ("region: %s" % (region))
-    json = readJsonActivities(path)
-    # lenitemspath = glob.glob(os.path.join(path, '*continuous_activity_portfolios*'))
-
-    # if len(lenitemspath) == 1:
-    #     path = os.path.join(path,'continuous_activity_portfolios',"translated_cob")
-
-    pathOut = os.path.join(path,'continuous_activity_portfolios')
-    if not os.path.isdir(pathOut):
-        os.mkdir(pathOut)
-    pathOut = os.path.join(pathOut,"translated_cob")
-    if not os.path.isdir(pathOut):
-        os.mkdir(pathOut)
 
     paths = []
     TIF_EXT = '.tif'
-    TIF_EXT_TOTAL = 'total.tif'
-    TIF_MAX_PORT = 'portfolio.tif'
     FUTURE_TIF_SUFFIX = '_FUTURE.tif'
     FUTURE_COMPLETE_TIF_SUFFIX = '_FUTURE_COMPLETE.tif'
 
+    pathOut = os.path.join(path,"translated_cob")
+    if not os.path.isdir(pathOut):
+        os.mkdir(pathOut)
+
     for filename in os.listdir(path):
-        varasdf = filename.endswith(TIF_MAX_PORT)
-        if (filename.endswith(TIF_EXT) or filename.endswith(TIF_EXT_TOTAL)):
-            if (filename.endswith(TIF_MAX_PORT) == False ):
-                out_filename = filename
-                if (is_future):
-                    out_filename = filename.replace(TIF_EXT, FUTURE_TIF_SUFFIX)
-                path_file = reclassify(os.path.join(path,filename),pathOut,out_filename,lulc_path,json, is_future, future_lulc_path)
-                if (is_future):
-                    lulc_path_region = '%s/%s/%s/YEAR_%s/LULC_%s.tif' % (base_path, constants.IN_BASE_DIR ,constants.LANDCOVER_DIR,year,region)
-                    print ("lulc_path_region : %s" % (lulc_path_region))
-                    lulc_path_complete = os.path.join(pathOut,filename.replace(TIF_EXT, FUTURE_COMPLETE_TIF_SUFFIX))
-                    print ("lulc_path_complete : %s" % (lulc_path_complete))
-                    command = "gdal_merge.py -o %s -of gtiff %s %s" % (lulc_path_complete, lulc_path_region, path_file)
-                    print (command)
-                    print(os.popen(command).read())
-                paths.append(path_file)
+        if (filename.endswith(TIF_EXT)):
+            out_filename = filename
+            if (is_future):
+                out_filename = filename.replace(TIF_EXT, FUTURE_TIF_SUFFIX)
+            path_file = reclassify(os.path.join(path,filename),pathOut,out_filename,lulc_path,json, is_future, future_lulc_path)
+            if (is_future):
+                lulc_path_region = '%s/%s/%s/YEAR_%s/LULC_%s.tif' % (base_path, constants.IN_BASE_DIR ,constants.LANDCOVER_DIR,year,region)
+                print ("lulc_path_region : %s" % (lulc_path_region))
+                lulc_path_complete = os.path.join(pathOut,filename.replace(TIF_EXT, FUTURE_COMPLETE_TIF_SUFFIX))
+                print ("lulc_path_complete : %s" % (lulc_path_complete))
+                command = "gdal_merge.py -o %s -of gtiff %s %s" % (lulc_path_complete, lulc_path_region, path_file)
+                print (command)
+                print(os.popen(command).read())
+            paths.append(path_file)
 
     return paths
+
+
+def verifypathconti(path):
+    lenitemspath = glob.glob(os.path.join(path,'continuous_activity_portfolios'))
+    jsonas = readJsonActivities(path)
+    if len(lenitemspath) == 0:
+        source = os.path.join(path,'activity_portfolio_total.tif')
+        path = os.path.join(path,'continuous_activity_portfolios')
+        os.mkdir(path)
+        destiny = os.path.join(path,'activity_portfolio_continuous_year_1.tif')
+        shutil.copy(source,destiny)
+
+    return path, jsonas;
 
 # readJsonActivities('/home/skaphe/Documentos/tnc/modelos/salidas/9_2020_10_24/out/04-RIOS/1_investment_portfolio_adviser_workspace/activity_portfolios/continuous_activity_portfolios')
 # reclassifyFilesInFolder('/home/skaphe/Documentos/tnc/modelos/salidas/9_2020_10_24/out/04-RIOS/1_investment_portfolio_adviser_workspace/activity_portfolios/continuous_activity_portfolios',5,'/home/skaphe/Documentos/tnc/modelos/salidas/9_2020_10_24/in/04-RIOS/LULC_SA_1.tif')

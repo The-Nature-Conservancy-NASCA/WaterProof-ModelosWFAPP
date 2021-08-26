@@ -20,7 +20,7 @@ from outWBDisIntake import SaveInDB
 from pydantic import BaseModel
 from getDataPTAP import generateAll
 from Select_PTAP import Select_PTAP
-from reclassify import reclassifyFilesInFolder
+from reclassify import reclassifyFilesInFolder,verifypathconti
 from dissagregation import DataCSVDis,DisaggregationOut
 from ROIFunctions.roiOut import SaveRoiDB, CreateZip
 from ROIFunctions.roiIn import DataCSVRoi
@@ -399,16 +399,18 @@ async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 	region_name = region[4]
 	print ("year: %s :: region: %s" % (year, region_name))
 	try:
-		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name)
+		pathCobs, json = verifypathconti(pathCobs)
+		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name,json)
 		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
 		if (os.path.isfile(path_future_lulc)):
-			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc, year, region_name)
+			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc, year, region_name,json)
 		dictResult['result'] = {"result":'successful execution'}
 		dictResult['paths'] = paths
 		dictResult['paths_future'] = paths_future
 	except Exception as e:
 		dictResult['status'] = False
 		dictResult['error'] = e
+		dictResult['error'] = e.args
 
 	return dictResult
 
