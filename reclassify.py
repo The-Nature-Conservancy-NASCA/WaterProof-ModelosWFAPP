@@ -145,9 +145,9 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
 def verifypathconti(path):
     lenitemspath = glob.glob(os.path.join(path,'continuous_activity_portfolios'))
     jsonas = readJsonActivities(path)
+    source = os.path.join(path,'activity_portfolio_total.tif')
+    path = os.path.join(path,'continuous_activity_portfolios')
     if len(lenitemspath) == 0:
-        source = os.path.join(path,'activity_portfolio_total.tif')
-        path = os.path.join(path,'continuous_activity_portfolios')
         os.mkdir(path)
         destiny = os.path.join(path,'activity_portfolio_continuous_year_1.tif')
         shutil.copy(source,destiny)
