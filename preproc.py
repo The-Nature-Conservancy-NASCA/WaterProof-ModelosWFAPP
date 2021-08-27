@@ -715,83 +715,89 @@ def internalCostFunctionExecute(conn, rows, study_case_id, user_id):
 	print("internalCostFunctionExecute")
 	
 	years = []
+	intakes = []
 	# save years
 	for row in rows:
 		if not row[0] in years:
 			years.append(row[0])
 
-	for y in years:	
-		print ("Iterating Year : %s" % y)
-		vars = dict()
-		for row in rows:
-			year = row[0]
-			if y == year:
-				graphid = str(row[17])
-				vars[Q + graphid] = row[6] 
-				vars[CN + graphid] = row[7]
-				vars[CP + graphid] = row[8]
-				vars[CSed + graphid] = row[9]
-				vars[WN + graphid] = row[10]
-				vars[WP + graphid] = row[11]
-				vars[WSed + graphid] = row[12]
-				vars[WNRet + graphid] = row[13]
-				vars[WPRet + graphid] = row[14]
-				vars[WSedRet + graphid] = row[15]
-		
-		for row in rows:			
-			if (len(row) > 19):
+	# save intakes
+	for row in rows:
+		if not row[20] in intakes:
+			intakes.append(row[20])
+
+	for intake in intakes:
+		for y in years:	
+			print ("Iterating Year : %s" % y)
+			vars = dict()
+			for row in rows:
 				year = row[0]
-				if y == year:
-					type_desc = str(row[18])
-					function_id = row[19]
-					intake_ptap_id = row[20]			
-					element = row[1]
-					money = row[2]
-					factor = row[3]
-					stage = row[4]		
-					awy = row[5]
-					ratio_change = row[21]
+				intake_ptap_id = row[20]
+				if y == year and intake == intake_ptap_id:
+					graphid = str(row[17])
+					vars[Q + graphid] = row[6] 
+					vars[CN + graphid] = row[7]
+					vars[CP + graphid] = row[8]
+					vars[CSed + graphid] = row[9]
+					vars[WN + graphid] = row[10]
+					vars[WP + graphid] = row[11]
+					vars[WSed + graphid] = row[12]
+					vars[WNRet + graphid] = row[13]
+					vars[WPRet + graphid] = row[14]
+					vars[WSedRet + graphid] = row[15]
+			
+			for row in rows:			
+				if (len(row) > 19):
+					year = row[0]
+					intake_ptap_id = row[20]
+					if y == year and intake == intake_ptap_id:
+						type_desc = str(row[18])
+						function_id = row[19]
+						intake_ptap_id = row[20]			
+						element = row[1]
+						money = row[2]
+						factor = row[3]
+						stage = row[4]		
+						awy = row[5]
+						ratio_change = row[21]
 
-					expression = row[16]
-					if (factor is None):
-						factor = 1.0
+						expression = row[16]
+						if (factor is None):
+							factor = 1.0
 
-					if (ratio_change is None):
-						ratio_change = 1.0
+						if (ratio_change is None):
+							ratio_change = 1.0
 
-					print ("stage: %s :: type: %s :: element: %s :: factor : %s" % (stage, type_desc, element, factor))	
-					if (not expression is None):
-						if expression.strip() != '':
-							print ("expression: %s" % expression )
-							args = re.findall(r'[a-zA-Z_]\w*', expression)
-							ALLOWED_NAMES = {
-								k: v for k, v in math.__dict__.items() if not k.startswith("__")
-							}
-							args = remove_no_vars(args)
-							
-							# result = -99999.0
-							result_factor = 1.0
-
-							try:						
-								code = compile(expression, "<string>", "eval")
+						print ("stage: %s :: type: %s :: element: %s :: factor : %s" % (stage, type_desc, element, factor))	
+						if (not expression is None):
+							if expression.strip() != '':
+								print ("expression: %s" % expression )
+								args = re.findall(r'[a-zA-Z_]\w*', expression)
+								ALLOWED_NAMES = {
+									k: v for k, v in math.__dict__.items() if not k.startswith("__")
+								}
+								args = remove_no_vars(args)
 								
-								result = eval(code,vars,ALLOWED_NAMES)
-								print ("result from eval:")	
-								print (result)
-								result_factor = (result * factor)/ratio_change
-								print ("result factor= (result*factor)/ratio_change :  (%s*%s)/%s = %s" % (result, factor, ratio_change, result_factor))
-								
-							except:
-								print ("ERROR!!!")
-								result = -99999
+								# result = -99999.0
+								result_factor = 1.0
+								try:						
+									code = compile(expression, "<string>", "eval")								
+									result = eval(code,vars,ALLOWED_NAMES)
+									print ("result from eval:")	
+									print (result)
+									result_factor = (result * factor)/ratio_change
+									print ("result factor= (result*factor)/ratio_change :  (%s*%s)/%s = %s" % (result, factor, ratio_change, result_factor))								
+								except:
+									print ("ERROR!!!")
+									result = -99999
 
-							try:
-								cursor = conn.cursor()
-								cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_ptap_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id])
-								conn.commit()
-								cursor.close()							
-							except:
-								print("Error saving data using __wp_get_aggregate_result_function_cost ")
+								try:
+									cursor = conn.cursor()
+									cursor.callproc('__wp_get_aggregate_result_function_cost',[stage, intake_ptap_id, element, year, result_factor, money, study_case_id, user_id, type_desc, function_id])
+									conn.commit()
+									cursor.close()							
+								except:
+									print("Error saving data using __wp_get_aggregate_result_function_cost ")
 							
 	return True
 
