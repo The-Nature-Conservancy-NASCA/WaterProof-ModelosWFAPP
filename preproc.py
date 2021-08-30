@@ -320,12 +320,14 @@ def calculateCarbonSum(catchment,path,label, model_dir, year_dir):
 	return statCalc
 
 def getPathsClimateValueFromStudyCaseId(id_study_case, id_catchment):
+	print ("getPathsClimateValueFromStudyCaseId :: id_study_case : %s, id_catchment: %s " % (id_study_case, id_catchment))
 	listResult = []
 	conn = connect('postgresql_alfa')
 	cursor = conn.cursor()
 	cursor.callproc('__wpget_paths_climate_value',[id_study_case, id_catchment])
 	result = cursor.fetchall()
 	for row in result:
+		print (row)
 		listResult.append(row)
 	cursor.close()
 	conn.close()
