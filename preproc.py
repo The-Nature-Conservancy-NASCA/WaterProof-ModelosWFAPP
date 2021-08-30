@@ -319,11 +319,11 @@ def calculateCarbonSum(catchment,path,label, model_dir, year_dir):
 	statCalc = calculateStatistic(stats,raster,catchment)
 	return statCalc
 
-def getPathsClimateValueFromStudyCaseId(id):
+def getPathsClimateValueFromStudyCaseId(id_study_case, id_catchment):
 	listResult = []
 	conn = connect('postgresql_alfa')
 	cursor = conn.cursor()
-	cursor.callproc('__wpget_paths_climate_value',[id])
+	cursor.callproc('__wpget_paths_climate_value',[id_study_case, id_catchment])
 	result = cursor.fetchall()
 	for row in result:
 		listResult.append(row)
@@ -372,7 +372,7 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 		in_path = os.path.join(os.getcwd(),pathF,'in',out_folder)
 
 		if (type != INVEST_TYPE_CURRENT):
-			paths_climate_value = getPathsClimateValueFromStudyCaseId(id_case)
+			paths_climate_value = getPathsClimateValueFromStudyCaseId(id_case, id_catchment)
 
 			if (len(paths_climate_value) > 0):
 				for p in paths_climate_value:
