@@ -108,7 +108,7 @@ def reclassify(pathFile,outPath,filename,lulc_path,json, is_future, future_lulc_
     file2.FlushCache()
     return pathTranslated
 
-def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, region,json):
+def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, region,json,study_case_id):
     print ("reclassifyFilesInFolder")
     print ("path : %s" % (path))
     print ("lulc_path : %s" % (lulc_path))
@@ -118,7 +118,7 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
     print ("region: %s" % (region))
 
     pathOut = os.path.join(path,"translated_cob")
-    json = readJsonActivities(path)
+    #json = readJsonActivities(path)
 
     if not os.path.isdir(pathOut):
         os.mkdir(pathOut)
