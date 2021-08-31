@@ -6,6 +6,7 @@ from config import config
 from connect import connect
 from osgeo import gdal
 from os import environ,path
+import preproc
 import constants
 
 base_path = environ["PATH_FILES"]
@@ -50,7 +51,7 @@ def getTranformations_by_name(name):
     conn.close()
     return listResult
 
-def reclassify(pathFile,outPath,filename,lulc_path,json, is_future, future_lulc_path):
+def reclassify(pathFile,outPath,filename,lulc_path,json, is_future, future_lulc_path, lucodes):
     driver = gdal.GetDriverByName('GTiff')
     file = gdal.Open(pathFile)
     file_lulc = gdal.Open(lulc_path)
@@ -63,8 +64,6 @@ def reclassify(pathFile,outPath,filename,lulc_path,json, is_future, future_lulc_
         file_future_lulc = gdal.Open(future_lulc_path)
         band_future_lulc = file_future_lulc.GetRasterBand(1)
         lista_future_lulc = band_future_lulc.ReadAsArray()
-
-    # print(lista)
 
     transformations = {}
 
@@ -83,7 +82,11 @@ def reclassify(pathFile,outPath,filename,lulc_path,json, is_future, future_lulc_
                     # print("X 0 " + str(x[0]))
                     if lista_lulc[i,j] == x[0]:
                         if (is_future):
-                            lista_future_lulc[i,j] = x[2]
+                            print ("Before generate subarray of lucodes")
+                            sub_lucodes = lucodes[0:lucodes.index(x[2])+1]
+                            if not lista_future_lulc[i,j] in sub_lucodes:
+                                print ("Value %s not in subarray" % lista_future_lulc[i,j])
+                                lista_future_lulc[i,j] = x[2]
                         else:    
                             lista_lulc[i,j] = x[2]
                         break            
@@ -114,21 +117,29 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
     print ("year: %s" % (year))
     print ("region: %s" % (region))
 
+    pathOut = os.path.join(path,"translated_cob")
+    json = readJsonActivities(path)
+
+    if not os.path.isdir(pathOut):
+        os.mkdir(pathOut)
+
     paths = []
     TIF_EXT = '.tif'
     FUTURE_TIF_SUFFIX = '_FUTURE.tif'
     FUTURE_COMPLETE_TIF_SUFFIX = '_FUTURE_COMPLETE.tif'
+    lucodes = preproc.bio_params_by_condition(region,study_case_id)
+    print ("lucodes : %s" % lucodes)
 
     pathOut = os.path.join(path,"translated_cob")
     if not os.path.isdir(pathOut):
         os.mkdir(pathOut)
-
+    
     for filename in os.listdir(path):
         if (filename.endswith(TIF_EXT)):
             out_filename = filename
             if (is_future):
                 out_filename = filename.replace(TIF_EXT, FUTURE_TIF_SUFFIX)
-            path_file = reclassify(os.path.join(path,filename),pathOut,out_filename,lulc_path,json, is_future, future_lulc_path)
+            path_file = reclassify(os.path.join(path,filename),pathOut,out_filename,lulc_path,json, is_future, future_lulc_path,lucodes)
             if (is_future):
                 lulc_path_region = '%s/%s/%s/YEAR_%s/LULC_%s.tif' % (base_path, constants.IN_BASE_DIR ,constants.LANDCOVER_DIR,year,region)
                 print ("lulc_path_region : %s" % (lulc_path_region))
