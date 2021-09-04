@@ -25,8 +25,8 @@ services:
       - GDAL_DATA=/usr/share/gdal
       - ZIP_CREATION_DIR=${ZIP_CREATION_DIR}
     volumes:
-      - /data/global_datasets/:/home/skaphe/Documentos/tnc/modelos/entradas/
-      - /data/outputs/:/home/skaphe/Documentos/tnc/modelos/salidas/      
+      - E:\Descargas\Trabajo\Workspace\tnc\modelos\entradas\:/home/skaphe/Documentos/tnc/modelos/entradas/
+      - E:\Descargas\Trabajo\Workspace\tnc\modelos\salidas\:/home/skaphe/Documentos/tnc/modelos/salidas/      
     ports:
       - 8000:8000
       - 3000:3000
