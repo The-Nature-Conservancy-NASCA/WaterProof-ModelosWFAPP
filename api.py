@@ -482,6 +482,14 @@ def download(user_dir, topic , file):
 	print ("download file : " + file_path)
 	return FileResponse(path=file_path, filename=file, media_type='text/csv')
 
+@app.get("/download")
+def download(user_dir, topic , file):
+	PATH_FILES = os.environ["PATH_FILES"]
+	path = os.path.join(PATH_FILES,'salidas', user_dir)
+	file_path = os.path.join(path,'out' , topic, file)
+	print ("download file : " + file_path)
+	return FileResponse(path=file_path, filename=file, media_type='text/csv')
+
 def validate_and_create_dir(dir_to_validate):
 
 	if(not os.path.isdir(dir_to_validate)):
