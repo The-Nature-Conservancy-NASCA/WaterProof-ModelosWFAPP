@@ -490,8 +490,8 @@ async def disaggregation( id_usuario, basin, case, catchment):
 	except Exception as e:
 		logging.info('Error in Proccess Disaggregation')
 		logging.info(e.args)
-		dictResult['status'] = False
-		dictResult['error'] = e.args
+		dict_result['status'] = False
+		dict_result['error'] = e.args
 
 	logging.info('Successfull Execution Process Disaggregation')
 	return dict_result
@@ -533,8 +533,8 @@ def roiExecution(user_id, study_cases_id):
 	except Exception as e:
 		logging.error('Error in Process ROI Execution')
 		logging.error(e.args)
-		dictResult['estado'] = False
-		dictResult['error'] = e.args
+		dict_result['estado'] = False
+		dict_result['error'] = e.args
 
 	logging.info('Successfull Execution Process ROI Execution')
 	return dict_result
@@ -586,8 +586,8 @@ def indicators( user_id, study_case_id ):
 	except Exception as e:
 		logging.error('Error in Process Indicators')
 		logging.error(e.args)
-		dictResult['estado'] = False
-		dictResult['error'] = e.args
+		dict_result['estado'] = False
+		dict_result['error'] = e.args
 
 	logging.info('Successfull Execution Process Indicators')
 	return dict_result
