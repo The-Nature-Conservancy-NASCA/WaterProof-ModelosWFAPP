@@ -39,6 +39,7 @@ import re
 import math
 import constants
 from decimal import *
+from rasterstats import zonal_stats
 
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
 logger.setLevel(logging.INFO)
@@ -833,3 +834,23 @@ def bio_params_by_condition(region, study_case_id):
 		values.append(t[0])
 	print ("values :%s " % values)	
 	return values 
+
+def rasters_statistics(usr_folder, intake_id,year, region):
+
+	base_path = '%s/WI_%s/out/03-INVEST' % (usr_folder, intake_id)
+	catchment = base_path + '/in/catchment/catchment.shp" '
+	awy   = base_path + '/AWY/YEAR_%s/output/per_pixel/wyield_%s.tif' % (year, region)
+	sdr   = base_path + '/SDR/YEAR_%s/sed_export_%s.tif' % (year, region)
+	ndr_n = base_path + '/NDR/YEAR_%s/n_export_%s.tif' % (year, region)
+	ndr_p = base_path + '/NDR/YEAR_%s/p_export_%s.tif' % (year, region)
+	carbon = base_path + '/CARBON/YEAR_%s/tot_c_cur_%s.tif' % (year, region)
+
+	types_stats = "min mean max"
+	raster_list = dict()
+	raster_list['awy'] = zonal_stats(catchment,awy,stats=types_stats,all_touched=True)
+	raster_list['sdr'] = zonal_stats(catchment,sdr,stats=types_stats,all_touched=True)
+	raster_list['ndr_n'] = zonal_stats(catchment,ndr_n,stats=types_stats,all_touched=True)
+	raster_list['ndr_p'] = zonal_stats(catchment,ndr_p,stats=types_stats,all_touched=True)
+	raster_list['carbon'] = zonal_stats(catchment,carbon,stats=types_stats,all_touched=True)
+
+	return raster_list

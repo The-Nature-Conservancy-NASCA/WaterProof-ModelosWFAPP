@@ -591,3 +591,10 @@ def indicators( user_id, study_case_id ):
 
 	logging.info('Successfull Execution Process Indicators')
 	return dict_result
+
+@app.get("/wf-models/raster_statistics")
+def raster_result_statistics(usr_folder, intake_id,year, region):
+
+	raster_list = preproc.rasters_statistics(usr_folder, intake_id,year, region)
+
+	return raster_list
