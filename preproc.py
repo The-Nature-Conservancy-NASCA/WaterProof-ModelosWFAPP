@@ -837,7 +837,7 @@ def bio_params_by_condition(region, study_case_id):
 
 def rasters_statistics(usr_folder, intake_id,year, region):
 
-	base_path = '%s/WI_%s/out/03-INVEST' % (usr_folder, intake_id)
+	base_path = '/home/skaphe/Documentos/tnc/modelos/salidas/%s/WI_%s/out/03-INVEST' % (usr_folder, intake_id)
 	catchment = base_path + '/in/catchment/catchment.shp" '
 	awy   = base_path + '/AWY/YEAR_%s/output/per_pixel/wyield_%s.tif' % (year, region)
 	sdr   = base_path + '/SDR/YEAR_%s/sed_export_%s.tif' % (year, region)
