@@ -32,14 +32,14 @@ import requests
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 from ROI_WaterFunds.ROI import ROI_Analisys
 from Indicators_WaterFunds.Indicators_WaterFunds import Indicators_BaU_NBS
-import logger
+import logging
 import ptvsd
 import constants
 
 
 base_path = environ["PATH_FILES"]
-logger = logger.getLogger(__name__) # grabs underlying WSGI logger
-logger.setLevel(logger.DEBUG)
+logger = logging.getLogger(__name__) # grabs underlying WSGI logger
+logger.setLevel(logging.DEBUG)
 today = datetime.date.today()
 datefilelog = "%s-%s-%s" % (today.year, today.month, today.day)
 loginfodate = today.strftime("%d/%b/%Y %I:%M:%S %p")
