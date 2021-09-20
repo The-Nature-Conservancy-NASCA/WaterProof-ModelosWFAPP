@@ -32,17 +32,18 @@ import requests
 from Disaggregation_WaterFunds.Disaggregation_and_Convolution import Desaggregation_BaU_NBS
 from ROI_WaterFunds.ROI import ROI_Analisys
 from Indicators_WaterFunds.Indicators_WaterFunds import Indicators_BaU_NBS
-import logging
+import logger
 import ptvsd
 import constants
 
 
 base_path = environ["PATH_FILES"]
-logger = logging.getLogger(__name__) # grabs underlying WSGI logger
-logger.setLevel(logging.DEBUG)
+logger = logger.getLogger(__name__) # grabs underlying WSGI logger
+logger.setLevel(logger.DEBUG)
 today = datetime.date.today()
 datefilelog = "%s-%s-%s" % (today.year, today.month, today.day)
-
+loginfodate = today.strftime("%d/%b/%Y %I:%M:%S %p")
+f = open("","a")
 
 # Only attach the debugger when we're the Django that deals with requests
 # if os.environ.get('RUN_MAIN') or os.environ.get('WERKZEUG_RUN_MAIN'):
@@ -74,54 +75,72 @@ async def root():
 	print("Hello world  with print")
 	return {"message":"Hello World :: %s" % {__name__}}
 
-
-@app.get("/wf-models/snapPoint")
-async def snap(x,y):
-	dictResult = dict()
-	dictResult['status'] = False
+'''0. Exchange rate'''
+@app.get("/wf-models/exchangeRate")
+def exchangeRoi(study_case_id):
+	logger.info('Start Proccess Exchange Rate')
 	try:
-		x = float(x)
-		y = float(y)
-		basin = delineate.getRegionFromCoord(x,y)
-		dictResult['basin'] = basin
-		path = delineate.getPath(basin,2)
-		dictResult['path'] = path
-		path = delineate.cutRaster(path,x,y,5)
-		dictResult['path_raster'] = path
-		[x,y] = delineate.snap(path,x,y)
-		dictResult = dict()
-		dictResult['status'] = True
-		dictResult['result'] = {"x_snap":x,"y_snap":y}
+		ExchangeROI(study_case_id)
 	except Exception as e:
+		logger.error('Error in Process Exchange Rate: ')
+		logger.error(e.args)
+		return e.args
+
+	logger.info('Successfull Execution Process Exchange Rate')
+	return "Run successful"
+
+'''3. Coverage Translator'''
+@app.get("/wf-models/cobTrans")
+async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
+	folder = Path(pathCobs).parents[4]
+	filenamelog = path.join(folder,f'log_{datefilelog}.log')
+	filenametxt = path.join(folder,f'log_{datefilelog}.txt')
+	formatlog = '%(asctime)s - %(levelname)s - %(message)s'
+	logger.basicConfig(filename=filenamelog, format=formatlog, datefmt='%m/%d/%Y %I:%M:%S %p', level=logger.INFO)
+	logger.info(loginfodate+'Start process Coverage translator')
+	f = open(filenametxt, "a")
+	f.write('Start process Coverage translator')
+	
+	print ("cobTrans :: start")
+	dictResult = dict()
+	dictResult['status'] = True
+	year = preproc.analysisPeriodFromStudyCase(study_case_id)
+	region = preproc.getRegionFromId(basin)
+	region_name = region[4]
+	print ("year: %s :: region: %s" % (year, region_name))
+	try:
+		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name)
+		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
+		if (os.path.isfile(path_future_lulc)):
+			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc, year, region_name)
+		dictResult['result'] = {"result":'successful execution'}
+		dictResult['paths'] = paths
+		dictResult['paths_future'] = paths_future
+	except Exception as e:
+		f.write(loginfodate+'Error in process Coverage translator')
+		f.write(e.args)
+		logger.error("Error in process Coverage translator")
+		logger.error(e.args)
 		dictResult['status'] = False
 		dictResult['error'] = e.args
-	return dictResult
- 
-@app.get("/wf-models/delineateCatchment")
-async def delineateCatchment(x,y):
-	dictResult = dict()
-	dictResult['status'] = False
-	try:
-		x = float(x)
-		y = float(y)
-		basin = delineate.getRegionFromCoord(x,y)
-		path = delineate.getPath(basin,1)
-		catchment = delineate.delineateCatchment(path,x,y)
-		dictResult = dict()
-		dictResult['status'] = True
-		dictResult['result'] = {}
-		dictResult['result']['basin'] = basin
-		dictResult['result']['geometry'] = catchment
-	except Exception as e:
-		dictResult['status'] = False
-		dictResult['error'] = e.args
+
+	f.write(loginfodate+'Successful execution process Coverage translator')
+	f.write('paths')
+	f.write(paths)
+	f.write('paths_future')
+	f.write(paths_future)
+	logger.info('Successful execution process Coverage translator')
+	logger.info('paths')
+	logger.info(paths)
+	logger.info('paths_future')
+	logger.info(paths_future)
 	return dictResult
 
-# def execInvest(type:str,id_usuario:int, basin:int,models: List[str] = Query(None),catchment:List[int] = Query(None)):
-# 	execInv.delay(type,id_usuario,basin,models,catchment)
+'''4. Invest Excecution'''
 @app.get("/wf-models/execInvest")
 async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[str] = Query(None),catchment:List[int] = Query(None)):
-	logging.info('Start Process ExecInvest, Type: %s' % type)
+	logger.info('Start Process ExecInvest, Type: %s' % type)
+	f.write(f'{loginfodate} Start Process ExecInvest, Type: {type}')
 	print("execInvest start, Type: %s" % type)
 	dictResult = dict()
 	dictResult['status'] = False
@@ -130,10 +149,10 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 
 	type = type.upper()
 
-	if type == constants.INVEST_TYPE_NBS: 
-		year = preproc.timeImplementFromStudyCase(case)		
-	if type == constants.INVEST_TYPE_BAU: 
-		year = preproc.analysisPeriodFromStudyCase(case)		
+	if type == constants.INVEST_TYPE_NBS:
+		year = preproc.timeImplementFromStudyCase(case)
+	if type == constants.INVEST_TYPE_BAU:
+		year = preproc.analysisPeriodFromStudyCase(case)
 	elif type == constants.INVEST_TYPE_CURRENT:
 		year = 0
 	carbon = False
@@ -146,11 +165,13 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 
 		for model in models:
 			#logger.debug("executeFunction for model :: %s" % {model})
-			logging.info("Execute Function for model :: %s" % {model})
+			logger.info("Execute Function for model :: %s" % {model})
+			f.write("Execute Function for model :: %s" % {model})
 			#print(":: executeFunction for model :: %s" % {model})
 			if type == constants.INVEST_TYPE_NBS:
 				for y in range(1,year+1):
-					logging.info(":: executeFunction model %s , Type: NBS for Year :: %s of %s" % (model, y, year))
+					logger.info(":: executeFunction model %s , Type: NBS for Year :: %s of %s" % (model, y, year))
+					f.write(f'{loginfodate} :: executeFunction model {model} , Type: NBS for Year :: {y} of {year}')
 					print(":: executeFunction model %s , Type: NBS for Year :: %s of %s" % (model, y, year))
 					catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, y, case)
 			else:
@@ -166,7 +187,8 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 		sum_carbon_val = -999
 		sum_carbon_nbs = dict()
 		if (carbon):
-			logging.info("Calculate carbon sum")
+			f.write(f'{loginfodate} Calculate carbon sum')
+			logger.info("Calculate carbon sum")
 			print ("Calculate carbon sum")
 			if type == constants.INVEST_TYPE_NBS:
 				for y in range(1,year+1):
@@ -209,7 +231,8 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 								"phosporus":p
 							}
 						}	
-						logging.info(f'Succesful {type} Execution')
+						logger.info(f'Succesful {type} Execution')
+						f.write(f'{loginfodate} Succesful {type} Execution')
 						dictResult['result'].append(result)					
 						preproc.insertInvestResult(y,type,q,nW,pW,sW,bf,sum_carbon_nbs[y],c, case, id_usuario)
 			else:
@@ -233,7 +256,8 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 							"phosporus":p
 						}
 					}
-					logging.info(f'Succesful {type} Execution')
+					logger.info(f'Succesful {type} Execution')
+					f.write(f'{loginfodate} Succesful {type} Execution')
 					dictResult['result'].append(result)
 					cont = cont + 1
 					if (type != constants.INVEST_TYPE_QUALITY):
@@ -249,7 +273,8 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 						"carbon" : sum_carbon,					
 					}
 
-				logging.info(f'Succesful {type} Execution')
+				logger.info(f'Succesful {type} Execution')
+				f.write(f'{loginfodate} Succesful {type} Execution')
 				dictResult['result'].append(result)
 			# dictResult['result'] = 'Ejecucion exitosa current scenario'
 
@@ -262,22 +287,84 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 		# Se ejecuta una vez x cada año
 		# capa lulc tomada del resultado del traductor de cobertura	
 		elif type == constants.INVEST_TYPE_NBS:  
-			logging.info('Succesful NBS Execution')
+			logger.info('Succesful NBS Execution')
+			f.write(f'{loginfodate} Succesful NBS Execution')
 			dictResult['result'] = 'Succesful NBS Execution'
 
 
 		dictResult['status'] = True
-		logging.info(dictResult)
 		print(dictResult)
 
 	except Exception as e:
-		logging.error('Error in Process ExecInvest')
-		logging.error(e.args)
+		f.write(f'{loginfodate} Error in Process ExecInvest')
+		f.write(e.args)
+		logger.error('Error in Process ExecInvest')
+		logger.error(e.args)
 		dictResult['status'] = False
 		dictResult['error'] = e.args
 
+	logger.info(dictResult)
+	f.write(dictResult)
 	return dictResult
 
+'''5. Disaggregation Execution'''
+@app.get("/wf-models/disaggregation")
+async def disaggregation( id_usuario, basin, case, catchment):
+	logger.info('Start Proccess Disaggregation')
+	try:
+		print ("disaggregation")
+		wi_folder = "WI_%s" % (catchment)
+		date = datetime.date.today()
+		usr_folder = "%s_%s_%s-%s-%s" % (id_usuario,case, date.year, date.month, date.day)
+		# /home/skaphe/Documentos/tnc/salidas/1000_120_2021-05-10/WI_44/in/07-DISAGGREGATION
+		path_data_in = path.join(base_path, constants.OUT_BASE_DIR, usr_folder, wi_folder, "in", constants.DISAGGREGATION_DIR)
+		print("path_data_in : %s" % path_data_in)
+		# /home/skaphe/Documentos/tnc/salidas/1000_120_2021-05-10/WI_44/out/07-DISAGGREGATION
+		path_data_out = path.join(base_path, constants.OUT_BASE_DIR, usr_folder, wi_folder, "out", constants.DISAGGREGATION_DIR)
+		print("path_data_out : %s" % path_data_out)
+		dict_result = dict()
+		dict_result['status'] = True
+		DataCSVDis(path_data_in, catchment, case)
+		Desaggregation_BaU_NBS(path_data_in, path_data_out)
+		DisaggregationOut(path_data_out,catchment,case)
+	except Exception as e:
+		logger.info('Error in Proccess Disaggregation')
+		logger.info(e.args)
+		dictResult['status'] = False
+		dictResult['error'] = e.args
+
+	logger.info('Successfull Execution Process Disaggregation')
+	return dict_result
+
+# WB intake primera ejecucion tomando los valores de disaggregation
+'''6. Water Balance Disaggregation Execution'''
+@app.get("/wf-models/wbdisaggregationIntake")
+async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
+	function_db = "__wp_intake_insert_report"
+	dictResult = dict()
+	dictResult['status'] = False
+	path_data_wb_in, path_data_wb_out, path_data_ds_out = path_wb(id_intake,user_id,study_case_id, 'WI')
+	logger.info(f'Start Process Water Balance Disaggregation Intake{id_intake}')
+	try:
+		DataInBAU(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
+		execWB(path_data_wb_in, path_data_wb_out)
+		SaveInDB( function_db, id_intake, user_id, study_case_id, "BAU", path_data_wb_out)
+		DataInNBS(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
+		execWB(path_data_wb_in, path_data_wb_out)
+		SaveInDB( function_db, id_intake, user_id, study_case_id, "NBS", path_data_wb_out)
+		dictResult = dict()
+		dictResult['status'] = True
+		dictResult['result'] = {"result":'Transacción exitosa'}
+	except Exception as e:
+		logger.error(f'Error in Proccess Water Balance Disaggregation Intake{id_intake}')
+		logger.error(e.args)
+		dictResult['status'] = False
+		dictResult['error'] = e.args
+
+	logger.info(f'Successfull Execution in Proccess Water Balance Disaggregation Intake{id_intake}')
+	return dictResult
+
+'''7. Aqueduct Execution'''
 @app.get("/wf-models/aqueduct")
 async def calculateAqueduct(path,id_intake):
 	# path = 1000_142_2021-6-25/WI_222
@@ -285,7 +372,7 @@ async def calculateAqueduct(path,id_intake):
 	full_path =  os.path.join(base_path, path)
 	dictResult = dict()
 	dictResult['status'] = False
-	logging.info('Start Proccess Aqueduct')
+	logger.info('Start Proccess Aqueduct')
 	try:
 		list = cutAqueduct(full_path)
 		print(list)
@@ -294,13 +381,13 @@ async def calculateAqueduct(path,id_intake):
 		dictResult['status'] = True
 		dictResult['result'] = list
 	except Exception as e:
-		logging.error('Error Execution in Proccess Aqueduct')
-		logging.error(e.args)
+		logger.error('Error Execution in Proccess Aqueduct')
+		logger.error(e.args)
 		dictResult['status'] = False
 		dictResult['error'] = e.args
 
-	logging.info('Successfull Execution in Proccess Aqueduct')
-	logging.info(dictResult)
+	logger.info('Successfull Execution in Proccess Aqueduct')
+	logger.info(dictResult)
 	return dictResult
 
 @app.post("/wf-models/ptapSelection")
@@ -327,34 +414,8 @@ async def ptapSelect(listcs:ListCS):
 	# 	dictResult['error'] = e.args
 	return dictResult
 
-# WB intake primera ejecucion tomando los valores de disaggregation
-@app.get("/wf-models/wbdisaggregationIntake")
-async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
-	function_db = "__wp_intake_insert_report"
-	dictResult = dict()
-	dictResult['status'] = False
-	path_data_wb_in, path_data_wb_out, path_data_ds_out = path_wb(id_intake,user_id,study_case_id, 'WI')
-	logging.info(f'Start Process Water Balance Disaggregation Intake{id_intake}')
-	try:
-		DataInBAU(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
-		execWB(path_data_wb_in, path_data_wb_out)
-		SaveInDB( function_db, id_intake, user_id, study_case_id, "BAU", path_data_wb_out)
-		DataInNBS(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
-		execWB(path_data_wb_in, path_data_wb_out)
-		SaveInDB( function_db, id_intake, user_id, study_case_id, "NBS", path_data_wb_out)
-		dictResult = dict()
-		dictResult['status'] = True
-		dictResult['result'] = {"result":'Transacción exitosa'}
-	except Exception as e:
-		logging.error(f'Error in Proccess Water Balance Disaggregation Intake{id_intake}')
-		logging.error(e.args)
-		dictResult['status'] = False
-		dictResult['error'] = e.args
-
-	logging.info(f'Successfull Execution in Proccess Water Balance Disaggregation Intake{id_intake}')
-	return dictResult
-
 # WB PTAP primera ejecucion tomando los valores de disaggregation
+'''7. Water Balance Dissagregation PTAP Execution'''
 @app.get("/wf-models/wbdisaggregationPTAP")
 async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	function_bd = '__wp_ptap_insert_report'
@@ -362,7 +423,7 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	dictResult['status'] = False
 
 	path_data_wb_in, path_data_wb_out, path_data_ds_out = path_wb(ptap_id,user_id,study_case_id, 'PTAP')
-	logging.info(f'Start Process Water Balance Disaggregation PTAP{ptap_id}')
+	logger.info(f'Start Process Water Balance Disaggregation PTAP{ptap_id}')
 	try:
 		DataInBAUPTAP(ptap_id,study_case_id, path_data_wb_in, path_data_ds_out)
 		execWB(path_data_wb_in, path_data_wb_out)
@@ -374,146 +435,48 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 		dictResult['status'] = True
 		dictResult['result'] = {"result":'Transacción exitosa'}
 	except Exception as e:
-		logging.error(f'Error in Proccess Water Balance Disaggregation PTAP{ptap_id}')
-		logging.error(e.args)
+		logger.error(f'Error in Proccess Water Balance Disaggregation PTAP{ptap_id}')
+		logger.error(e.args)
 		dictResult['status'] = False
 		dictResult['error'] = e.args
 
-	logging.info(f'Successfull Execution in Proccess Water Balance Disaggregation PTAP{ptap_id}')
+	logger.info(f'Successfull Execution in Proccess Water Balance Disaggregation PTAP{ptap_id}')
 	return dictResult
 
-# water balance segunda ejecucion Intake
-@app.get("/wf-models/wb")
-async def calculateWB(id_intake):
-	dictResult = dict()
-	dictResult['status'] = False
+'''8. Execute Cost Function'''
+@app.get("/wf-models/costFunctionExecute")
+def costFunctionExecute(user_id, intake_id, study_case_id):
+	
+	preproc.costFunctionExecute(intake_id, study_case_id, user_id)
+	return True
+
+'''9. Indicators Execution'''
+@app.get("/wf-models/indicators")
+def indicators( user_id, study_case_id ):
+
+	today = datetime.date.today()
+	usr_folder = "%s_%s_%s-%s-%s" % (user_id, study_case_id, today.year, today.month, today.day)
 	OUT_BASE_DIR = "salidas"
-	path_data_wb_in = path.join(base_path, OUT_BASE_DIR, 'tmp')
-	path_data_wb_out = path.join(base_path, OUT_BASE_DIR, 'tmp')
-	logging.info(f'Start Process Water Balance Intake {id_intake}')
+	INDICATORS = 'INDICATORS'
+	path_data = path.join(base_path, OUT_BASE_DIR, usr_folder)
+	path_data_ind = path.join(path_data,INDICATORS)
+	dict_result = dict()
+	dict_result['status'] = True
+	logger.info('Start Proccess Indicators')
 	try:
-		DataInWB(id_intake, path_data_wb_in)
-		execWB(path_data_wb_in, path_data_wb_out)
-		outFile = mergeData(path_data_wb_out)
-		readSum(outFile, path_data_wb_out)
-		dictResult = dict()
-		dictResult['status'] = True
-		dictResult['result'] = {"result":'Transacción exitosa'}
+		IndicatorsIn(path_data)
+		Indicators_BaU_NBS(path_data_ind)
+		IndicatorsSaveDB(path_data,user_id,study_case_id,today)
 	except Exception as e:
-		logging.error(f'Error in Proccess Water Balance Intake {id_intake}')
-		logging.error(e.args)
-		dictResult['status'] = False
+		logger.error('Error in Process Indicators')
+		logger.error(e.args)
+		dictResult['estado'] = False
 		dictResult['error'] = e.args
 
-	logging.info(f'Successfull Execution in Proccess Water Balance Intake {id_intake}')
-	return dictResult
-
-# water balance segunda ejecucion PTAP
-@app.get("/wf-models/wbPTAP")
-async def calculateWBPTAP(id_ptap):
-	dictResult = dict()
-	dictResult['status'] = False
-	logging.info(f'Start Process Water Balance PTAP {id_ptap}')
-	try:
-		ptap_id = int(id_ptap)
-		DataInWBPTAP(ptap_id)
-		execWB()
-		outFile = mergeDataPTAP()
-		readSumPTAP(outFile)
-		dictResult['status'] = True
-		dictResult['result'] = {"result":'Transacción exitosa'}
-	except Exception as e:
-		logging.error(f'Error in Proccess Water Balance PTAP {id_ptap}')
-		logging.error(e.args)
-		dictResult['status'] = False
-		dictResult['error'] = e.args
-
-	logging.info(f'Successfull Execution Proccess Water Balance PTAP {id_ptap}')
-	return dictResult
-
-@app.get("/wf-models/cobTrans")
-async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
-	folder = Path(pathCobs).parents[4]
-	filenamelog = path.join(folder,f'log_{datefilelog}.log')
-	formatlog = '%(asctime)s - %(levelname)s - %(message)s'
-	logging.basicConfig(filename=filenamelog, format=formatlog, datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.INFO)
-	logging.info('Start process Coverage translator')
-	print ("cobTrans :: start")
-	dictResult = dict()
-	dictResult['status'] = True
-	year = preproc.analysisPeriodFromStudyCase(study_case_id)
-	region = preproc.getRegionFromId(basin)
-	region_name = region[4]
-	print ("year: %s :: region: %s" % (year, region_name))
-	try:
-		pathCobs, json = verifypathconti(pathCobs)
-		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name,json,study_case_id)
-		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
-		if (os.path.isfile(path_future_lulc)):
-			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc, year, region_name,json,study_case_id)
-		dictResult['result'] = {"result":'successful execution'}
-		dictResult['paths'] = paths
-		dictResult['paths_future'] = paths_future
-	except Exception as e:
-		logging.error("Error in process Coverage translator")
-		logging.error(e.args)
-		dictResult['status'] = False
-		dictResult['error'] = e.args
-
-	logging.info('Successful execution process Coverage translator')
-	logging.info('paths')
-	logging.info(paths)
-	logging.info('paths_future')
-	logging.info(paths_future)
-	return dictResult
-
-
-@app.get("/wf-models/disaggregation")
-async def disaggregation( id_usuario, basin, case, catchment):
-	logging.info('Start Proccess Disaggregation')
-	try:
-		print ("disaggregation")
-		wi_folder = "WI_%s" % (catchment)
-		date = datetime.date.today()
-		usr_folder = "%s_%s_%s-%s-%s" % (id_usuario,case, date.year, date.month, date.day)
-		# /home/skaphe/Documentos/tnc/salidas/1000_120_2021-05-10/WI_44/in/07-DISAGGREGATION
-		path_data_in = path.join(base_path, constants.OUT_BASE_DIR, usr_folder, wi_folder, "in", constants.DISAGGREGATION_DIR)
-		print("path_data_in : %s" % path_data_in)
-		# /home/skaphe/Documentos/tnc/salidas/1000_120_2021-05-10/WI_44/out/07-DISAGGREGATION
-		path_data_out = path.join(base_path, constants.OUT_BASE_DIR, usr_folder, wi_folder, "out", constants.DISAGGREGATION_DIR)
-		print("path_data_out : %s" % path_data_out)
-		dict_result = dict()
-		dict_result['status'] = True
-		DataCSVDis(path_data_in, catchment, case)
-		Desaggregation_BaU_NBS(path_data_in, path_data_out)
-		DisaggregationOut(path_data_out,catchment,case)
-	except Exception as e:
-		logging.info('Error in Proccess Disaggregation')
-		logging.info(e.args)
-		dict_result['status'] = False
-		dict_result['error'] = e.args
-
-	logging.info('Successfull Execution Process Disaggregation')
+	logger.info('Successfull Execution Process Indicators')
 	return dict_result
 
-@app.get("/wf-models/disaggregation2")
-def disaggregation2(user_id, study_cases_id):
-
-	return preproc.processDissagregation(user_id, study_cases_id)
-
-@app.get("/wf-models/exchangeRate")
-def exchangeRoi(study_case_id):
-	logging.info('Start Proccess Exchange Rate')
-	try:
-		ExchangeROI(study_case_id)
-	except Exception as e:
-		logging.error('Error in Process Exchange Rate: ')
-		logging.error(e.args)
-		return e.args
-
-	logging.info('Successfull Execution Process Exchange Rate')
-	return "Run successful"
-
+'''10. ROI Execution'''
 @app.get("/wf-models/roiExecution")
 def roiExecution(user_id, study_cases_id):
 	today = datetime.date.today()
@@ -524,21 +487,76 @@ def roiExecution(user_id, study_cases_id):
 	path_data_roi = path.join(path_data,ROI)
 	dict_result = dict()
 	dict_result['status'] = True
-	logging.info('Start Proccess ROI Execution')
+	logger.info('Start Proccess ROI Execution')
 	try:
 		DataCSVRoi(user_id, study_cases_id, today, path_data)
 		ROI_Analisys(path_data_roi)
 		SaveRoiDB(path_data_roi,study_cases_id)
 		CreateZip(path_data, study_cases_id, usr_folder) 
 	except Exception as e:
-		logging.error('Error in Process ROI Execution')
-		logging.error(e.args)
-		dict_result['estado'] = False
-		dict_result['error'] = e.args
+		logger.error('Error in Process ROI Execution')
+		logger.error(e.args)
+		dictResult['estado'] = False
+		dictResult['error'] = e.args
 
-	logging.info('Successfull Execution Process ROI Execution')
+	logger.info('Successfull Execution Process ROI Execution')
+	f.close()
 	return dict_result
 	# return preproc.processRoi(user_id,study_cases_id)
+
+# water balance segunda ejecucion Intake
+@app.get("/wf-models/wb")
+async def calculateWB(id_intake):
+	dictResult = dict()
+	dictResult['status'] = False
+	OUT_BASE_DIR = "salidas"
+	path_data_wb_in = path.join(base_path, OUT_BASE_DIR, 'tmp')
+	path_data_wb_out = path.join(base_path, OUT_BASE_DIR, 'tmp')
+	logger.info(f'Start Process Water Balance Intake {id_intake}')
+	try:
+		DataInWB(id_intake, path_data_wb_in)
+		execWB(path_data_wb_in, path_data_wb_out)
+		outFile = mergeData(path_data_wb_out)
+		readSum(outFile, path_data_wb_out)
+		dictResult = dict()
+		dictResult['status'] = True
+		dictResult['result'] = {"result":'Transacción exitosa'}
+	except Exception as e:
+		logger.error(f'Error in Proccess Water Balance Intake {id_intake}')
+		logger.error(e.args)
+		dictResult['status'] = False
+		dictResult['error'] = e.args
+
+	logger.info(f'Successfull Execution in Proccess Water Balance Intake {id_intake}')
+	return dictResult
+
+# water balance segunda ejecucion PTAP
+@app.get("/wf-models/wbPTAP")
+async def calculateWBPTAP(id_ptap):
+	dictResult = dict()
+	dictResult['status'] = False
+	logger.info(f'Start Process Water Balance PTAP {id_ptap}')
+	try:
+		ptap_id = int(id_ptap)
+		DataInWBPTAP(ptap_id)
+		execWB()
+		outFile = mergeDataPTAP()
+		readSumPTAP(outFile)
+		dictResult['status'] = True
+		dictResult['result'] = {"result":'Transacción exitosa'}
+	except Exception as e:
+		logger.error(f'Error in Proccess Water Balance PTAP {id_ptap}')
+		logger.error(e.args)
+		dictResult['status'] = False
+		dictResult['error'] = e.args
+
+	logger.info(f'Successfull Execution Proccess Water Balance PTAP {id_ptap}')
+	return dictResult
+
+@app.get("/wf-models/disaggregation2")
+def disaggregation2(user_id, study_cases_id):
+
+	return preproc.processDissagregation(user_id, study_cases_id)
 
 @app.get("/wf-models/download")
 def download(user_dir, topic , file):
@@ -561,40 +579,44 @@ def validate_and_create_dir(dir_to_validate):
 	if(not os.path.isdir(dir_to_validate)):
 		os.mkdir(dir_to_validate)
 
-''' Execute Cost Function'''
-@app.get("/wf-models/costFunctionExecute")
-def costFunctionExecute(user_id, intake_id, study_case_id):
-	
-	preproc.costFunctionExecute(intake_id, study_case_id, user_id)
-	return True
-
-@app.get("/wf-models/indicators")
-def indicators( user_id, study_case_id ):
-	today = datetime.date.today()
-	usr_folder = "%s_%s_%s-%s-%s" % (user_id, study_case_id, today.year, today.month, today.day)
-	OUT_BASE_DIR = "salidas"
-	INDICATORS = 'INDICATORS'
-	path_data = path.join(base_path, OUT_BASE_DIR, usr_folder)
-	path_data_ind = path.join(path_data,INDICATORS)
-	dict_result = dict()
-	dict_result['status'] = True
-	logging.info('Start Proccess Indicators')
+@app.get("/wf-models/snapPoint")
+async def snap(x,y):
+	dictResult = dict()
+	dictResult['status'] = False
 	try:
-		IndicatorsIn(path_data)
-		Indicators_BaU_NBS(path_data_ind)
-		IndicatorsSaveDB(path_data,user_id,study_case_id,today)
+		x = float(x)
+		y = float(y)
+		basin = delineate.getRegionFromCoord(x,y)
+		dictResult['basin'] = basin
+		path = delineate.getPath(basin,2)
+		dictResult['path'] = path
+		path = delineate.cutRaster(path,x,y,5)
+		dictResult['path_raster'] = path
+		[x,y] = delineate.snap(path,x,y)
+		dictResult = dict()
+		dictResult['status'] = True
+		dictResult['result'] = {"x_snap":x,"y_snap":y}
 	except Exception as e:
-		logging.error('Error in Process Indicators')
-		logging.error(e.args)
-		dict_result['estado'] = False
-		dict_result['error'] = e.args
-
-	logging.info('Successfull Execution Process Indicators')
-	return dict_result
-
-@app.get("/wf-models/raster_statistics")
-def raster_result_statistics(usr_folder, intake_id,year, region):
-
-	raster_list = preproc.rasters_statistics(usr_folder, intake_id,year, region)
-
-	return raster_list
+		dictResult['status'] = False
+		dictResult['error'] = e.args
+	return dictResult
+ 
+@app.get("/wf-models/delineateCatchment")
+async def delineateCatchment(x,y):
+	dictResult = dict()
+	dictResult['status'] = False
+	try:
+		x = float(x)
+		y = float(y)
+		basin = delineate.getRegionFromCoord(x,y)
+		path = delineate.getPath(basin,1)
+		catchment = delineate.delineateCatchment(path,x,y)
+		dictResult = dict()
+		dictResult['status'] = True
+		dictResult['result'] = {}
+		dictResult['result']['basin'] = basin
+		dictResult['result']['geometry'] = catchment
+	except Exception as e:
+		dictResult['status'] = False
+		dictResult['error'] = e.args
+	return dictResult
