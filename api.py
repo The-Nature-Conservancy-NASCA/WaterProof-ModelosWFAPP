@@ -597,3 +597,10 @@ async def delineateCatchment(x,y):
 		dictResult['status'] = False
 		dictResult['error'] = e.args
 	return dictResult
+
+@app.get("/wf-models/raster_statistics")
+def raster_result_statistics(usr_folder, intake_id,year, region):
+
+	raster_list = preproc.rasters_statistics(usr_folder, intake_id,year, region)
+
+	return raster_list
