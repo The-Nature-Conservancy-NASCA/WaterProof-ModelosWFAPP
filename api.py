@@ -106,10 +106,11 @@ async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 	region_name = region[4]
 	print ("year: %s :: region: %s" % (year, region_name))
 	try:
-		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name)
+		pathCobs, json = verifypathconti(pathCobs)
+		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name,json,study_case_id)
 		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
 		if (os.path.isfile(path_future_lulc)):
-			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc, year, region_name)
+			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc, year, region_name,json,study_case_id)
 		dictResult['result'] = {"result":'successful execution'}
 		dictResult['paths'] = paths
 		dictResult['paths_future'] = paths_future
