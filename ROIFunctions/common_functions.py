@@ -1,4 +1,5 @@
 import csv,datetime
+import shutil
 from os import path,environ
 from connect import connect
 base_path = environ["PATH_FILES"]
@@ -72,3 +73,6 @@ def path_wb(id_intake,user_id,study_case_id, preffix):
 	path_data_wb_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", WATER_BALANCE_DIR)
 	path_data_ds_out = path.join(base_path, OUT_BASE_DIR, usr_folder, wi_folder, "out", DISAGGREGATION_DIR)
 	return path_data_wb_in, path_data_wb_out, path_data_ds_out
+
+def CopyFile(original,target):
+    shutil.copyfile(original,target)
