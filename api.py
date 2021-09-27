@@ -25,7 +25,7 @@ from dissagregation import DataCSVDis,DisaggregationOut
 from ROIFunctions.roiOut import SaveRoiDB, CreateZip
 from ROIFunctions.roiIn import DataCSVRoi
 from ROIFunctions.exchangeRateROI import ExchangeROI
-from ROIFunctions.common_functions import path_wb,updateDataDB
+from ROIFunctions.common_functions import path_wb,updateDataDB,CopyFile
 from IndicatorsFunctions.Indicators_IN_and_OUT import IndicatorsIn,IndicatorsSaveDB
 import pandas as pd
 import requests
@@ -35,6 +35,7 @@ from Indicators_WaterFunds.Indicators_WaterFunds import Indicators_BaU_NBS
 import logging
 import ptvsd
 import constants
+from pprint import pformat
 
 
 base_path = environ["PATH_FILES"]
@@ -88,12 +89,12 @@ def exchangeRoi(study_case_id):
 	logger.info('Successfull Execution Process Exchange Rate')
 	return "Run successful"
 
-'''3. Coverage Translator'''
 @app.get("/wf-models/cobTrans")
 async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
+	print(pathCobs)
 	folder = Path(pathCobs).parents[4]
+	print(folder)
 	filenamelog = path.join(folder,f'log_{datefilelog}.log')
-	filenametxt = path.join(folder,f'log_{datefilelog}.txt')
 	formatlog = '%(asctime)s - %(levelname)s - %(message)s'
 	logging.basicConfig(filename=filenamelog, format=formatlog, datefmt='%m/%d/%Y %I:%M:%S %p')
 	logger.info('Start process Coverage translator')
@@ -115,15 +116,13 @@ async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 		dictResult['paths'] = paths
 		dictResult['paths_future'] = paths_future
 		logger.info('Successful execution process Coverage translator')
-		logger.info('paths')
-		logger.info(paths)
-		logger.info('paths_future')
-		logger.info(paths_future)
 	except Exception as e:
 		logger.error("Error in process Coverage translator")
 		logger.error(e.args)
 		dictResult['status'] = False
 		dictResult['error'] = e.args
+
+	logger.info(pformat(dictResult))
 	return dictResult
 
 '''4. Invest Excecution'''
@@ -462,6 +461,7 @@ def roiExecution(user_id, study_cases_id):
 	usr_folder = "%s_%s_%s-%s-%s" % (user_id, study_cases_id, today.year, today.month, today.day)
 	OUT_BASE_DIR = "salidas"
 	ROI = 'ROI'
+	out_file = path.join(base_path, OUT_BASE_DIR,'README.txt')
 	path_data = path.join(base_path, OUT_BASE_DIR, usr_folder)
 	path_data_roi = path.join(path_data,ROI)
 	dict_result = dict()
@@ -471,7 +471,8 @@ def roiExecution(user_id, study_cases_id):
 		DataCSVRoi(user_id, study_cases_id, today, path_data)
 		ROI_Analisys(path_data_roi)
 		SaveRoiDB(path_data_roi,study_cases_id)
-		CreateZip(path_data, study_cases_id, usr_folder) 
+		CopyFile(out_file,path.join(path_data,'README.txt'))
+		CreateZip(path_data, study_cases_id, usr_folder)
 	except Exception as e:
 		logger.error('Error in Process ROI Execution')
 		logger.error(e.args)
