@@ -326,10 +326,10 @@ async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 	try:
 		DataInBAU(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
 		execWB(path_data_wb_in, path_data_wb_out)
-		SaveInDB( function_db, id_intake, user_id, study_case_id, "BAU", path_data_wb_out)
+		SaveInDB( function_db, id_intake, user_id, study_case_id, "BAU", path_data_wb_out,'Intake')
 		DataInNBS(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
 		execWB(path_data_wb_in, path_data_wb_out)
-		SaveInDB( function_db, id_intake, user_id, study_case_id, "NBS", path_data_wb_out)
+		SaveInDB( function_db, id_intake, user_id, study_case_id, "NBS", path_data_wb_out,'Intake')
 		dictResult = dict()
 		dictResult['status'] = True
 		dictResult['result'] = {"result":'Transacción exitosa'}
@@ -405,10 +405,10 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	try:
 		DataInBAUPTAP(ptap_id,study_case_id, path_data_wb_in, path_data_ds_out)
 		execWB(path_data_wb_in, path_data_wb_out)
-		SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'BAU', path_data_wb_out)
+		SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'BAU', path_data_wb_out,'PTAP')
 		DataInNBSPTAP(ptap_id,study_case_id, path_data_wb_in)
 		execWB(path_data_wb_in, path_data_wb_out)
-		SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS', path_data_wb_out)
+		SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS', path_data_wb_out,'PTAP')
 		dictResult = dict()
 		dictResult['status'] = True
 		dictResult['result'] = {"result":'Transacción exitosa'}
