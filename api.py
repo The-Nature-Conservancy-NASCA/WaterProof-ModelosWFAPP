@@ -25,7 +25,7 @@ from dissagregation import DataCSVDis,DisaggregationOut
 from ROIFunctions.roiOut import SaveRoiDB, CreateZip
 from ROIFunctions.roiIn import DataCSVRoi
 from ROIFunctions.exchangeRateROI import ExchangeROI
-from ROIFunctions.common_functions import path_wb,updateDataDB,CopyFile
+from ROIFunctions.common_functions import path_wb,updateDataDB,CopyFile,insertParameter
 from IndicatorsFunctions.Indicators_IN_and_OUT import IndicatorsIn,IndicatorsSaveDB
 import pandas as pd
 import requests
@@ -42,7 +42,7 @@ base_path = environ["PATH_FILES"]
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
 logger.setLevel(logging.DEBUG)
 today = datetime.date.today()
-datefilelog = "%s-%s-%s" % (today.year, today.month, today.day)
+datefilelog = today.strftime("%d-%b-%Y_%I_%M")
 loginfodate = today.strftime("%d/%b/%Y %I:%M:%S %p")
 
 # Only attach the debugger when we're the Django that deals with requests
@@ -91,9 +91,7 @@ def exchangeRoi(study_case_id):
 
 @app.get("/wf-models/cobTrans")
 async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
-	print(pathCobs)
 	folder = Path(pathCobs).parents[4]
-	print(folder)
 	filenamelog = path.join(folder,f'log_{datefilelog}.log')
 	formatlog = '%(asctime)s - %(levelname)s - %(message)s'
 	logging.basicConfig(filename=filenamelog, format=formatlog, datefmt='%m/%d/%Y %I:%M:%S %p')
@@ -106,7 +104,9 @@ async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 	region = preproc.getRegionFromId(basin)
 	region_name = region[4]
 	print ("year: %s :: region: %s" % (year, region_name))
+	args = [study_case_id,filenamelog]
 	try:
+		insertParameter('__wpinsert_download_zip',args)
 		pathCobs, json = verifypathconti(pathCobs)
 		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name,json,study_case_id)
 		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
