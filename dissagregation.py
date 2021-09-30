@@ -72,7 +72,7 @@ def DisaggregationOutInsert(df,stage,catchment,studycase):
     Bf     = df['BF (m3)'].values
     Wc     = df['WC (Ton)'].values
 
-    for idx,item in enumerate(df):
+    for idx,item in enumerate(df['Time']):
         args= [int(Time[idx]),stage,int(catchment),int(studycase),Awy[idx], Wsed[idx], Wn[idx], Wp[idx], Bf[idx], Wc[idx]]
         insertParameter('__wp_insert_disaggregation', args)
 

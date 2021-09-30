@@ -23,4 +23,4 @@ CARBON_ROI_DB = 'CARBONO'
 OUT_BASE_DIR = "salidas"
 IN_BASE_DIR = "entradas"
 
-ZIP_CREATION_DIR = "http://dev.skaphe.com:81/salidas/"
+ZIP_CREATION_DIR = "https://dev.skaphe.com/outputs/"
