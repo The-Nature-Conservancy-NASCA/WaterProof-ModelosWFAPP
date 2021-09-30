@@ -25,7 +25,7 @@ from dissagregation import DataCSVDis,DisaggregationOut
 from ROIFunctions.roiOut import SaveRoiDB, CreateZip
 from ROIFunctions.roiIn import DataCSVRoi
 from ROIFunctions.exchangeRateROI import ExchangeROI
-from ROIFunctions.common_functions import path_wb,updateDataDB,CopyFile,insertParameter
+from ROIFunctions.common_functions import path_wb,updateDataDB,CopyFile,insertParameter,selectDataDB
 from IndicatorsFunctions.Indicators_IN_and_OUT import IndicatorsIn,IndicatorsSaveDB
 import pandas as pd
 import requests
@@ -106,7 +106,9 @@ async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 	print ("year: %s :: region: %s" % (year, region_name))
 	args = [study_case_id,filenamelog]
 	try:
-		insertParameter('__wpinsert_download_zip',args)
+		count = selectDataDB('select count(*) from waterproof_reports_zip where study_case_id_id = ' + study_case_id)
+		if( count[0] == 0 ):
+			insertParameter('__wpinsert_download_zip',args)
 		pathCobs, json = verifypathconti(pathCobs)
 		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name,json,study_case_id)
 		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
