@@ -196,9 +196,9 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 			
 			region 			= preproc.getRegionFromId(basin)
 			region_name = region[4]
-			year_bau = preproc.analysisPeriodFromStudyCase(case)
-			base_path 	= path + '/WI_%s/out/03-INVEST' % (basin)
-			sdr_bau_path			= base_path + '/SDR/YEAR_%s' % (year_bau)
+			year_bau 		= preproc.analysisPeriodFromStudyCase(case)
+			base_path 	= path + '/out/03-INVEST'
+			sdr_bau_path= base_path + '/SDR/YEAR_%s' % (year_bau)
 			print ("sdr_bau : %s" % sdr_bau_path)
 			print ("region: %s" % region_name)
 
