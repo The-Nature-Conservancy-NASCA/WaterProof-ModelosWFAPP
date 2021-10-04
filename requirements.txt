@@ -17,4 +17,4 @@ antlr4-python3-runtime
 aiofiles
 requests
 AdvancedHTMLParser
-pysal
+pysal==1.14.4
