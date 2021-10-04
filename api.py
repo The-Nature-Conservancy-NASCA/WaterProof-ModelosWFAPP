@@ -25,7 +25,7 @@ from dissagregation import DataCSVDis,DisaggregationOut
 from ROIFunctions.roiOut import SaveRoiDB, CreateZip
 from ROIFunctions.roiIn import DataCSVRoi
 from ROIFunctions.exchangeRateROI import ExchangeROI
-from ROIFunctions.common_functions import path_wb,updateDataDB
+from ROIFunctions.common_functions import path_wb,updateDataDB,CopyFile,insertParameter,selectDataDB
 from IndicatorsFunctions.Indicators_IN_and_OUT import IndicatorsIn,IndicatorsSaveDB
 import pandas as pd
 import requests
@@ -35,13 +35,14 @@ from Indicators_WaterFunds.Indicators_WaterFunds import Indicators_BaU_NBS
 import logging
 import ptvsd
 import constants
+from pprint import pformat
 
 
 base_path = environ["PATH_FILES"]
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
 logger.setLevel(logging.DEBUG)
 today = datetime.date.today()
-datefilelog = "%s-%s-%s" % (today.year, today.month, today.day)
+datefilelog = today.strftime("%d-%b-%Y_%I_%M")
 loginfodate = today.strftime("%d/%b/%Y %I:%M:%S %p")
 
 # Only attach the debugger when we're the Django that deals with requests
@@ -88,12 +89,10 @@ def exchangeRoi(study_case_id):
 	logger.info('Successfull Execution Process Exchange Rate')
 	return "Run successful"
 
-'''3. Coverage Translator'''
 @app.get("/wf-models/cobTrans")
 async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 	folder = Path(pathCobs).parents[4]
 	filenamelog = path.join(folder,f'log_{datefilelog}.log')
-	filenametxt = path.join(folder,f'log_{datefilelog}.txt')
 	formatlog = '%(asctime)s - %(levelname)s - %(message)s'
 	logging.basicConfig(filename=filenamelog, format=formatlog, datefmt='%m/%d/%Y %I:%M:%S %p')
 	logger.info('Start process Coverage translator')
@@ -105,7 +104,11 @@ async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 	region = preproc.getRegionFromId(basin)
 	region_name = region[4]
 	print ("year: %s :: region: %s" % (year, region_name))
+	args = [study_case_id,filenamelog]
 	try:
+		count = selectDataDB('select count(*) from waterproof_reports_zip where study_case_id_id = ' + study_case_id)
+		if( count[0] == 0 ):
+			insertParameter('__wpinsert_download_zip',args)
 		pathCobs, json = verifypathconti(pathCobs)
 		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name,json,study_case_id)
 		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
@@ -115,15 +118,13 @@ async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 		dictResult['paths'] = paths
 		dictResult['paths_future'] = paths_future
 		logger.info('Successful execution process Coverage translator')
-		logger.info('paths')
-		logger.info(paths)
-		logger.info('paths_future')
-		logger.info(paths_future)
 	except Exception as e:
 		logger.error("Error in process Coverage translator")
 		logger.error(e.args)
 		dictResult['status'] = False
 		dictResult['error'] = e.args
+
+	logger.info(pformat(dictResult))
 	return dictResult
 
 '''4. Invest Excecution'''
@@ -341,10 +342,10 @@ async def calculateWBDisaggregationIntake(id_intake,user_id,study_case_id):
 	try:
 		DataInBAU(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
 		execWB(path_data_wb_in, path_data_wb_out)
-		SaveInDB( function_db, id_intake, user_id, study_case_id, "BAU", path_data_wb_out)
+		SaveInDB( function_db, id_intake, user_id, study_case_id, "BAU", path_data_wb_out,'Intake')
 		DataInNBS(id_intake,path_data_wb_in,path_data_ds_out,study_case_id)
 		execWB(path_data_wb_in, path_data_wb_out)
-		SaveInDB( function_db, id_intake, user_id, study_case_id, "NBS", path_data_wb_out)
+		SaveInDB( function_db, id_intake, user_id, study_case_id, "NBS", path_data_wb_out,'Intake')
 		dictResult = dict()
 		dictResult['status'] = True
 		dictResult['result'] = {"result":'Transacción exitosa'}
@@ -420,10 +421,10 @@ async def calculateWBDisaggregationPTAP(ptap_id,user_id,study_case_id):
 	try:
 		DataInBAUPTAP(ptap_id,study_case_id, path_data_wb_in, path_data_ds_out)
 		execWB(path_data_wb_in, path_data_wb_out)
-		SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'BAU', path_data_wb_out)
+		SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'BAU', path_data_wb_out,'PTAP')
 		DataInNBSPTAP(ptap_id,study_case_id, path_data_wb_in)
 		execWB(path_data_wb_in, path_data_wb_out)
-		SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS', path_data_wb_out)
+		SaveInDB( function_bd, ptap_id, user_id, study_case_id, 'NBS', path_data_wb_out,'PTAP')
 		dictResult = dict()
 		dictResult['status'] = True
 		dictResult['result'] = {"result":'Transacción exitosa'}
@@ -476,6 +477,7 @@ def roiExecution(user_id, study_cases_id):
 	usr_folder = "%s_%s_%s-%s-%s" % (user_id, study_cases_id, today.year, today.month, today.day)
 	OUT_BASE_DIR = "salidas"
 	ROI = 'ROI'
+	out_file = path.join(base_path, OUT_BASE_DIR,'README.txt')
 	path_data = path.join(base_path, OUT_BASE_DIR, usr_folder)
 	path_data_roi = path.join(path_data,ROI)
 	dict_result = dict()
@@ -485,7 +487,8 @@ def roiExecution(user_id, study_cases_id):
 		DataCSVRoi(user_id, study_cases_id, today, path_data)
 		ROI_Analisys(path_data_roi)
 		SaveRoiDB(path_data_roi,study_cases_id)
-		CreateZip(path_data, study_cases_id, usr_folder) 
+		CopyFile(out_file,path.join(path_data,'README.txt'))
+		CreateZip(path_data, study_cases_id, usr_folder)
 	except Exception as e:
 		logger.error('Error in Process ROI Execution')
 		logger.error(e.args)

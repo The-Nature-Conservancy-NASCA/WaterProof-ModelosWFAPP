@@ -9,7 +9,7 @@ import ROIFunctions.saves as save
 import ROIFunctions.sensivity as sens
 import ROIFunctions.carbon as carb
 import constants 
-from ROIFunctions.common_functions import insertParameter
+from ROIFunctions.common_functions import updateDataDB
 
 ruta = environ["PATH_FILES"]
 ZIP_CREATION_DIR = os.getenv('ZIP_CREATION_DIR', constants.ZIP_CREATION_DIR) 
@@ -29,4 +29,4 @@ def CreateZip(path, studyCase_id, user_folder):
     shutil.make_archive(path,'zip',path)
     link= (constants.ZIP_CREATION_DIR + user_folder + ".zip")
     args = [studyCase_id,link]
-    insertParameter('__wpinsert_download_zip',args)
+    updateDataDB('__wpupdate_download_zip',args)

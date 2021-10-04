@@ -9,7 +9,7 @@ from ROIFunctions.common_functions import insertParameter
 ruta = os.environ["PATH_FILES"]
 # ruta = 'D:/Descargas/Trabajo/Workspace/tnc/modelos'
 
-def SaveInDB( function_db, ptap_id, user_id, study_case_id, scenario, path_data_wb_out):
+def SaveInDB( function_db, ptap_id, user_id, study_case_id, scenario, path_data_wb_out,typep):
     # Ruta de acceso a los archivos
     anotherroute= path_data_wb_out # os.path.join(ruta,'salidas','wb_test','OUTPUTS')
     # archivos de salida en csv a Matriz
@@ -62,8 +62,11 @@ def SaveInDB( function_db, ptap_id, user_id, study_case_id, scenario, path_data_
     for label,series in final.items():
         val = series.values
         args = [float(val[0]), ptap_id, val[1], user_id, val[2], val[3], val[4], val[5], val[6], val[7], val[8], val[9], val[10], val[11], study_case_id, scenario]
-        # Por el momento se han agregado ceros en los datos que aun no han sido obtenidos
         insertParameter( function_db, args )
+
+    final = final.T
+    final.columns=["element", "year", "awy", "cn_mg_l",'cp_mg_l','csed_mg_l','wn_kg','wp_kg','wsed_ton','wn_ret_kg','wp_ret_ton','wsed_ret_ton']
+    final.to_csv(anotherroute+f'/OUTPUT_RESULT_{typep}_{scenario}_{ptap_id}.csv',index=False)
 
 
 # if __name__ == "__main__":
