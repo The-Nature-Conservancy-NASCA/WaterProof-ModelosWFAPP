@@ -43,6 +43,7 @@ from rasterstats import zonal_stats
 from dbfread import DBF
 import pandas as pd
 import numpy as np
+import pysal as ps
 
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
 logger.setLevel(logging.INFO)
