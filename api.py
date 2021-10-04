@@ -165,11 +165,9 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 				catchmentShp,path,label = preproc.executeFunction(basin,model,type,catchment,id_usuario, year, case)
 			if (model == 'carbon'):
 				carbon = True
-
+	
 		dictResult['result'] = 'successful execution for type :: {}'.format(type)
-
 		dictResult['result'] = {}
-
 		sum_carbon = -999 # TODO :: Validate if can be negative as disable value
 		sum_carbon_val = -999
 		sum_carbon_nbs = dict()
@@ -195,9 +193,25 @@ async def execInvest(type:str,id_usuario:int, basin:int, case:int, models: List[
 			cont = 0
 			dictResult['result'] = []
 			
+			region 			= preproc.getRegionFromId(basin)
+			region_name = region[4]
+			year_bau = preproc.analysisPeriodFromStudyCase(case)
+			base_path 	= path + '/WI_%s/out/03-INVEST' % (basin)
+			sdr_bau_path			= base_path + '/SDR/YEAR_%s' % (year_bau)
+			print ("sdr_bau : %s" % sdr_bau_path)
+			print ("region: %s" % region_name)
+
 			if type == constants.INVEST_TYPE_NBS:
-				for y in range(1,year+1):
+				for y in range(1,year+1):					
 					year_dir = 'YEAR_' + str(y)
+
+					# FIXES
+					# BAU == Last Year
+					# NBS == from Year == 1 to Last Year					
+					sdr_nbs_path	= base_path + '/SDR/YEAR_%s' % (y)
+					print ("sdr_nbs_path :%s" % sdr_nbs_path)
+					preproc.SDR_BugFix(sdr_bau_path, sdr_nbs_path, region_name)
+					# FIXES
 
 					for c in catch:
 						s,n,p,q,sW,nW,pW,bf = preproc.calcConc(execute,path,label,cont, model_dir, year_dir)
