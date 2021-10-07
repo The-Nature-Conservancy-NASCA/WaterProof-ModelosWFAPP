@@ -30,8 +30,11 @@ def Save_roi( anotherroute, studycase, type_in, ejecution, idx ):
 
     save_id_out=[]
     for save in save_zer['Process']:
-        list_in = [save for var in range(serie_time[0].size)]
-        save_id_out+=list_in
+        if(save == 'NoData'):
+            save_id_out=[0]
+        else:
+            list_in = [save for var in range(serie_time[0].size)]
+            save_id_out+=list_in
 
 
     today = datetime.date.today()
