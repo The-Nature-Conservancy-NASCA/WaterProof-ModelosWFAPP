@@ -34,9 +34,10 @@ def CreateZip(path, studyCase_id, user_folder):
         shutil.make_archive(path,'zip',path)
         link= (constants.ZIP_CREATION_DIR + user_folder + ".zip")
         args = [studyCase_id,link]
-        updateDataDB('__wpupdate_download_zip',args)
         print("ZIP created")
     except Exception as e:
         print("Error creating ZIP")
         print(e)    
+        
+    updateDataDB('__wpupdate_download_zip',args)
 
