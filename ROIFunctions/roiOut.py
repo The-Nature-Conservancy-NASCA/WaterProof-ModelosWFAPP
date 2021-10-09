@@ -38,6 +38,6 @@ def CreateZip(path, studyCase_id, user_folder):
     except Exception as e:
         print("Error creating ZIP")
         print(e)    
-        
-    updateDataDB('__wpupdate_download_zip',args)
+
+    updateDataDB(args, '__wpupdate_download_zip')
 
