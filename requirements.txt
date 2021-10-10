@@ -2,7 +2,7 @@ pysheds
 Fiona
 psycopg2
 pycrs
-fastapi[all]==0.63.0
+fastapi[all]==0.64.0
 uvicorn[standard]==0.13.4
 gunicorn==20.0.4
 numpy
@@ -18,3 +18,10 @@ aiofiles
 requests
 AdvancedHTMLParser
 pysal==1.14.4
+aiohttp
+asyncio
+celery==4.4.7
+flower==0.9.7
+pytest==6.2.4
+redis
+

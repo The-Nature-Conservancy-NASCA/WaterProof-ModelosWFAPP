@@ -1,4 +1,4 @@
-FROM python:3.7
+FROM python:3.7-buster
 
 #ADD environment.yml /tmp/environment.yml
 ADD requirements.txt /app/requirements.txt

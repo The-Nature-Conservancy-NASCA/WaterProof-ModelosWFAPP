@@ -1,14 +1,12 @@
-from fastapi import FastAPI, Query
+from celery.result import AsyncResult
+from fastapi import FastAPI, Query, Form, Body
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-
+from fastapi.responses import FileResponse, JSONResponse
 from typing import List
 import delineate
-import math
 from pathlib import Path
 import os
 from os import environ,path
-import shutil
 import preproc
 import datetime
 from aqueduct import cutAqueduct,insertResults
@@ -36,7 +34,11 @@ import logging
 import ptvsd
 import constants
 from pprint import pformat
-
+import aiohttp
+import asyncio
+import aiofiles
+from aiohttp import ClientSession
+from worker import create_task
 
 base_path = environ["PATH_FILES"]
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
@@ -55,7 +57,7 @@ ptvsd.enable_attach(address=('0.0.0.0', 3000), redirect_output=True)
 class ListCS(BaseModel):
     csinfras: List[int]
 
-app = FastAPI()
+app = FastAPI(debug=True)
 
 origins = [
     "http://apps.skaphe.com:8000"
@@ -69,11 +71,75 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+async def fetch_html(url: str, session: ClientSession, **kwargs) -> str:
+	"""GET request wrapper to fetch page HTML.
+	kwargs are passed to `session.request()`. """
+
+	resp = await session.request(method="GET", url=url, **kwargs)
+	resp.raise_for_status()
+	logger.info("Got response [%s] for URL: %s", resp.status, url)
+	html = await resp.text()
+	return html
+
+async def execute_preproc(session, url, params):
+	"""execute_preproc (asynchronously)"""
+	logger.info("Executing preproc :: async")
+	print("Executing preproc :: async")
+	try:
+		response = await session.request(method='GET', url=url, params=params)
+		response.raise_for_status()
+		print(f"Response status ({url}): {response.status}")    
+	except Exception as err:
+		print(f"An error ocurred: {err}")
+	response_json = await response.json()
+	return response_json
+
 @app.get("/wf-models/")
 async def root():
 	logger.debug("Hello world")
 	print("Hello world  with print")
 	return {"message":"Hello World :: %s" % {__name__}}
+
+@app.get("/wf-models/rios")
+async def test_rios():
+	logger.debug("testing rios frop wf-models")
+	print("testing rios frop wf-models")
+	base_url_api = 'http://wfapp_py3:5050/wf-rios/welcome/'
+	r = requests.get(url=base_url_api)
+	data = r.json()
+	return data
+
+
+@app.get("/wf-models/preprocRIOS")
+async def preproc_rios(id_usuario:str, id_case:int):
+	logger.info('Start preprocRIOS from Models Py3 with async-await')
+	print('Start preprocRIOS from Models Py3')
+	base_url_api = 'http://wfapp_py2:5050/wf-rios/preprocRIOS/'
+	parameters = {
+		'id_usuario': id_usuario,
+		'id_case' : id_case
+  }
+	async with ClientSession() as session:
+		await asyncio.gather(*[execute_preproc(session, base_url_api, parameters)])
+
+	# try:
+	# 	html = await fetch_html(url=base_url_api, session=session, **kwargs)
+	# except (
+	# aiohttp.ClientError,
+	# aiohttp.http_exceptions.HttpProcessingError,
+	# ) as e:
+	# 	logger.error(
+	# 		"aiohttp exception for %s [%s]: %s",
+	# 		url,
+	# 		getattr(e, "status", None),
+	# 		getattr(e, "message", None),
+	# 	)
+	# 	return found
+	# except Exception as e:
+	# 	logger.exception(
+	# 			"Non-aiohttp exception occured:  %s", getattr(e, "__dict__", {})
+	# 	)
+	# 	return found
 
 '''0. Exchange rate'''
 @app.get("/wf-models/exchangeRate")
@@ -598,6 +664,46 @@ async def snap(x,y):
  
 @app.get("/wf-models/delineateCatchment")
 async def delineateCatchment(x,y):
+	logger.info(f'Start Process delineateCatchment {x} {y}')
+	print(f'Start Process delineateCatchment {x} {y}')
+	catchment = await catchment_from_coords(x,y)
+	return catchment
+
+@app.get("/wf-models/delineateCatchmentAsync")
+async def delineateCatchmentAsync(x,y):
+	logger.info(f'Start Process delineateCatchment {x} {y}')
+	print(f'Start Process delineateCatchment {x} {y}')
+	# resp = await catchment_from_coords_test(x,y)
+
+	resp = await asyncio.gather(*[catchment_from_coords_test(x,y)])
+	
+	return resp
+
+@app.get("/wf-models/raster_statistics")
+def raster_result_statistics(usr_folder, intake_id,year, region):
+	
+	raster_list = preproc.rasters_statistics(usr_folder, intake_id,year, region)
+	return raster_list
+
+@app.get("/tasks/{task_id}")
+def get_status(task_id):
+    task_result = AsyncResult(task_id)
+    result = {
+        "task_id": task_id,
+        "task_status": task_result.status,
+        "task_result": task_result.result
+    }
+    return JSONResponse(result)
+
+@app.post("/tasks", status_code=201)
+def run_task(payload = Body(...)):
+    task_type = payload["type"]
+    task = create_task.delay(int(task_type))
+    return JSONResponse({"task_id": task.id})
+
+async def catchment_from_coords(x,y):
+	logger.info(f'Start Process catchment_from_coords {x} {y}')
+	print(f'Start Process catchment_from_coords {x} {y}')
 	dictResult = dict()
 	dictResult['status'] = False
 	try:
@@ -614,11 +720,35 @@ async def delineateCatchment(x,y):
 	except Exception as e:
 		dictResult['status'] = False
 		dictResult['error'] = e.args
+	logger.info(f'Successfull Execution catchment_from_coords {x} {y}')
+	print (f'Successfull Execution catchment_from_coords: {x} {y}')
 	return dictResult
 
-@app.get("/wf-models/raster_statistics")
-def raster_result_statistics(usr_folder, intake_id,year, region):
-
-	raster_list = preproc.rasters_statistics(usr_folder, intake_id,year, region)
-
-	return raster_list
+async def catchment_from_coords_test(x,y):
+	logger.info(f'Start Process catchment_from_coords {x} {y}')
+	print(f'Start Process catchment_from_coords {x} {y}')
+	dictResult = dict()
+	dictResult['status'] = False
+	dict_test = dict()
+	for i in range(1,5):
+		try:
+			x = float(x)
+			y = float(y)
+			basin = delineate.getRegionFromCoord(x,y)
+			path = delineate.getPath(basin,1)
+			catchment = delineate.delineateCatchment(path,x,y)
+			dictResult = dict()
+			dictResult['status'] = True
+			dictResult['result'] = {}
+			dictResult['result']['basin'] = basin
+			dictResult['result']['geometry'] = catchment
+			dict_test[i] = dictResult
+		except Exception as e:
+			dictResult['status'] = False
+			dictResult['error'] = e.args
+			dict_test[i] = dictResult
+	logger.info(f'Successfull Execution catchment_from_coords {x} {y}')
+	print (f'Successfull Execution catchment_from_coords: {x} {y}')
+	return dict_test
+		
+	

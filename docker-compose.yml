@@ -24,15 +24,43 @@ services:
       - PATH_FILES=${PATH_FILES}
       - GDAL_DATA=/usr/share/gdal
       - ZIP_CREATION_DIR=${ZIP_CREATION_DIR}
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
     volumes:
-      - /data/global_datasets/:/home/skaphe/Documentos/tnc/modelos/entradas/
-      - /data/outputs/:/home/skaphe/Documentos/tnc/modelos/salidas/      
+      - c:/data/global_datasets/:/home/skaphe/Documentos/tnc/modelos/entradas/
+      - c:/data/outputs/:/home/skaphe/Documentos/tnc/modelos/salidas/      
     ports:
       - 8000:8000
       - 3000:3000
     networks:
       - shared-models
-      
+
+  worker:
+    build: .
+    command: celery worker --app=worker.celery --loglevel=info
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:6-alpine
+
+  dashboard:
+    build: .
+    command:  flower --app=worker.celery --port=5555 --broker=redis://redis:6379/0
+    ports:
+      - 5556:5555
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - worker
+
 networks:
   shared-models:
     driver: bridge
