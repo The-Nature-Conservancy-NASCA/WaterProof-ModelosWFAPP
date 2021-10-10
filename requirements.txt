@@ -15,7 +15,7 @@ gdal==2.4.4
 sympy
 antlr4-python3-runtime
 aiofiles
-requests
+requests==2.25.1
 AdvancedHTMLParser
 pysal==1.14.4
 aiohttp
@@ -23,5 +23,5 @@ asyncio
 celery==4.4.7
 flower==0.9.7
 pytest==6.2.4
-redis
+redis==3.5.3
 

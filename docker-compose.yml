@@ -32,7 +32,7 @@ services:
     ports:
       - 8000:8000
       - 3000:3000
-    command: gunicorn api:app --host 0.0.0.0 -k uvicorn.workers.UvicornWorker --reload
+    command: gunicorn api:app --bind 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker
     networks:
       - shared-models
 
