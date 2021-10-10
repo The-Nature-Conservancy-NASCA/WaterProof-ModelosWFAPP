@@ -1,5 +1,5 @@
 from celery.result import AsyncResult
-from fastapi import Body, FastAPI, Form, Request
+from fastapi import Body, FastAPI, Form, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from typing import List
