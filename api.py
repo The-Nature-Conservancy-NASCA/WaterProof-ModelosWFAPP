@@ -1,5 +1,5 @@
 from celery.result import AsyncResult
-from fastapi import FastAPI, Query, Form, Body
+from fastapi import Body, FastAPI, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from typing import List
@@ -57,7 +57,7 @@ ptvsd.enable_attach(address=('0.0.0.0', 3000), redirect_output=True)
 class ListCS(BaseModel):
     csinfras: List[int]
 
-app = FastAPI(debug=True)
+app = FastAPI()
 
 origins = [
     "http://apps.skaphe.com:8000"
