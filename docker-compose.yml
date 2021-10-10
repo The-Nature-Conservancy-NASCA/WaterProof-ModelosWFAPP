@@ -27,8 +27,8 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     volumes:
-      - c:/data/global_datasets/:/home/skaphe/Documentos/tnc/modelos/entradas/
-      - c:/data/outputs/:/home/skaphe/Documentos/tnc/modelos/salidas/      
+      - /data/global_datasets/:/home/skaphe/Documentos/tnc/modelos/entradas/
+      - /data/outputs/:/home/skaphe/Documentos/tnc/modelos/salidas/      
     ports:
       - 8000:8000
       - 3000:3000
