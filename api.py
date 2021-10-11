@@ -38,7 +38,7 @@ import aiohttp
 import asyncio
 import aiofiles
 from aiohttp import ClientSession
-from worker import create_task
+from worker import create_task, catchment_task
 
 base_path = environ["PATH_FILES"]
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
@@ -685,21 +685,26 @@ def raster_result_statistics(usr_folder, intake_id,year, region):
 	raster_list = preproc.rasters_statistics(usr_folder, intake_id,year, region)
 	return raster_list
 
-@app.get("/tasks/{task_id}")
+@app.get("/wf-models/tasks/{task_id}")
 def get_status(task_id):
     task_result = AsyncResult(task_id)
-    result = {
-        "task_id": task_id,
-        "task_status": task_result.status,
-        "task_result": task_result.result
-    }
+    result = validate_task_result(task_result)
     return JSONResponse(result)
 
-@app.post("/tasks", status_code=201)
+@app.post("/wf-models/tasks", status_code=201)
 def run_task(payload = Body(...)):
     task_type = payload["type"]
     task = create_task.delay(int(task_type))
     return JSONResponse({"task_id": task.id})
+
+@app.post("/wf-models/task_catchment", status_code=201)
+def task_catchment(payload = Body(...)):
+		x = payload["x"]
+		y = payload["y"]
+		print(f'Start task_catchment {x} {y}')
+		task = catchment_task.delay(x, y)
+		print(f'Finish task_catchment {x} {y}')
+		return JSONResponse({"task_id": task.id})
 
 async def catchment_from_coords(x,y):
 	logger.info(f'Start Process catchment_from_coords {x} {y}')
@@ -751,4 +756,14 @@ async def catchment_from_coords_test(x,y):
 	print (f'Successfull Execution catchment_from_coords: {x} {y}')
 	return dict_test
 		
-	
+def validate_task_result(task_result):
+    result = task_result.result
+    status = task_result.status
+    if status == 'FAILURE':
+        result = 'Error'
+    resp = {
+        "task_id": task_result.id,
+        "task_status": status,
+        "task_result": result
+    }
+    return resp

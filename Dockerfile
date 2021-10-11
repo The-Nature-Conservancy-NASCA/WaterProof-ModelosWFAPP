@@ -19,7 +19,7 @@ RUN pip install -r requirements.txt
 RUN pip install -r dev_requirements.txt
 
 COPY . /app
-ADD geoprocessing.py /usr/local/lib/python3.9/site-packages/pygeoprocessing/geoprocessing.py
+ADD geoprocessing.py /usr/local/lib/python3.7/site-packages/pygeoprocessing/geoprocessing.py
 RUN chmod +x startup.py
 RUN chmod +x api.py
 
