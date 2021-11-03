@@ -1,3 +1,4 @@
+import shutil
 from celery.result import AsyncResult
 from fastapi import Body, FastAPI, Form, Request, Query
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,7 +7,7 @@ from typing import List
 import delineate
 from pathlib import Path
 import os
-from os import environ,path
+from os import environ,path, rmdir
 import preproc
 import datetime
 from aqueduct import cutAqueduct,insertResults
@@ -639,6 +640,17 @@ def validate_and_create_dir(dir_to_validate):
 
 	if(not os.path.isdir(dir_to_validate)):
 		os.mkdir(dir_to_validate)
+
+#test Sebas por favor no borrar
+@app.get("/wf-models/delete")
+def delete(study_case_id,user_id,date):
+	try:
+		print('holi si entre')
+		pathdelete = os.path.join(base_path,'salidas',user_id+'_'+study_case_id+'_'+date)
+		shutil.rmtree(pathdelete)
+	except Exception as e:
+		return e.args
+	return 'file delete complete!'
 
 @app.get("/wf-models/snapPoint")
 async def snap(x,y):
