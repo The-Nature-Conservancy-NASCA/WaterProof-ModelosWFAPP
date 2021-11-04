@@ -108,6 +108,9 @@ def exportToShp(catchment, path):
 			feat_coll = row[1] # data as json
 			id = row[0]
 			geom_intake = [json.loads(feat_coll)['features'][0]['geometry']]
+			print (geom_intake)
+			print ("convert to string: ")
+			print (json.dumps(geom_intake))
 			geom = ogr.CreateGeometryFromJson(geom_intake)
 			#while feat is not None:
 			featDef = ogr.Feature(out_layer.GetLayerDefn())
