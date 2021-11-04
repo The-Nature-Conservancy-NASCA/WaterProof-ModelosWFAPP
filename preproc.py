@@ -75,7 +75,6 @@ def exportToShp(catchment, path):
 	cursor_ = conn_.cursor()
 
 	output = os.path.join(path,"in","catchment","catchment.shp")
-	print("Output: " + output)
 	source = osr.SpatialReference()
 	epsg_4326 = 4326
 	source.ImportFromEPSG(epsg_4326)
@@ -102,14 +101,13 @@ def exportToShp(catchment, path):
 
 	if(catchment != -1):		
 		sql = 'select id, "geomIntake" from waterproof_intake_polygon where intake_id %s' % params
-		print (sql)
 		#layer = conn.ExecuteSQL(sql)
 		cursor_.execute(sql)
 		try:
 			row = cursor_.fetchone()
-			geom_intake = row[1] # data as json
+			feat_coll = row[1] # data as json
 			id = row[0]
-			print (geom_intake)
+			geom_intake = [json.loads(feat_coll)['features'][0]['geometry']]
 			geom = ogr.CreateGeometryFromJson(geom_intake)
 			#while feat is not None:
 			featDef = ogr.Feature(out_layer.GetLayerDefn())
