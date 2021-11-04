@@ -105,7 +105,7 @@ async def test_shp(id:int):
 	logger.info(f'Start Process test_shp {id}')
 	print(f'Start Process test_shp {id}')
 	path = '/home/skaphe/Documentos/tnc/modelos/salidas/tmp/'
-	preproc.exportToShp(id, path)
+	preproc.exportToShp([str(id)], path)
 
 
 @app.get("/wf-models/rios")
