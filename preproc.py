@@ -101,6 +101,7 @@ def exportToShp(catchment, path):
 
 	if(catchment != -1):		
 		sql = 'select id, "geomIntake" from waterproof_intake_polygon where intake_id %s' % params
+		print (sql)
 		#layer = conn.ExecuteSQL(sql)
 		cursor_.execute(sql)
 		try:
