@@ -107,7 +107,7 @@ def exportToShp(catchment, path):
 			row = cursor_.fetchone()
 			feat_coll = row[1] # data as json
 			id = row[0]
-			geom_intake = [json.loads(feat_coll)['features'][0]['geometry']]
+			geom_intake = json.loads(feat_coll)['features'][0]['geometry']
 			print (geom_intake)
 			print ("convert to string: ")
 			print (json.dumps(geom_intake))
