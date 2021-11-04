@@ -109,7 +109,7 @@ def exportToShp(catchment, path):
 			id = row[0]
 			geom_intake = json.loads(feat_coll)['features'][0]['geometry']
 			print (json.dumps(geom_intake))
-			geom = ogr.CreateGeometryFromJson(geom_intake)
+			geom = ogr.CreateGeometryFromJson(json.dumps(geom_intake))
 			print ("ExportToWkt:")
 			print (geom.ExportToWkt())
 			#while feat is not None:
