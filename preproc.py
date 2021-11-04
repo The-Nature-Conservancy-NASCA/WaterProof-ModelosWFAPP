@@ -63,12 +63,16 @@ WPRet = 'WPRet'
 
 # Exportar cuenca delimitada a shp
 def exportToShp(catchment, path):
+	print ("Exporting to shp...")
 	params = config(section='postgresql_alfa')
-	connString = "PG: host=" + params['host'] + " dbname=" + params['database'] + " user=" + params['user'] + " password=" + params['password'] 
-	conn=ogr.Open(connString)
-	if conn is None:
-		print('Could not open a database or GDAL is not correctly installed!')
-		sys.exit(1)
+	# connString = "PG: host=" + params['host'] + " dbname=" + params['database'] + " user=" + params['user'] + " password=" + params['password'] 
+	# conn = ogr.Open(connString)
+	# if conn is None:
+	# 	print('Could not open a database or GDAL is not correctly installed!')
+	# 	sys.exit(1)
+
+	conn_ = connect('postgresql_alfa')
+	cursor_ = conn_.cursor()
 
 	output = os.path.join(path,"in","catchment","catchment.shp")
 	source = osr.SpatialReference()
@@ -79,11 +83,9 @@ def exportToShp(catchment, path):
 	epsg_54004 = 54004
 	target.ImportFromEPSG(epsg_54004)
 	transform = osr.CoordinateTransformation(source, target)
-
 	# Schema definition of SHP file
 	out_driver = ogr.GetDriverByName('ESRI Shapefile')
 	out_ds = out_driver.CreateDataSource(output)
-
 	out_layer = out_ds.CreateLayer("catchment", target, ogr.wkbPolygon)
 	fd = ogr.FieldDefn('ws_id',ogr.OFTInteger)
 	fd1 = ogr.FieldDefn('subws_id',ogr.OFTInteger)
@@ -97,27 +99,30 @@ def exportToShp(catchment, path):
 			params = params + str(c) + ','
 		params = params[:-1] + ')'
 
-	if(catchment != -1):
-		# delimitation_type = 'SBN' and 
-		sql = "select * from waterproof_intake_polygon where intake_id" + str(params)
-
-		# layer = conn.GetLayerByName("delineated_catchment")
-		layer = conn.ExecuteSQL(sql)
-		
-		feat = layer.GetNextFeature()
-		while feat is not None:
+	if(catchment != -1):		
+		sql = "select id, geomIntake from waterproof_intake_polygon where intake_id %s" % params
+		#layer = conn.ExecuteSQL(sql)
+		cursor_.execute(sql)
+		try:
+			row = cursor_.fetchone()
+			geom_intake = row[1] # data as json
+			id = row[0]
+			print (geom_intake)
+			geom = ogr.CreateGeometryFromJson(geom_intake)
+			#while feat is not None:
 			featDef = ogr.Feature(out_layer.GetLayerDefn())
-			geom = feat.GetGeometryRef()
+			#geom = feat.GetGeometryRef()
 			geom.Transform(transform)		
 			featDef.SetGeometry(geom)			
-			featDef.SetField('ws_id',feat.id)		
-			featDef.SetField('subws_id',feat.id)		
+			featDef.SetField('ws_id',id)		
+			featDef.SetField('subws_id',id)		
 			out_layer.CreateFeature(featDef)
-			feat.Destroy()
-			feat = layer.GetNextFeature()
-			
-
-		conn.Destroy()
+			#feat.Destroy()
+			#	feat = layer.GetNextFeature()
+		except:
+			print ("No data found")
+		
+		#conn.Destroy()
 		out_ds.Destroy()
 		
 	return os.path.join(os.getcwd(),output)
