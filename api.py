@@ -101,11 +101,19 @@ async def root():
 	print("Hello world  with print")
 	return {"message":"Hello World :: %s" % {__name__}}
 
+@app.get("/wf-models/test_shp")
+async def test_shp(id:int):
+	logger.info(f'Start Process test_shp {id}')
+	print(f'Start Process test_shp {id}')
+	path = '/home/skaphe/Documentos/tnc/modelos/salidas/tmp/'
+	preproc.exportToShp([str(id)], path)
+
+
 @app.get("/wf-models/rios")
 async def test_rios():
 	logger.debug("testing rios frop wf-models")
 	print("testing rios frop wf-models")
-	base_url_api = 'http://wfapp_py3:5050/wf-rios/welcome/'
+	base_url_api = 'http://wfapp_py2:5050/wf-rios/welcome/'
 	r = requests.get(url=base_url_api)
 	data = r.json()
 	return data
