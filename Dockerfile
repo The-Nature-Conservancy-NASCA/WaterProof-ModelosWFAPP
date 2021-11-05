@@ -13,6 +13,9 @@ ADD dev_requirements.txt /app/dev_requirements.txt
 
 RUN pip install --upgrade pip
 RUN apt update && apt install -y libpq-dev gdal-bin libgdal-dev
+RUN apt install -y gfortran
+RUN apt-get install -y libspatialindex-dev
+
 
 RUN pip install -r requirements_before.txt
 RUN pip install -r requirements.txt
