@@ -98,3 +98,5 @@ services:
 networks:
   shared-models:
     driver: bridge
+  spcwaterproof_default:
+    external: true
