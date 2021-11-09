@@ -430,6 +430,12 @@ def processParameters(parametersList, basin, catchment, pathF, type, model, user
 			path_coverages = 'out/04-RIOS/1_investment_portfolio_adviser_workspace/activity_portfolios/continuous_activity_portfolios/translated_cob/'
 			raster_coverage_name = 'activity_portfolio_continuous_year_%s_FUTURE_COMPLETE.tif' % year
 			value = os.path.join(pathF, path_coverages,raster_coverage_name)
+		
+		if (name == 'lulc_cur_path' and type == constants.INVEST_TYPE_NBS):
+      # /home/skaphe/Documentos/tnc/modelos/salidas/1000-70-1-2021-5-25/WI_86
+			path_coverages = 'out/04-RIOS/1_investment_portfolio_adviser_workspace/activity_portfolios/continuous_activity_portfolios/translated_cob/'
+			raster_coverage_name = 'activity_portfolio_continuous_year_%s_FUTURE.tif' % year
+			value = os.path.join(pathF, path_coverages,raster_coverage_name)
 
 		if(value == 'False'):
 			value = False
