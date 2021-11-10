@@ -649,11 +649,9 @@ def validate_and_create_dir(dir_to_validate):
 	if(not os.path.isdir(dir_to_validate)):
 		os.mkdir(dir_to_validate)
 
-#test Sebas por favor no borrar
 @app.get("/wf-models/delete")
 def delete(study_case_id,user_id,date):
 	try:
-		print('holi si entre')
 		pathdelete = os.path.join(base_path,'salidas',user_id+'_'+study_case_id+'_'+date)
 		shutil.rmtree(pathdelete)
 	except Exception as e:
