@@ -7,6 +7,8 @@ from os import environ
 ruta = environ["PATH_FILES"]
 
 def execWB(path_data_wb_in, path_data_wb_out):
+    print ("path_data_wb_in: ", path_data_wb_in)
+    print ("path_data_wb_out: ", path_data_wb_out)
     # Leer archivos base CSV
     # Los archivos CSV deberán ser construidos desde la interfaz WEB con la estructura propuesta
 
@@ -670,5 +672,5 @@ def execWB(path_data_wb_in, path_data_wb_out):
         writer = csv.writer(myFile)
         writer.writerows(Order_Results)
 
-    print('Proceso finalizado con exito...')
+    print('Proceso WI_Balance finalizado con exito...')
     print('Se han creado los CSV de resultados!!')

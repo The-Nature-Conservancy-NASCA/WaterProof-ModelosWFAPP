@@ -140,6 +140,9 @@ def updateParameter(element, parameter, value):
 	conn.close()
 
 def readSum(csvIn, path_data_wb_out):
+    print ('Reading sum file')
+    print("csvIn: ",csvIn)
+    print("path_data_wb_out: ",path_data_wb_out)
     data = readCsv(csvIn, path_data_wb_out)
     line = 0
     headers = []

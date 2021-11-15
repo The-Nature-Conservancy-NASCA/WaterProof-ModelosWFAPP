@@ -578,6 +578,7 @@ def roiExecution(user_id, study_cases_id):
 @app.get("/wf-models/wb")
 async def calculateWB(id_intake):
 	logger.info(f'Start Process Water Balance {id_intake}')
+	print(f'Start Process Water Balance {id_intake}')
 	dictResult = dict()
 	dictResult['status'] = False
 	OUT_BASE_DIR = "salidas"
@@ -589,6 +590,7 @@ async def calculateWB(id_intake):
 		DataInWB(id_intake, path_data_wb_in)
 		print(f'Start method execWB {id_intake}')
 		execWB(path_data_wb_in, path_data_wb_out)
+		print(f'Start method mergeData {id_intake}')
 		outFile = mergeData(path_data_wb_out)
 		print(f'Start method readSum {id_intake}')
 		readSum(outFile, path_data_wb_out)
