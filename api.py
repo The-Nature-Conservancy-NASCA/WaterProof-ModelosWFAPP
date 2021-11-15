@@ -577,6 +577,7 @@ def roiExecution(user_id, study_cases_id):
 # water balance segunda ejecucion Intake
 @app.get("/wf-models/wb")
 async def calculateWB(id_intake):
+	logger.info(f'Start Process Water Balance {id_intake}')
 	dictResult = dict()
 	dictResult['status'] = False
 	OUT_BASE_DIR = "salidas"
@@ -584,9 +585,12 @@ async def calculateWB(id_intake):
 	path_data_wb_out = path.join(base_path, OUT_BASE_DIR, 'tmp')
 	logger.info(f'Start Process Water Balance Intake {id_intake}')
 	try:
+		print(f'Start method DataInWB {id_intake}')
 		DataInWB(id_intake, path_data_wb_in)
+		print(f'Start method execWB {id_intake}')
 		execWB(path_data_wb_in, path_data_wb_out)
 		outFile = mergeData(path_data_wb_out)
+		print(f'Start method readSum {id_intake}')
 		readSum(outFile, path_data_wb_out)
 		dictResult = dict()
 		dictResult['status'] = True
@@ -725,7 +729,7 @@ def task_catchment(payload = Body(...)):
 		return JSONResponse({"task_id": task.id})
 
 '''4. Invest Excecution'''
-@app.post("/wf-models/task_exec_invest", status_code=201)
+@app.post("/wf-models/task-exec-invest", status_code=201)
 async def task_exec_invest(payload = Body(...)):
  	# (type:str,id_usuario:int, basin:int, case:int, models: List[str] = Query(None),catchment:List[int] = Query(None)):
 	type = payload["type"]
