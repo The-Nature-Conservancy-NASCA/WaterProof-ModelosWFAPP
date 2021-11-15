@@ -16,18 +16,18 @@ def Select_PTAP(PathProject_PTAP):
     SelectQuality   = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS",'6_Table_Select_Quality.csv'))
     SelectPTAP      = pd.read_csv(os.path.join(ruta,"salidas","ptap_test","INPUTS",'5_Table_Select_PTAP.csv'))
 
+    # Check AWY = 0  -> 0.0031536 m3 = 0.1 l/s
+    id = AWY  == 0
+    AWY[id] = 0.0031536
+
     # Factor
     # Kg/m3 -> mg/l
     Factor_1 = 1000
 
     # Integración de calidades
-
-    # el -1 se resta con el campo time que proviene del csv (siempre es uno)
     CN = N.sum(1)/AWY.sum(1)*Factor_1
     CP = P.sum(1)/AWY.sum(1)*Factor_1
     CS = S.sum(1)/AWY.sum(1)*Factor_1*1000
-
-    # Results = S
 
      # Select PTAP - Water Quality - SST
     if (CS[1] >= SelectPTAP['SST'][0]) and (CS[1] < SelectPTAP['SST'][1]):
