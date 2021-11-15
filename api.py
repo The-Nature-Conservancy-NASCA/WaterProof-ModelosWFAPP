@@ -39,7 +39,7 @@ import aiohttp
 import asyncio
 import aiofiles
 from aiohttp import ClientSession
-from worker import create_task, catchment_task
+from worker import create_task, catchment_task, exec_invest_task
 
 base_path = environ["PATH_FILES"]
 logger = logging.getLogger(__name__) # grabs underlying WSGI logger
@@ -723,6 +723,22 @@ def task_catchment(payload = Body(...)):
 		task = catchment_task.delay(x, y)
 		print(f'Finish task_catchment {x} {y}')
 		return JSONResponse({"task_id": task.id})
+
+'''4. Invest Excecution'''
+@app.post("/wf-models/task_exec_invest", status_code=201)
+async def task_exec_invest(payload = Body(...)):
+ 	# (type:str,id_usuario:int, basin:int, case:int, models: List[str] = Query(None),catchment:List[int] = Query(None)):
+	type = payload["type"]
+	logger.info('Start Process ExecInvest from Task, Type: %s' % type)
+	id_usuario = payload["id_usuario"]
+	basin = payload["basin"]
+	case = payload["case"]
+	models = payload["models"]
+	catchment = payload["catchment"]
+	print (f'Start Process ExecInvest from Task, Type: {type}')
+	task = exec_invest_task.delay(type,id_usuario, basin, case, models, catchment)
+	print (f'Finish Process ExecInvest from Task, Type: {type}')
+	return JSONResponse({"task_id": task.id})
 
 async def catchment_from_coords(x,y):
 	logger.info(f'Start Process catchment_from_coords {x} {y}')
