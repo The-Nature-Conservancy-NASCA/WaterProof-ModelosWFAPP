@@ -35,6 +35,10 @@ def execWB(path_data_wb_in, path_data_wb_out):
     WNInputs    = np.loadtxt(open(os.path.join(path_data_wb_in,"2_WI_WNInputs.csv")),   delimiter=",")
     WPInputs    = np.loadtxt(open(os.path.join(path_data_wb_in,"2_WI_WPInputs.csv")),   delimiter=",")
 
+    # Check AWY = 0  -> 0.0031536 m3 = 0.1 l/s
+    if np.shape(AWYInputs)[0] == 2:
+        AWYInputs[1,1:] = 0.0031536
+
     # Leer archivo de serie de tiempo de caudal extraido (l/s)
     # Col1: Anho Col 2: QExtract
     QExtract    = np.loadtxt(open(os.path.join(path_data_wb_in,"3_Water_Extraction.csv"), "rb"), delimiter=",")
