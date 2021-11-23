@@ -676,12 +676,12 @@ def insertInvestResult(year, type, awy, wn_kg, wp_kg, wsed_ton, bf_m3, wc_ton,in
 	listResult = []
 	conn = connect('postgresql_alfa')
 	cursor = conn.cursor()
-	cursor.callproc('__wp_invest_result_insert',[year, type, awy, wn_kg, wp_kg, wsed_ton, bf_m3, wc_ton,intake_id, study_case_id, user_id])
+	
+	cursor.callproc('__wp_invest_result_insert',[year, type, validateNumber(awy), validateNumber(wn_kg), validateNumber(wp_kg), validateNumber(wsed_ton), validateNumber(bf_m3), validateNumber(wc_ton), intake_id, study_case_id, user_id])
 	conn.commit()
 	cursor.close()
 	conn.close()
 
-''' Calculate Cost function '''
 def costFunctionExecute(intake_id, study_case_id, user_id):
 	print ("costFunctionExecute")
 	conn = connect('postgresql_alfa')
@@ -873,8 +873,6 @@ def rasters_statistics(usr_folder, intake_id,year, region):
 
 	return raster_list
 
-
-
 def SDR_BugFix(FilePath_BaU, FilePath_NBS, Region):
     """
     FilePath_BaU: SDR model output directory for BaU scenario
@@ -949,3 +947,10 @@ def SDR_BugFix(FilePath_BaU, FilePath_NBS, Region):
     for i, row in Table_PD.T.iteritems():
         db.write(row)
     db.close()
+
+# validate if number is null , return zero otherwise return the number
+def validateNumber(value):
+	if value == None:
+		return 0
+	else:
+		return value
