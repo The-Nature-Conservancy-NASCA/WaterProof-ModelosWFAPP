@@ -950,7 +950,7 @@ def SDR_BugFix(FilePath_BaU, FilePath_NBS, Region):
 
 # validate if number is null , return zero otherwise return the number
 def validateNumber(value):
-	if value == None:
+	if value == None or math.isnan(value):
 		return 0
 	else:
 		return value
