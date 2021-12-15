@@ -31,10 +31,7 @@ def generateCsvPerc(id, function_db, csv_in, path_data_wb_in):
     generateCsv(["From_Element","PWater","RetSed","RetN","RetP"],results, pathF)
 
 def generateCsvData(id, funcion_db, csv_in, path_data_in):
-    print("generateCsvData: %s / %s" % (path_data_in, csv_in))
     results = getDataDB( [id], funcion_db )
-    print ("results:")
-    print (results)
     listElements = []
     listData = []
     listElements.append(0)

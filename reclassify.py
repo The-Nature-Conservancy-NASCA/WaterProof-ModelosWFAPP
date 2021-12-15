@@ -108,7 +108,7 @@ def reclassify(pathFile,outPath,filename,lulc_path,json, is_future, future_lulc_
     file2.FlushCache()
     return pathTranslated
 
-def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, region,json,study_case_id):
+def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, region,json,study_case_id,catchmentOut):
     print ("reclassifyFilesInFolder")
     print ("path : %s" % (path))
     print ("lulc_path : %s" % (lulc_path))
@@ -127,6 +127,7 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
     TIF_EXT = '.tif'
     FUTURE_TIF_SUFFIX = '_FUTURE.tif'
     FUTURE_COMPLETE_TIF_SUFFIX = '_FUTURE_COMPLETE.tif'
+    CARBON_TIF_SUFFIX = '_CARBON.tif'
     lucodes = preproc.bio_params_by_condition(region,study_case_id)
     print ("lucodes : %s" % lucodes)
 
@@ -148,6 +149,9 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
                 command = "gdal_merge.py -o %s -of gtiff %s %s" % (lulc_path_complete, lulc_path_region, path_file)
                 print (command)
                 print(os.popen(command).read())
+                # *** Cut Complete Raster with Catchment ***
+                lulc_path_carbon = os.path.join(pathOut,filename.replace(TIF_EXT, CARBON_TIF_SUFFIX))
+                preproc.cutRaster(catchmentOut, lulc_path_complete,lulc_path_carbon)
             paths.append(path_file)
 
     return paths

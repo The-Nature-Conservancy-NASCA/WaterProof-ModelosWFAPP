@@ -165,7 +165,7 @@ def exchangeRoi(study_case_id):
 	return "Run successful"
 
 @app.get("/wf-models/cobTrans")
-async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
+async def cobTrans(pathCobs,pathLULC, basin, study_case_id,catchmentOut):
 	folder = Path(pathCobs).parents[4]
 	filenamelog = path.join(folder,f'log_{datefilelog}.log')
 	formatlog = '%(asctime)s - %(levelname)s - %(message)s'
@@ -185,10 +185,10 @@ async def cobTrans(pathCobs,pathLULC, basin, study_case_id):
 		if( count[0] == 0 ):
 			insertParameter('__wpinsert_download_zip',args)
 		pathCobs, json = verifypathconti(pathCobs)
-		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name,json,study_case_id)
+		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name,json,study_case_id,catchmentOut)
 		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
 		if (os.path.isfile(path_future_lulc)):
-			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc, year, region_name,json,study_case_id)
+			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc, year, region_name,json,study_case_id,catchmentOut)
 		dictResult['result'] = {"result":'successful execution'}
 		dictResult['paths'] = paths
 		dictResult['paths_future'] = paths_future
