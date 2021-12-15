@@ -664,6 +664,15 @@ def delete(study_case_id,user_id,date):
 		return e.args
 	return 'file delete complete!'
 
+@app.get("/wf-models/delete-intake")
+def delete(intake_id,user_id,date):
+	try:
+		pathdelete = os.path.join(base_path,'salidas',user_id+'_'+'-1'+'_'+date+'/WI_'+intake_id)
+		shutil.rmtree(pathdelete)
+	except Exception as e:
+		return e.args
+	return 'file delete complete!'
+
 @app.get("/wf-models/snapPoint")
 async def snap(x,y):
 	dictResult = dict()
