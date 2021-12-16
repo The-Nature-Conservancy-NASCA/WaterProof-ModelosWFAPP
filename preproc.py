@@ -209,8 +209,11 @@ def createFolder(user, id_case, id_catchment ,date):
    
 # Cortar raster
 def cutRaster(catchment,path,out_path):
-	print ("Cutting raster")
-	data = rasterio.open(path)
+	print ("Cutting raster...")
+	print ("Catchment: %s" % (catchment))
+	print ("Path: %s" % (path))
+	print ("Out path: %s" % (out_path))
+	#data = rasterio.open(path)
 	with fiona.open(catchment, "r") as shapefile:
 		shapes = [feature["geometry"] for feature in shapefile]
 	

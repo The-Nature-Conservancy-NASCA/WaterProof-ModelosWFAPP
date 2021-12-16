@@ -127,7 +127,7 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
     TIF_EXT = '.tif'
     FUTURE_TIF_SUFFIX = '_FUTURE.tif'
     FUTURE_COMPLETE_TIF_SUFFIX = '_FUTURE_COMPLETE.tif'
-    CARBON_TIF_SUFFIX = '_CARBON.tif'
+    CARBON_DIR = 'CARBON'
     lucodes = preproc.bio_params_by_condition(region,study_case_id)
     print ("lucodes : %s" % lucodes)
 
@@ -150,9 +150,11 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
                 print (command)
                 print(os.popen(command).read())
                 # Cut Complete Raster with Catchment ***
-                lulc_path_carbon = lulc_path_complete.replace(TIF_EXT, CARBON_TIF_SUFFIX)
-                print ("lulc_path_carbon : %s" % (lulc_path_carbon))
-                preproc.cutRaster(catchmentOut, lulc_path_complete,lulc_path_carbon)
+                path_carbon_dir = os.path.join(path,CARBON_DIR)
+                if not os.path.isdir(path_carbon_dir):
+                    os.mkdir(path_carbon_dir)
+                print ("path_carbon_dir : %s" % (path_carbon_dir))
+                preproc.cutRaster(catchmentOut, lulc_path_complete,path_carbon_dir)
             paths.append(path_file)
 
     return paths
