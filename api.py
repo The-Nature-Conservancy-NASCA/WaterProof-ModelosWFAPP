@@ -165,7 +165,7 @@ def exchangeRoi(study_case_id):
 	return "Run successful"
 
 @app.get("/wf-models/cobTrans")
-async def cobTrans(pathCobs,pathLULC, basin, study_case_id,catchmentOut):
+async def coverageTranslator(pathCobs,pathLULC, basin, study_case_id,catchmentOut):	
 	folder = Path(pathCobs).parents[4]
 	filenamelog = path.join(folder,f'log_{datefilelog}.log')
 	formatlog = '%(asctime)s - %(levelname)s - %(message)s'

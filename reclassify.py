@@ -149,8 +149,8 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
                 command = "gdal_merge.py -o %s -of gtiff %s %s" % (lulc_path_complete, lulc_path_region, path_file)
                 print (command)
                 print(os.popen(command).read())
-                # *** Cut Complete Raster with Catchment ***
-                lulc_path_carbon = os.path.join(pathOut,filename.replace(TIF_EXT, CARBON_TIF_SUFFIX))
+                # Cut Complete Raster with Catchment ***
+                lulc_path_carbon = lulc_path_complete.replace(TIF_EXT, CARBON_TIF_SUFFIX)
                 preproc.cutRaster(catchmentOut, lulc_path_complete,lulc_path_carbon)
             paths.append(path_file)
 
