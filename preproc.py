@@ -209,6 +209,7 @@ def createFolder(user, id_case, id_catchment ,date):
    
 # Cortar raster
 def cutRaster(catchment,path,out_path):
+	print ("Cutting raster")
 	data = rasterio.open(path)
 	with fiona.open(catchment, "r") as shapefile:
 		shapes = [feature["geometry"] for feature in shapefile]
@@ -224,7 +225,9 @@ def cutRaster(catchment,path,out_path):
 	
 	with rasterio.open(os.path.join(out_path,os.path.basename(path)), "w", **out_meta) as dest:
 		dest.write(out_image)
-
+	print ("out_path: %s" % out_path)
+	print ("os.path.basename(path): %s" % os.path.basename(path))
+	print ("return : %s" % os.path.join(out_path,os.path.basename(path)))
 	return os.path.join(out_path,os.path.basename(path))
 
 # Recuperar macroregion por id
