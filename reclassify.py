@@ -154,7 +154,8 @@ def reclassifyFilesInFolder(path,lulc_path, is_future, future_lulc_path, year, r
                 if not os.path.isdir(path_carbon_dir):
                     os.mkdir(path_carbon_dir)
                 print ("path_carbon_dir : %s" % (path_carbon_dir))
-                preproc.cutRaster(catchmentOut, lulc_path_complete,path_carbon_dir)
+                catchment_using_json = catchmentOut.replace('.shp','_using_json.shp')
+                preproc.cutRaster(catchment_using_json, lulc_path_complete,path_carbon_dir)
             paths.append(path_file)
 
     return paths

@@ -228,7 +228,7 @@ def cutRaster(catchment,path,out_path):
 	
 	with rasterio.open(os.path.join(out_path,os.path.basename(path)), "w", **out_meta) as dest:
 		dest.write(out_image)
-	print ("out_path: %s" % out_path)
+	
 	print ("os.path.basename(path): %s" % os.path.basename(path))
 	print ("return : %s" % os.path.join(out_path,os.path.basename(path)))
 	return os.path.join(out_path,os.path.basename(path))
