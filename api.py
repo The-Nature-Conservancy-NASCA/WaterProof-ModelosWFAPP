@@ -167,9 +167,9 @@ def exchangeRoi(study_case_id):
 @app.get("/wf-models/cobTrans")
 async def coverageTranslator(pathCobs,pathLULC, basin, study_case_id,catchmentOut):	
 	folder = Path(pathCobs).parents[4]
-	filenamelog = path.join(folder,f'log_{datefilelog}.log')
+	filenamelog = path.join(folder,f'log_{study_case_id}_{datefilelog}.log')
 	formatlog = '%(asctime)s - %(levelname)s - %(message)s'
-	logging.basicConfig(filename=filenamelog, format=formatlog, datefmt='%m/%d/%Y %I:%M:%S %p')
+	logging.basicConfig(filename=filenamelog, format=formatlog, datefmt='%m/%d/%Y %I:%M:%S %p', force=True)
 	logger.info('Start process Coverage translator')
 	
 	print ("cobTrans :: start")
@@ -181,6 +181,7 @@ async def coverageTranslator(pathCobs,pathLULC, basin, study_case_id,catchmentOu
 	print ("year: %s :: region: %s" % (year, region_name))
 	args = [study_case_id,filenamelog]
 	try:
+		# se adiciona este bloque para garantizar que exista el registro de generación del archivo zip
 		count = selectDataDB('select count(*) from waterproof_reports_zip where study_case_id_id = ' + study_case_id)
 		if( count[0] == 0 ):
 			insertParameter('__wpinsert_download_zip',args)
