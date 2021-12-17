@@ -169,7 +169,7 @@ async def coverageTranslator(pathCobs,pathLULC, basin, study_case_id,catchmentOu
 	folder = Path(pathCobs).parents[4]
 	filenamelog = path.join(folder,f'log_{study_case_id}_{datefilelog}.log')
 	formatlog = '%(asctime)s - %(levelname)s - %(message)s'
-	logging.basicConfig(filename=filenamelog, format=formatlog, datefmt='%m/%d/%Y %I:%M:%S %p', force=True)
+	logging.basicConfig(filename=filenamelog, format=formatlog, force=True, datefmt='%m/%d/%Y %I:%M:%S %p')
 	logger.info('Start process Coverage translator')
 	
 	print ("cobTrans :: start")
