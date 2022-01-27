@@ -5,9 +5,9 @@ pycrs
 fastapi[all]==0.64.0
 uvicorn[standard]==0.13.4
 gunicorn==20.0.4
-numpy==1.21.2
+numpy
 natcap.invest==3.8.9
-rasterstats==0.15.0
+rasterstats
 dbfread
 SQLAlchemy
 pymongo
@@ -18,7 +18,7 @@ aiofiles
 requests==2.25.1
 AdvancedHTMLParser
 pysal==1.14.4
-aiohttp==3.7.4
+aiohttp
 asyncio
 celery==4.4.7
 flower==0.9.7
