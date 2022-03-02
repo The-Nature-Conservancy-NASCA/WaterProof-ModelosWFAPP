@@ -131,31 +131,13 @@ async def preproc_rios(id_usuario:str, id_case:int):
 	async with ClientSession() as session:
 		await asyncio.gather(*[execute_preproc(session, base_url_api, parameters)])
 
-	# try:
-	# 	html = await fetch_html(url=base_url_api, session=session, **kwargs)
-	# except (
-	# aiohttp.ClientError,
-	# aiohttp.http_exceptions.HttpProcessingError,
-	# ) as e:
-	# 	logger.error(
-	# 		"aiohttp exception for %s [%s]: %s",
-	# 		url,
-	# 		getattr(e, "status", None),
-	# 		getattr(e, "message", None),
-	# 	)
-	# 	return found
-	# except Exception as e:
-	# 	logger.exception(
-	# 			"Non-aiohttp exception occured:  %s", getattr(e, "__dict__", {})
-	# 	)
-	# 	return found
-
 '''0. Exchange rate'''
 @app.get("/wf-models/exchangeRate")
 def exchangeRoi(study_case_id):
 	logger.info('Start Proccess Exchange Rate')
 	try:
-		ExchangeROI(study_case_id)
+		id = int(study_case_id)
+		ExchangeROI(id)
 	except Exception as e:
 		logger.error('Error in Process Exchange Rate: ')
 		logger.error(e.args)
@@ -165,7 +147,7 @@ def exchangeRoi(study_case_id):
 	return "Run successful"
 
 @app.get("/wf-models/cobTrans")
-async def coverageTranslator(pathCobs,pathLULC, basin, study_case_id,catchmentOut):	
+async def coverageTranslator(pathCobs, pathLULC, basin, study_case_id, catchmentOut):	
 	folder = Path(pathCobs).parents[4]
 	filenamelog = path.join(folder,f'log_{study_case_id}_{datefilelog}.log')
 	formatlog = '%(asctime)s - %(levelname)s - %(message)s'
@@ -175,21 +157,23 @@ async def coverageTranslator(pathCobs,pathLULC, basin, study_case_id,catchmentOu
 	print ("cobTrans :: start")
 	dictResult = dict()
 	dictResult['status'] = True
-	year = preproc.analysisPeriodFromStudyCase(study_case_id)
-	region = preproc.getRegionFromId(basin)
-	region_name = region[4]
-	print ("year: %s :: region: %s" % (year, region_name))
-	args = [study_case_id,filenamelog]
 	try:
+		id = int(study_case_id)
+		year = preproc.analysisPeriodFromStudyCase(id)
+		region = preproc.getRegionFromId(basin)
+		region_name = region[4]
+		print ("year: %s :: region: %s" % (year, region_name))
+		args = [id,filenamelog]
+	
 		# se adiciona este bloque para garantizar que exista el registro de generación del archivo zip
-		count = selectDataDB('select count(*) from waterproof_reports_zip where study_case_id_id = ' + study_case_id)
+		count = selectDataDB('select count(*) from waterproof_reports_zip where study_case_id_id = %s' % id)
 		if( count[0] == 0 ):
 			insertParameter('__wpinsert_download_zip',args)
 		pathCobs, json = verifypathconti(pathCobs)
-		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name,json,study_case_id,catchmentOut)
+		paths = reclassifyFilesInFolder(pathCobs,pathLULC, False,'', year, region_name,json, id, catchmentOut)
 		path_future_lulc = pathLULC.replace(constants.RIOS_DIR,constants.PREPROC_RIOS_DIR).replace('.tif','_FUTURE.tif')
 		if (os.path.isfile(path_future_lulc)):
-			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc, year, region_name,json,study_case_id,catchmentOut)
+			paths_future = reclassifyFilesInFolder(pathCobs,pathLULC, True, path_future_lulc, year, region_name, json, id, catchmentOut)
 		dictResult['result'] = {"result":'successful execution'}
 		dictResult['paths'] = paths
 		dictResult['paths_future'] = paths_future
