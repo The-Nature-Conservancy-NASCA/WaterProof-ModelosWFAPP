@@ -728,6 +728,25 @@ def costFunctionExecute(intake_id, study_case_id, user_id):
 	cursor.close()
 	internalCostFunctionExecute(conn, rows, study_case_id, user_id)
 
+	# CUSTOM
+	stage = 'NBS'
+	type_element = 'intake'
+	print (stage, type_element)
+	cursor = conn.cursor()
+	cursor.callproc('__wp_get_function_cost_study_cases_custom',[study_case_id, stage])
+	rows = cursor.fetchall()
+	cursor.close()
+	internalCostFunctionExecute(conn, rows, study_case_id, user_id)
+
+	stage = 'BAU'
+	type_element = 'intake'
+	print (stage, type_element)
+	cursor = conn.cursor()
+	cursor.callproc('__wp_get_function_cost_study_cases_custom',[study_case_id, stage])
+	rows = cursor.fetchall()
+	cursor.close()
+	internalCostFunctionExecute(conn, rows, study_case_id, user_id)
+
 	conn.close()
 	
 	return True
