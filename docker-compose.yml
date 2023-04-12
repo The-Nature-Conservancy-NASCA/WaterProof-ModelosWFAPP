@@ -1,0 +1,102 @@
+version: '3.3'
+
+# volumes:
+#   outputs:
+#     external: true
+#   inputs:
+#     external: true
+
+    
+services:
+  wfapp_py3:
+    image: wfapp_py3
+    container_name: wfapp_py3_container
+    build: .
+    environment:
+      - PG_HOST=${PG_HOST}
+      - PG_GEO_DATABASE=${PG_GEO_DATABASE}
+      - PG_GEO_USER=${PG_GEO_USER}
+      - PG_GEO_PASSWORD=${PG_GEO_PASSWORD}
+      - PG_DATABASE=${PG_DATABASE}
+      - PG_USER=${PG_USER}
+      - PG_PASSWORD=${PG_PASSWORD}
+      - PG_PORT=${PG_PORT}
+      - PATH_FILES=${PATH_FILES}
+      - GDAL_DATA=/usr/share/gdal
+      - ZIP_CREATION_DIR=${ZIP_CREATION_DIR}
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    volumes:
+      - ./:/app/      
+      - /data/global_datasets/:/home/skaphe/Documentos/tnc/modelos/entradas/
+      - /data/outputs/:/home/skaphe/Documentos/tnc/modelos/salidas/
+    ports:
+      - 8000:8000
+      - 3000:3000
+    # command: gunicorn api:app --bind 0.0.0.0:8000 -k uvicorn.workers.UvicornWorker
+    command: uvicorn api:app --host 0.0.0.0 --reload
+    networks:
+      - shared-models
+      - spcwaterproof_default
+    # depends_on:
+    #   - redis
+
+  worker:
+    build: .
+    command: celery worker --app=worker.celery --loglevel=info -n worker_invest@%h -Q worker_invest
+    volumes:
+      - ./:/app/
+      - /data/global_datasets/:/home/skaphe/Documentos/tnc/modelos/entradas/
+      - /data/outputs/:/home/skaphe/Documentos/tnc/modelos/salidas/
+    environment:
+      - PG_HOST=${PG_HOST}
+      - PG_GEO_DATABASE=${PG_GEO_DATABASE}
+      - PG_GEO_USER=${PG_GEO_USER}
+      - PG_GEO_PASSWORD=${PG_GEO_PASSWORD}
+      - PG_DATABASE=${PG_DATABASE}
+      - PG_USER=${PG_USER}
+      - PG_PASSWORD=${PG_PASSWORD}
+      - PG_PORT=${PG_PORT}
+      - PATH_FILES=${PATH_FILES}
+      - GDAL_DATA=/usr/share/gdal
+      - ZIP_CREATION_DIR=${ZIP_CREATION_DIR}
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - shared-models
+      - spcwaterproof_default
+    
+  redis:
+    image: redis:6-alpine
+    networks:
+      - shared-models
+      - spcwaterproof_default
+
+  dashboard:
+    build: .
+    command: flower --app=worker.celery --url_prefix=flower --basic_auth=waterproof:5K4ph32021 --port=5555 --broker=redis://redis:6379/0
+    ports:
+      - 5556:5555
+    environment:
+      - PG_HOST=${PG_HOST}
+      - PG_GEO_DATABASE=${PG_GEO_DATABASE}
+      - PG_GEO_USER=${PG_GEO_USER}
+      - PG_GEO_PASSWORD=${PG_GEO_PASSWORD}
+      - PG_DATABASE=${PG_DATABASE}
+      - PG_USER=${PG_USER}
+      - PG_PASSWORD=${PG_PASSWORD}
+      - PG_PORT=${PG_PORT}
+      - PATH_FILES=${PATH_FILES}
+      - GDAL_DATA=/usr/share/gdal
+      - ZIP_CREATION_DIR=${ZIP_CREATION_DIR}
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    networks:
+      - shared-models
+      - spcwaterproof_default
+
+networks:
+  shared-models:
+    driver: bridge
+  spcwaterproof_default:
+    external: true

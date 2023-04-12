@@ -1,0 +1,37 @@
+version: '3'
+
+# volumes:
+#   outputs:
+#     external: true
+#   inputs:
+#     external: true
+
+    
+services:
+  wfapp_py3:
+    image: wfapp_py3
+    container_name: wfapp_py3_container
+    build: .
+    environment:
+      - PG_HOST=water-proof.org
+      - PG_GEO_DATABASE=geonode_data
+      - PG_GEO_USER=geonode
+      - PG_GEO_PASSWORD=<your_pass>
+      - PG_DATABASE=geonode
+      - PG_USER=geonode
+      - PG_PASSWORD=<your_pass>
+      - PG_PORT=5432
+      - PATH_FILES=/home/skaphe/Documentos/tnc/modelos
+      - GDAL_DATA=/usr/share/gdal
+    volumes:
+      - /data/global_datasets/:/home/skaphe/Documentos/tnc/modelos/entradas/
+      - /data/outputs/:/home/skaphe/Documentos/tnc/modelos/salidas/      
+    ports:
+      - 8000:8000
+      - 3000:3000
+    networks:
+      - shared-models
+      
+networks:
+  shared-models:
+    driver: bridge

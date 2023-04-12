@@ -1,0 +1,4 @@
+/tmp
+catchment.*
+docker-compose.yml
+/.env
